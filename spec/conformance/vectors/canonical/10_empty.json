@@ -1,0 +1,10 @@
+{
+  "name": "10_empty",
+  "input": {
+    "obj": {},
+    "arr": [],
+    "s": ""
+  },
+  "canonical": "{\"arr\":[],\"obj\":{},\"s\":\"\"}",
+  "hash": "sha256:cb21fb26e9762b2ad84481ae53d34c4d8082d0a756ee9f7afcd22d0617430a31"
+}

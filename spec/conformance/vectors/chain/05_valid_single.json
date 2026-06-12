@@ -1,0 +1,20 @@
+{
+  "name": "valid_single",
+  "manifest": {
+    "model": "toy2",
+    "seed": 1,
+    "runtime": "ggrid-ref-0.1.0"
+  },
+  "records": [
+    {
+      "prev": "sha256:7b5041870a9ad4828835ed436692220a4b7f369dceb81fb206dda7d0b180578f",
+      "step": 0,
+      "ev": "STEP",
+      "applied": {},
+      "sigma_peak": 0.0,
+      "norm_corr": 0.0
+    }
+  ],
+  "head": "sha256:c92ed2d8611a85e5735be7b60523b224fdba02940b10e50120bacdb71285872f",
+  "valid": true
+}

@@ -1,0 +1,53 @@
+flowchart LR
+  subgraph STACK["AI SYSTEM — DATA PLANE (seven layers)"]
+    direction TB
+    L7["L7 APPLICATION<br/>product · users · outcomes"]
+    L6["L6 ORCHESTRATION<br/>LangGraph · CrewAI · MCP · subagents"]
+    L5["L5 CONTEXT WINDOW<br/>prompts · RAG · memory · contexel"]
+    L4["L4 DECODING<br/>samplers · grammars · logit processors"]
+    L3["L3 ACTIVATION SPACE<br/>residual stream · features"]
+    L2["L2 WEIGHTS<br/>pretraining · RLHF character prior"]
+    L1["L1 INFERENCE RUNTIME<br/>vLLM · llama.cpp · closed APIs"]
+    L7 --> L6 --> L5 --> L4 --> L3 --> L2 --> L1
+  end
+
+  subgraph OG["OPENGUIDE — CONTROL PLANE (vertical cut)"]
+    direction TB
+    DC["DECLARED BEHAVIOR<br/>OBC contract · hashed"]
+    KC["Compiler<br/>tier select per target"]
+    AC["Actuators<br/>T0 inject · T1 mask · T2 re-anchor"]
+    SC["Sensors<br/>probes · checks · metrics"]
+    RC["Reconciler<br/>observed vs declared → correction"]
+    TC["OBSERVED BEHAVIOR<br/>hash-chained trace · replayable"]
+    DC --> KC --> AC
+    SC --> RC --> AC
+    SC --> TC
+    DC -.-> RC
+  end
+
+  subgraph XC["CROSS-CUTTING CONSUMERS"]
+    OBS["Observability<br/>OTel gen_ai.behavior.*<br/>fleet console"]
+    AUD["Replay and Audit<br/>incident → lookup"]
+    GOV["Change Management<br/>behavior diffs · rollback by hash"]
+  end
+
+  AC -->|"tier 2: scheduled re-anchor"| L5
+  AC -->|"tier 1: token masking"| L4
+  AC -->|"tier 0: residual injection"| L3
+  L3 -->|"probe readings"| SC
+  L7 -->|"external metrics: CodeMonk · sensors"| SC
+  L6 <-->|"middleware integration · contract delegation"| KC
+  L2 -.->|"behavioral prior — untouched, frozen"| OG
+  TC --> OBS
+  TC --> AUD
+  DC --> GOV
+
+  TT["TRAINING TIME<br/>alignment sets the prior, once"] -.-> L2
+  IT["INFERENCE TIME<br/>OpenGuide governs the trajectory,<br/>every step of every run"] -.-> OG
+
+  style STACK fill:#14171c,stroke:#46c8d2,color:#eef2f6
+  style OG fill:#1b1f26,stroke:#e8a33d,color:#eef2f6
+  style XC fill:#1b1f26,stroke:#7ddb8a,color:#eef2f6
+  style TT fill:#101318,stroke:#6b7684,color:#8a94a3
+  style IT fill:#101318,stroke:#e8a33d,color:#c9d1d9
+  style L2 fill:#14171c,stroke:#9b7bf0,color:#c9d1d9

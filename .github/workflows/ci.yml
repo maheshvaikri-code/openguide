@@ -1,0 +1,38 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  runtime:
+    name: guidancegrid (py${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install -e ".[dev,obc]" jsonschema
+      - run: ruff check .
+      - run: python -m pytest
+
+  conformance:
+    name: spec conformance gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install numpy
+      # Regenerate vectors from the reference impl, then verify the committed
+      # vectors are unchanged (drift between spec and impl fails the build).
+      - run: python spec/conformance/generate.py
+      - run: git diff --exit-code spec/conformance/vectors
+      # The independent runner must reproduce every hash from the spec rules alone.
+      - run: python spec/conformance/run_conformance.py

@@ -1,0 +1,11 @@
+{
+  "name": "01_atoms",
+  "input": {
+    "b": true,
+    "n": null,
+    "i": 42,
+    "s": "hello"
+  },
+  "canonical": "{\"b\":true,\"i\":42,\"n\":null,\"s\":\"hello\"}",
+  "hash": "sha256:72092e36ac6c50aa18ae06d66d60ac38ce5bbbd22d64d6dd567d48e90b1606b6"
+}

@@ -1,0 +1,52 @@
+# OBC v0.1 — reference contract: a scope-disciplined coding agent.
+# Case study 1 (blueprint §5): 100-step SWE tasks, scope discipline +
+# tests-before-commit + a CESR setpoint via an external measure.
+
+[contract]
+name = "coding-agent-default"
+version = "0.1.0"
+enforcement_floor = "t3"          # minimum tier; runtime refuses below
+
+[identity]
+persona = "precise, terse, skeptical"
+boundaries = ["no edits outside declared paths", "no force push"]
+
+[[invariants]]
+id = "adherence"
+measure = "judge:instruction_adherence"
+floor = 0.85
+weight = 1.0
+
+[[invariants]]
+id = "tests_gate"
+measure = "structural:tests_pass_before_commit"
+hard = true                        # tier-1/3 enforced, never advisory
+
+[[invariants]]
+id = "cesr"
+measure = "external:codemonk.cesr"
+floor = 0.80
+weight = 0.5
+
+[[phases]]
+name = "plan"
+window = { turns = [0, 5] }
+signals = [{ ref = "explore", gain = 0.5 }]
+
+[[phases]]
+name = "act"
+window = { turns = [5, -1] }
+signals = [{ ref = "anchor", gain = { ramp = [0.1, 0.6] } }]
+
+[[triggers]]
+on = "token:<tool_call>"
+apply = { ref = "precision", gain = 0.7, decay_tau = 8 }
+
+[recovery]
+drift_threshold = 0.27
+actions = ["re_anchor", "escalate@0.45", "halt@0.60"]
+
+[signals]
+anchor    = { pack = "sha256:0000000000000000000000000000000000000000000000000000000000000000", t2_template = "templates/anchor.md" }
+precision = { pack = "sha256:0000000000000000000000000000000000000000000000000000000000000000", t1_grammar = "grammars/tool.lark" }
+explore   = { pack = "sha256:0000000000000000000000000000000000000000000000000000000000000000" }

@@ -1,0 +1,95 @@
+flowchart TB
+  APP["AGENT / APPLICATION<br/>sets contract · consumes state"]
+
+  subgraph AUTH["AUTHORING and REGISTRY — cold path, hashed artifacts"]
+    OBC["OBC Contract<br/>invariants · phases · triggers<br/>recovery · enforcement floor<br/>contract_hash"]
+    REG["SignalPack Registry<br/>per-model vectors · eval scores<br/>content-addressed"]
+    MREG["Measure Registry<br/>probe: · structural: · external: · judge:"]
+  end
+
+  subgraph SESSION["SESSION ESTABLISHMENT — per run"]
+    CAP["Capability Resolver<br/>interrogate target · select tier<br/>refuse below contract floor"]
+    COMP["Contract Compiler<br/>OBC + capabilities → artifacts"]
+    ART["Compiled Artifacts<br/>T0 ResolvedGrid · T1 grammar+bias<br/>T2 prompt frags · T3 validators<br/>ProbeSpec · TriggerTable"]
+    MAN["Run Manifest<br/>model+contract+pack+runtime+seed<br/>= replay key"]
+  end
+
+  subgraph DATA["DATA PLANE — per step, hot path"]
+    INT["Stream Interceptor<br/>chunk assembly · trigger detect"]
+    EVAL["Column Evaluator<br/>g of layer,t · frames · triggers"]
+    T0["T0 Injector<br/>Σ-cap · norm-preserving"]
+    T1["T1 Decoder Mask<br/>grammar FSM · logit bias"]
+    T2["T2 Prompt Assembler<br/>scheduled re-anchor"]
+    T3["T3 Validator Gate<br/>block · retry"]
+  end
+
+  MODEL["TARGET MODEL<br/>open weights or closed API"]
+
+  subgraph CTRLP["CONTROL PLANE — per turn"]
+    SEN["Sensor Layer<br/>activation probes · structural checks<br/>external metrics · judge calls"]
+    BST["Behavioral State<br/>invariant readings · drift scalar<br/>active tier · typed JSON"]
+    RECON["Reconciler<br/>error vs setpoint → gain adjust<br/>recovery · escalate · halt"]
+  end
+
+  subgraph REC["RECORD PLANE"]
+    TR["Recorder<br/>hash-chained trace · no side doors"]
+    CAS["CAS Store<br/>contracts · packs · traces"]
+    IDX["Fleet Index<br/>cross-run queries"]
+  end
+
+  subgraph OUT["CONSUMERS"]
+    RPL["Replay Engine<br/>verify · re-execute · diff runs"]
+    UI["Consoles<br/>2D run · 3D trajectory · 4D fleet"]
+    OTEL["OTel Export<br/>gen_ai.behavior.* spans"]
+  end
+
+  subgraph OFF["OFFLINE REFINEMENT"]
+    TUNE["Grid Tuning<br/>learn schedules vs setpoints"]
+    DRV["Signal Derivation<br/>contrast pairs · probes · SAE"]
+  end
+
+  APP --> INT
+  OBC --> COMP
+  REG --> COMP
+  MREG --> COMP
+  CAP --> COMP
+  COMP --> ART
+  COMP --> MAN
+  MAN --> TR
+  ART --> EVAL
+  ART --> SEN
+  INT --> EVAL
+  EVAL --> T0
+  EVAL --> T1
+  EVAL --> T2
+  T0 --> MODEL
+  T1 --> MODEL
+  T2 --> MODEL
+  MODEL --> T3
+  MODEL --> SEN
+  T3 -->|"validated output + state"| APP
+  SEN --> BST
+  BST --> RECON
+  RECON -->|"next-turn gains · recovery actions"| EVAL
+  BST --> TR
+  EVAL --> TR
+  RECON --> TR
+  TR --> CAS
+  CAS --> IDX
+  CAS --> RPL
+  IDX --> UI
+  BST --> OTEL
+  IDX -->|"realized vs expected gap"| TUNE
+  TUNE -->|"new contract_hash"| OBC
+  TUNE --> DRV
+  DRV -->|"new pack_hash"| REG
+
+  style AUTH fill:#1b1f26,stroke:#e8a33d,color:#eef2f6
+  style SESSION fill:#1b1f26,stroke:#c9a0ff,color:#eef2f6
+  style DATA fill:#1b1f26,stroke:#46c8d2,color:#eef2f6
+  style CTRLP fill:#1b1f26,stroke:#7ddb8a,color:#eef2f6
+  style REC fill:#1b1f26,stroke:#e06a8a,color:#eef2f6
+  style OUT fill:#1b1f26,stroke:#8a94a3,color:#eef2f6
+  style OFF fill:#1b1f26,stroke:#9b7bf0,color:#eef2f6
+  style MODEL fill:#14171c,stroke:#eef2f6,color:#eef2f6
+  style APP fill:#14171c,stroke:#6b7684,color:#c9d1d9

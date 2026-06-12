@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openguide.dev/spec/state/behavioral-state.schema.json",
+  "title": "Behavioral State v0.1",
+  "description": "The per-turn behavioral state object: the measured + actuated state of an agent under contract at one turn. Emitted as a trace record and mapped to OTel gen_ai.behavior.* attributes.",
+  "type": "object",
+  "required": ["turn", "tier_active", "invariants", "drift", "hash_prev", "hash"],
+  "additionalProperties": false,
+  "properties": {
+    "turn": {
+      "description": "Zero-based turn index within the run.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "tier_active": {
+      "description": "The enforcement tier actually applied this turn.",
+      "type": "string",
+      "enum": ["t0", "t1", "t2", "t3"]
+    },
+    "invariants": {
+      "description": "Per-invariant readings keyed by invariant id.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["reading"],
+        "additionalProperties": false,
+        "properties": {
+          "reading": {
+            "description": "Normalized measure reading in [0,1]; null if the sensor was unavailable this turn.",
+            "type": ["number", "null"],
+            "minimum": 0.0,
+            "maximum": 1.0
+          },
+          "floor": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+          "violated": { "type": "boolean" },
+          "determinism": { "type": "string", "enum": ["deterministic", "stochastic"] }
+        }
+      }
+    },
+    "drift": {
+      "description": "Scalar drift = weighted sum of invariant floor violations, in [0,1].",
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "signals_active": {
+      "description": "Signals applied this turn, keyed by ref, with effective gain.",
+      "type": "object",
+      "additionalProperties": { "type": "number" }
+    },
+    "sigma_peak": {
+      "description": "Peak per-layer sum of absolute gains before the sigma-cap (tier 0 only).",
+      "type": "number",
+      "minimum": 0.0
+    },
+    "norm_correction": {
+      "description": "Fraction the column was scaled down by the sigma-cap, in [0,1] (tier 0 only).",
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "recovery_fired": {
+      "description": "Recovery action fired this turn, if any.",
+      "type": ["string", "null"],
+      "enum": ["re_anchor", "escalate", "halt", null]
+    },
+    "sensor_gaps": {
+      "description": "Invariant ids whose sensors timed out / were unavailable; gains proceeded stale.",
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "hash_prev": {
+      "description": "Hash of the previous trace record (chain link).",
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "hash": {
+      "description": "Hash of this record: sha256(canonical({prev, ...record})).",
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  }
+}

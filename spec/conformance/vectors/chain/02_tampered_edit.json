@@ -1,0 +1,44 @@
+{
+  "name": "tampered_edit_field",
+  "manifest": {
+    "model": "toy",
+    "spec_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "seed": 7,
+    "runtime": "ggrid-ref-0.1.0"
+  },
+  "records": [
+    {
+      "prev": "sha256:a2c927cf5d308723178a92d365facf4341de0728dc17aad962b02ca1bfb27c29",
+      "step": 0,
+      "ev": "STEP",
+      "applied": {},
+      "sigma_peak": 0.1,
+      "norm_corr": 0.0
+    },
+    {
+      "prev": "sha256:98208dd00ef1d901e4e8f661252db7790a0b35d6f2b32b0a27d401db6172186a",
+      "step": 1,
+      "ev": "OVERRIDE",
+      "signal": "anchor",
+      "old": 1.0,
+      "new": 0.5,
+      "source": "operator"
+    },
+    {
+      "prev": "sha256:afa38610949408d34d6227bb812ba21033698c2ef942b39de1a0f94d60ca40af",
+      "step": 2,
+      "ev": "TRIGGER",
+      "on": "tool_call",
+      "signal": "precision",
+      "g": 0.7,
+      "tau": 8.0,
+      "layers": [
+        20,
+        30
+      ],
+      "source": "runtime"
+    }
+  ],
+  "head": "sha256:3c293929b4121322fd3822326388b6ea3e1b80f239c1c9097db6aa66b8e9290c",
+  "valid": false
+}

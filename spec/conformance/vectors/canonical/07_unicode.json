@@ -1,0 +1,10 @@
+{
+  "name": "07_unicode",
+  "input": {
+    "name": "café",
+    "emoji": "✓",
+    "jp": "日本語"
+  },
+  "canonical": "{\"emoji\":\"\\u2713\",\"jp\":\"\\u65e5\\u672c\\u8a9e\",\"name\":\"caf\\u00e9\"}",
+  "hash": "sha256:98d056cd32e9d55aa16287cf597617b47a1313582384018f8b9e27ba848edf1a"
+}

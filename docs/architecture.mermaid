@@ -1,0 +1,59 @@
+flowchart TB
+  subgraph AUTHOR["AUTHORING PLANE — hashed artifacts"]
+    SPEC["Grid Spec (TOML/JSON)<br/>signals · schedules · envelopes · triggers<br/>spec_hash"]
+    PACK["Signal Pack (safetensors)<br/>steering vectors per model × layer<br/>pack_hash + eval scores"]
+    COMP["Compiler"]
+    RG["Resolved Grid<br/>sparse frame tiles (L × W)<br/>grid_hash"]
+    SPEC --> COMP
+    PACK --> COMP
+    COMP --> RG
+  end
+
+  subgraph CONTROL["CONTROL PLANE — GridRuntime"]
+    COL["Column evaluator<br/>g(layer, t), one column per step"]
+    CAP["Σ-cap enforcement<br/>norm-preserving injection"]
+    CHAN["Control channel — ring-0<br/>knobs · triggers · injections<br/>authenticated · every write recorded"]
+    LOOP["Closed-loop controller<br/>setpoint: adherence ≥ 0.85<br/>gain ← probe error"]
+    CHAN --> COL
+    COL --> CAP
+    LOOP --> CHAN
+  end
+
+  subgraph MODEL["MODEL PLANE — frozen weights"]
+    TF["Transformer forward pass<br/>hooks at L0…L31"]
+    PROBE["Probes<br/>measured behavioral state / step"]
+    TF --> PROBE
+  end
+
+  subgraph RECORD["RECORD PLANE — flight recorder"]
+    TRACE["Hash-chained Trace<br/>(step, signal, gain, layers, Σ, corr)<br/>tamper-evident · head hash"]
+    REPLAY["Replay console<br/>scrub · per-token attribution"]
+    INDEX["Fleet index<br/>cross-run queries"]
+    TRACE --> REPLAY
+    TRACE --> INDEX
+  end
+
+  subgraph REFINE["REFINEMENT — offline"]
+    TUNE["Grid tuning<br/>learn G by gradient vs setpoint"]
+    DERIVE["Signal derivation<br/>contrast pairs · probes · SAE"]
+  end
+
+  PROMPT["Prompt / context<br/>(initial conditions)"] --> TF
+  RG --> COL
+  CAP -- "inject g·v into residual stream" --> TF
+  PROBE -- "measured state" --> LOOP
+  COL --> TRACE
+  CHAN --> TRACE
+  MAN["Run Manifest<br/>model+spec+pack+runtime+seed<br/>= replay key"] --> TRACE
+  INDEX -- "realized vs expected gap" --> TUNE
+  TUNE -- "new spec_hash" --> SPEC
+  TUNE --> DERIVE
+  DERIVE -- "new pack_hash" --> PACK
+
+  style AUTHOR fill:#1b1f26,stroke:#e8a33d,color:#eef2f6
+  style CONTROL fill:#1b1f26,stroke:#46c8d2,color:#eef2f6
+  style MODEL fill:#1b1f26,stroke:#9b7bf0,color:#eef2f6
+  style RECORD fill:#1b1f26,stroke:#7ddb8a,color:#eef2f6
+  style REFINE fill:#1b1f26,stroke:#e06a8a,color:#eef2f6
+  style PROMPT fill:#14171c,stroke:#6b7684,color:#c9d1d9
+  style MAN fill:#14171c,stroke:#6b7684,color:#c9d1d9

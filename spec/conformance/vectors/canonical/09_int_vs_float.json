@@ -1,0 +1,10 @@
+{
+  "name": "09_int_vs_float",
+  "input": {
+    "i": 1,
+    "f": 1.5,
+    "z": 0.0
+  },
+  "canonical": "{\"f\":1.5,\"i\":1,\"z\":0.0}",
+  "hash": "sha256:411b5ce705440d735c6acebddc68251a6641eb629aa122c7541ffb4f5e9aa7ca"
+}

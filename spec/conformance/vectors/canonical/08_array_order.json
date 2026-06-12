@@ -1,0 +1,14 @@
+{
+  "name": "08_array_order",
+  "input": [
+    3,
+    1,
+    2,
+    {
+      "b": 1,
+      "a": 2
+    }
+  ],
+  "canonical": "[3,1,2,{\"a\":2,\"b\":1}]",
+  "hash": "sha256:5e21d54df1a71703f6f25216ff0c5dbd78bca73255f936a50c0128cb5e801c5b"
+}
