@@ -22,7 +22,20 @@ def build(config: ProxyConfig | None = None):
         registry.load_dir(config.contracts_dir)
     upstream = HttpxUpstream(config.upstream_base_url, config.upstream_api_key)
     emitter = _build_emitter(config)
-    return create_app(registry=registry, upstream=upstream, emitter=emitter)
+    store = _build_store(config)
+    return create_app(registry=registry, upstream=upstream, emitter=emitter, store=store)
+
+
+def _build_store(config: ProxyConfig):
+    """Build the fleet-index store. sqlite today (file or in-memory); a postgres
+    DSN is recognised and noted but falls back to sqlite until the pg backend
+    lands (blueprint: sqlite -> postgres)."""
+    from guidancegrid.store import Store
+
+    dsn = config.store_dsn
+    if dsn and dsn.startswith("sqlite:"):
+        return Store(dsn[len("sqlite:"):] or ":memory:")
+    return Store(":memory:")
 
 
 def _build_emitter(config: ProxyConfig):

@@ -35,11 +35,12 @@ class ContractNotFound(KeyError):
 
 class Governor:
     def __init__(self, registry: ContractRegistry, upstream: Upstream,
-                 sessions: SessionStore | None = None, emitter=None):
+                 sessions: SessionStore | None = None, emitter=None, store=None):
         self.registry = registry
         self.upstream = upstream
         self.sessions = sessions or SessionStore()
         self.emitter = emitter or InMemorySpanEmitter()
+        self.store = store                      # optional guidancegrid.store.Store
 
     # ── helpers ──────────────────────────────────────────────────────
     def _manifest(self, compiled, session_id: str) -> dict[str, Any]:
@@ -82,7 +83,22 @@ class Governor:
         sess.halted = out.halted
         sess.history.append(out.state)
         self.emitter.emit_turn(out.state, compiled, sess)
+        self._persist(sess, compiled)
         return sess, out
+
+    def _persist(self, sess, compiled) -> None:
+        """Upsert the run row into the fleet index (cheap, every turn)."""
+        if self.store is None:
+            return
+        from guidancegrid.store import RunRecord
+
+        self.store.put_run(RunRecord(
+            run_id=sess.session_id, contract_hash=compiled.contract_hash,
+            model=compiled.model_id, tier=compiled.tier_active, turns=sess.turn,
+            max_drift=round(sess.max_drift, 6), recoveries=sess.recoveries,
+            halted=sess.halted, verified=sess.reconciler.trace.verify(),
+            trace_hash=sess.reconciler.trace.head, created="",
+        ))
 
     def _resolve(self, body, headers) -> tuple[str, Any] | None:
         """Return (session_id, compiled) if governed, else None for passthrough."""

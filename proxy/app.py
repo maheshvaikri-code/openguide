@@ -25,17 +25,18 @@ from .upstream import MockUpstream, Upstream
 
 
 def create_app(*, registry: ContractRegistry | None = None, upstream: Upstream | None = None,
-               sessions: SessionStore | None = None, emitter=None) -> FastAPI:
+               sessions: SessionStore | None = None, emitter=None, store=None) -> FastAPI:
     app = FastAPI(title="OpenGuide Proxy", version="0.1.0")
 
     registry = registry or ContractRegistry()
     upstream = upstream or MockUpstream()
     emitter = emitter or InMemorySpanEmitter()
-    governor = Governor(registry, upstream, sessions or SessionStore(), emitter)
+    governor = Governor(registry, upstream, sessions or SessionStore(), emitter, store=store)
 
     app.state.registry = registry
     app.state.governor = governor
     app.state.emitter = emitter
+    app.state.store = store
 
     @app.get("/healthz")
     async def healthz() -> dict[str, str]:
@@ -72,6 +73,25 @@ def create_app(*, registry: ContractRegistry | None = None, upstream: Upstream |
         if isinstance(emitter, InMemorySpanEmitter):
             return {"spans": emitter.spans}
         return {"spans": []}
+
+    @app.get("/v1/openguide/runs")
+    async def runs(contract: str | None = None, min_drift: float | None = None,
+                   halted: bool | None = None, limit: int = 100):
+        if store is None:
+            return JSONResponse({"error": "no store configured"}, status_code=501)
+        rows = store.query_runs(contract_hash=contract, min_drift=min_drift,
+                                halted=halted, limit=limit)
+        return {"runs": [r.__dict__ for r in rows]}
+
+    @app.get("/v1/openguide/runs/{run_id}/trace")
+    async def run_trace(run_id: str):
+        sess = governor.sessions.get(run_id)
+        if sess is None:
+            return JSONResponse({"error": "no such run/trace"}, status_code=404)
+        t = sess.reconciler.trace
+        cas_key = store.put_trace(t) if store is not None else None   # durable copy
+        return {"manifest": t.manifest, "head": t.head, "records": t.records,
+                "verified": t.verify(), "cas_key": cas_key}
 
     @app.post("/v1/chat/completions")
     async def chat_completions(req: Request):

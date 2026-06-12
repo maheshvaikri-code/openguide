@@ -11,6 +11,7 @@ is the query surface the console reads; there is no privileged path.
 from __future__ import annotations
 
 import sqlite3
+import threading
 from dataclasses import asdict, dataclass
 from typing import Any
 
@@ -58,10 +59,15 @@ CREATE INDEX IF NOT EXISTS idx_runs_drift ON runs(max_drift);
 
 class Store:
     def __init__(self, path: str = ":memory:"):
-        self.conn = sqlite3.connect(path)
+        # check_same_thread=False: the proxy serves requests on a threadpool, so
+        # the connection is shared across threads. All access is serialized by
+        # self._lock, which keeps that safe for sqlite's short transactions.
+        self.conn = sqlite3.connect(path, check_same_thread=False)
         self.conn.row_factory = sqlite3.Row
-        self.conn.executescript(_SCHEMA)
-        self.conn.commit()
+        self._lock = threading.Lock()
+        with self._lock:
+            self.conn.executescript(_SCHEMA)
+            self.conn.commit()
 
     def close(self) -> None:
         self.conn.close()
@@ -71,34 +77,54 @@ class Store:
         """Store a canonical-encodable object; returns its content hash."""
         body = canonical_json(obj).encode("utf-8")
         key = bhash(body)
-        self.conn.execute(
-            "INSERT OR IGNORE INTO cas(hash, kind, body) VALUES (?,?,?)", (key, kind, body)
-        )
-        self.conn.commit()
+        with self._lock:
+            self.conn.execute(
+                "INSERT OR IGNORE INTO cas(hash, kind, body) VALUES (?,?,?)", (key, kind, body)
+            )
+            self.conn.commit()
         return key
 
     def get_blob(self, key: str) -> bytes | None:
-        row = self.conn.execute("SELECT body FROM cas WHERE hash=?", (key,)).fetchone()
+        with self._lock:
+            row = self.conn.execute("SELECT body FROM cas WHERE hash=?", (key,)).fetchone()
         return bytes(row["body"]) if row else None
 
     def has_blob(self, key: str) -> bool:
-        return self.conn.execute("SELECT 1 FROM cas WHERE hash=?", (key,)).fetchone() is not None
+        with self._lock:
+            return self.conn.execute("SELECT 1 FROM cas WHERE hash=?", (key,)).fetchone() is not None
+
+    # ── trace persistence (CAS) ──────────────────────────────────────
+    def put_trace(self, trace) -> str:
+        """Store a Trace's full body {manifest, head, records} in the CAS;
+        returns its content hash. Idempotent."""
+        body = {"manifest": trace.manifest, "head": trace.head, "records": trace.records}
+        return self.put_blob(body, "trace")
+
+    def get_trace(self, key: str):
+        """Reload a persisted Trace by content hash, or None."""
+        raw = self.get_blob(key)
+        if raw is None:
+            return None
+        from ..core.trace import Trace
+        return Trace.from_json(raw.decode("utf-8"))
 
     # ── fleet index ──────────────────────────────────────────────────
     def put_run(self, run: RunRecord) -> None:
         d = asdict(run)
-        self.conn.execute(
-            """INSERT OR REPLACE INTO runs
-               (run_id, contract_hash, model, tier, turns, max_drift, recoveries,
-                halted, verified, trace_hash, created)
-               VALUES (:run_id,:contract_hash,:model,:tier,:turns,:max_drift,:recoveries,
-                       :halted,:verified,:trace_hash,:created)""",
-            {**d, "halted": int(run.halted), "verified": int(run.verified)},
-        )
-        self.conn.commit()
+        with self._lock:
+            self.conn.execute(
+                """INSERT OR REPLACE INTO runs
+                   (run_id, contract_hash, model, tier, turns, max_drift, recoveries,
+                    halted, verified, trace_hash, created)
+                   VALUES (:run_id,:contract_hash,:model,:tier,:turns,:max_drift,:recoveries,
+                           :halted,:verified,:trace_hash,:created)""",
+                {**d, "halted": int(run.halted), "verified": int(run.verified)},
+            )
+            self.conn.commit()
 
     def get_run(self, run_id: str) -> RunRecord | None:
-        row = self.conn.execute("SELECT * FROM runs WHERE run_id=?", (run_id,)).fetchone()
+        with self._lock:
+            row = self.conn.execute("SELECT * FROM runs WHERE run_id=?", (run_id,)).fetchone()
         return self._row_to_run(row) if row else None
 
     def query_runs(self, *, contract_hash: str | None = None, min_drift: float | None = None,
@@ -116,7 +142,9 @@ class Store:
         where = (" WHERE " + " AND ".join(clauses)) if clauses else ""
         sql = f"SELECT * FROM runs{where} ORDER BY max_drift DESC LIMIT ?"
         params.append(limit)
-        return [self._row_to_run(r) for r in self.conn.execute(sql, params).fetchall()]
+        with self._lock:
+            rows = self.conn.execute(sql, params).fetchall()
+        return [self._row_to_run(r) for r in rows]
 
     @staticmethod
     def _row_to_run(row: sqlite3.Row) -> RunRecord:
