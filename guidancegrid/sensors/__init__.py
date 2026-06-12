@@ -7,6 +7,7 @@ substitute for a structural one — the type is carried through to the trace.
 from .base import Measure, MeasureRegistry, Reading
 from .external import ExternalMeasure
 from .judge import JudgeMeasure
+from .probe import LinearProbe, ProbeMeasure
 from .structural import StructuralMeasure
 
 __all__ = [
@@ -16,4 +17,6 @@ __all__ = [
     "StructuralMeasure",
     "ExternalMeasure",
     "JudgeMeasure",
+    "LinearProbe",
+    "ProbeMeasure",
 ]

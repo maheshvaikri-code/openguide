@@ -142,3 +142,31 @@ class SignalPack:
             name, layer = key.rsplit("__", 1)
             pack.set_vector(name, int(layer), data[key])
         return pack
+
+    # ── safetensors (the production pack format) ─────────────────────
+    def save_safetensors(self, path: str) -> str:
+        """Write a content-addressable .safetensors pack; returns its hash.
+        model_id and pack_hash are stored in the file metadata."""
+        from safetensors.numpy import save_file
+
+        tensors = {
+            f"{name}__{layer}": np.ascontiguousarray(vec, dtype=np.float32)
+            for name, sig in self.vectors.items()
+            for layer, vec in sig.items()
+        }
+        save_file(tensors, path, metadata={"model_id": self.model_id, "pack_hash": self.hash()})
+        return self.hash()
+
+    @classmethod
+    def load_safetensors(cls, path: str) -> "SignalPack":
+        from safetensors import safe_open
+
+        with safe_open(path, framework="numpy") as f:
+            meta = f.metadata() or {}
+            keys = list(f.keys())
+            d = int(f.get_tensor(keys[0]).shape[0]) if keys else 0
+            pack = cls(meta.get("model_id", "unknown"), d)
+            for key in keys:
+                name, layer = key.rsplit("__", 1)
+                pack.set_vector(name, int(layer), f.get_tensor(key))
+        return pack

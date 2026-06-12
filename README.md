@@ -110,7 +110,20 @@ bit-identical — while an ungoverned counterfactual runs to the halt threshold.
 (pass-through by default). Streaming SSE with tool-call delta reassembly,
 session continuity that feeds the re-anchor forward across calls, and
 `gen_ai.behavior.*` spans. `docker compose up` → point any OpenAI SDK at it →
-behavioral state in Jaeger. 92 tests total.
+behavioral state in Jaeger. Governance overhead ≈ 0.4 ms p50.
+
+**Phase 4 — Signal Tier (T0/T1): complete (steering core; real-model evals
+pending weights).** Real PyTorch forward-hook activation steering
+([`channels/t0_activation.py`](guidancegrid/channels/t0_activation.py)) with
+norm-preserving injection, the mechanical Σ-cap, and replay-identical traces;
+linear-probe sensors on the residual stream; safetensors SignalPacks + a build
+script; and dependency-light constrained decoding for T1
+([`channels/t1_decoding.py`](guidancegrid/channels/t1_decoding.py)). The T0
+loop is proven on a tiny synthetic model in CI; the Qwen2.5-7B adherence/MMLU
+gate is a runnable, honestly-labeled harness
+([`scripts/qwen_t0_gate.py`](scripts/qwen_t0_gate.py)) that needs weights + a
+GPU. 127 tests total. **Capability-retention numbers are not claimed until that
+gate runs on real weights** — see [`packs/README.md`](packs/README.md).
 
 Next: **Phase 3 — Console** (the dashboard). See
 [`docs/blueprint.md`](docs/blueprint.md) for the full phase plan.
