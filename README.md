@@ -23,22 +23,26 @@ provable behavior.**
 | [`spec/state/`](spec/state/) | Behavioral State schema + `gen_ai.behavior.*` OTel mapping |
 | [`spec/trace/`](spec/trace/) | Trace format: canonical encoding, chain construction, verification, replay |
 | [`spec/conformance/`](spec/conformance/) | Golden vectors + an independent runner (the Phase 0 gate) |
-| [`guidancegrid/`](guidancegrid/) | Reference runtime (Python, numpy-only): `core/` + `obc/` + `tune/`. The literal `(layer × step)` control grid. |
-| [`tests/`](tests/) | Test suite (core invariants, OBC validation, conformance gate). |
+| [`guidancegrid/`](guidancegrid/) | Reference runtime (numpy-only): `core/` `obc/` `compiler/` `sensors/` `channels/` `controller/` `store/` `tune/`. |
+| [`proxy/`](proxy/) | The wedge — an OpenAI-compatible FastAPI proxy with header-activated governance. |
+| [`integrations/`](integrations/) | OpenAI SDK drop-in, LiteLLM callback, LangGraph middleware. |
+| [`deploy/compose/`](deploy/compose/) | `docker compose up` → proxy + Jaeger + postgres. |
+| [`tests/`](tests/) | Test suite (core invariants, OBC, conformance, runtime gate, proxy). |
 | [`docs/`](docs/) | Blueprint, positioning, architecture diagrams, replay-console prototype. |
-| [`deploy/`](deploy/), [`packs/`](packs/) | Compose skeleton and SignalPack registry (filled in later phases). |
 | [`archive/`](archive/) | The original v0.1.0 reference drop, kept for provenance. |
 
 ## Layout
 
 ```
 OpenGuide/
-├── guidancegrid/        # the importable package (no double-nesting)
-│   ├── core/  obc/  tune/
+├── guidancegrid/        # the importable runtime package (no double-nesting)
+│   ├── core/  obc/  compiler/  sensors/  channels/  controller/  store/  tune/
+├── proxy/               # OpenAI-compatible governance proxy (FastAPI)
+├── integrations/        # openai-sdk / litellm / langgraph
 ├── tests/               # pytest suite
 ├── spec/                # the standard (obc, state, trace, conformance)
 ├── docs/                # blueprint + design docs + diagrams
-├── deploy/  packs/      # filled in later phases
+├── deploy/  packs/      # compose stack; SignalPack registry (later phases)
 ├── archive/             # original v0.1.0 reference
 ├── pyproject.toml  conftest.py  README.md
 ```
@@ -92,11 +96,23 @@ python spec/conformance/run_conformance.py # re-derive them from the spec rules 
 
 **Phase 0 — Spec Core: complete.** OBC schema + 3 contracts, behavioral state +
 OTel mapping, trace format spec, golden conformance vectors, and an independent
-runner that verifies a reference-runtime trace using the spec docs alone. The
-reference runtime's 18 core invariants pass; 32 tests total.
+runner that verifies a reference-runtime trace using the spec docs alone.
 
-Next: **Phase 1 — Universal Runtime** (OBC→tier compiler, T2/T3 channels,
-sensors, per-turn reconciler, CAS store). See
+**Phase 1 — Universal Runtime: complete.** OBC→tier compiler (capability
+resolver), T2 re-anchor + T3 validator channels, typed sensors, the per-turn
+reconciler (drift + recovery, single write path through the trace), and a
+sqlite CAS + fleet index. Gate: a 50-turn mock agent drifts at turn 30, the
+reconciler re-anchors, drift recovers, the trace verifies, and replay is
+bit-identical — while an ungoverned counterfactual runs to the halt threshold.
+
+**Phase 2 — The Proxy Wedge: complete.** An OpenAI-compatible FastAPI proxy;
+`X-OpenGuide-Contract: <hash>` activates governance with zero app changes
+(pass-through by default). Streaming SSE with tool-call delta reassembly,
+session continuity that feeds the re-anchor forward across calls, and
+`gen_ai.behavior.*` spans. `docker compose up` → point any OpenAI SDK at it →
+behavioral state in Jaeger. 92 tests total.
+
+Next: **Phase 3 — Console** (the dashboard). See
 [`docs/blueprint.md`](docs/blueprint.md) for the full phase plan.
 
 ## License

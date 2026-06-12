@@ -90,6 +90,10 @@ class Reconciler:
 
         vres = self.validator.validate(ctx)
         fired_refs = self._fired_triggers(readings, drift)
+        # token: triggers are detected upstream (in the stream layer) and passed in
+        for r in ctx.get("token_trigger_refs", []) or []:
+            if r not in fired_refs:
+                fired_refs.append(r)
 
         # recovery dispatch: drift ladder, OR a hard validation failure forces re_anchor
         action = self.c.recovery.action_for(drift)

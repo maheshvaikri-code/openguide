@@ -1,0 +1,40 @@
+# OpenGuide local stack: proxy + OTLP collector (Jaeger) + postgres (store).
+# One command: `docker compose -f deploy/compose/docker-compose.yml up`
+services:
+  proxy:
+    build:
+      context: ../..
+      dockerfile: deploy/compose/proxy.Dockerfile
+    environment:
+      OPENGUIDE_UPSTREAM_BASE_URL: ${OPENGUIDE_UPSTREAM_BASE_URL:-https://api.openai.com}
+      OPENGUIDE_UPSTREAM_API_KEY: ${OPENAI_API_KEY:-}
+      OPENGUIDE_CONTRACTS_DIR: /app/spec/obc/examples
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
+      OPENGUIDE_STORE_DSN: postgresql://openguide:openguide@postgres:5432/openguide
+    ports:
+      - "8088:8088"
+    depends_on:
+      - jaeger
+      - postgres
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.57
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686"   # Jaeger UI
+      - "4317:4317"     # OTLP gRPC
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: openguide
+      POSTGRES_PASSWORD: openguide
+      POSTGRES_DB: openguide
+    ports:
+      - "5432:5432"
+    volumes:
+      - openguide_pg:/var/lib/postgresql/data
+
+volumes:
+  openguide_pg:
