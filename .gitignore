@@ -28,3 +28,7 @@ Thumbs.db
 
 # Archives kept out of source history
 guidancegrid-0.1.0.zip
+
+# Generated benchmark artifacts + fleet db
+benchmarks/*_results.json
+*.db

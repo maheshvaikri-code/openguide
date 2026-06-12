@@ -122,10 +122,20 @@ script; and dependency-light constrained decoding for T1
 loop is proven on a tiny synthetic model in CI; the Qwen2.5-7B adherence/MMLU
 gate is a runnable, honestly-labeled harness
 ([`scripts/qwen_t0_gate.py`](scripts/qwen_t0_gate.py)) that needs weights + a
-GPU. 127 tests total. **Capability-retention numbers are not claimed until that
-gate runs on real weights** — see [`packs/README.md`](packs/README.md).
+GPU. **Capability-retention numbers are not claimed until that gate runs on
+real weights** — see [`packs/README.md`](packs/README.md).
 
-Next: **Phase 3 — Console** (the dashboard). See
+**Phase 5 — Benchmarks, Demo, Case Studies: complete (simulated).** The
+intervention benchmark ([`benchmarks/t1_bench.py`](benchmarks/t1_bench.py): T2
+contract re-anchor vs naive re-prompt vs none at matched token budget), the
+drift benchmark, a synthetic fleet generator, the one-command killer demo
+(`make demo` — baseline visibly drifts, governed holds, replay scrubs to the
+re-anchor), and the multi-tenant + injection-detection case studies. All run
+offline; results are **simulated** and clearly labeled — real closed/open-model
+numbers require keys/weights and replace them
+([`benchmarks/REPORT.md`](benchmarks/REPORT.md)). 137 tests total.
+
+Next: **Phase 3 — Console** (the dashboard, Next.js). See
 [`docs/blueprint.md`](docs/blueprint.md) for the full phase plan.
 
 ## License
