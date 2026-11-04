@@ -46,6 +46,8 @@ def test_runs_populate_fleet_index():
     assert len(runs) == 1
     assert runs[0]["run_id"] == "run-a" and runs[0]["turns"] == 3
     assert runs[0]["verified"] is True
+    assert runs[0]["trace_cas_key"].startswith("sha256:")
+    assert store.get_trace(runs[0]["trace_cas_key"]) is not None
 
     # high-drift filter
     hi = client.get("/v1/openguide/runs", params={"min_drift": 0.27}).json()["runs"]
@@ -65,6 +67,49 @@ def test_run_trace_endpoint_persists_and_verifies():
     reloaded = store.get_trace(tr["cas_key"])
     assert reloaded is not None and reloaded.verify()
     assert reloaded.head == tr["head"]
+
+
+def test_run_trace_endpoint_metadata_only_omits_records():
+    client, h, _ = build()
+    hdrs = {"X-OpenGuide-Contract": h, "X-OpenGuide-Session": "run-meta"}
+    body = {"model": "openai:gpt-4o", "messages": [{"role": "user", "content": "go"}]}
+    client.post("/v1/chat/completions", headers=hdrs, json=body)
+
+    tr = client.get("/v1/openguide/runs/run-meta/trace", params={"metadata_only": "true"}).json()
+    assert tr["verified"] is True
+    assert tr["metadata_only"] is True
+    assert tr["record_count"] == 1
+    assert tr["event_counts"] == {"STATE": 1}
+    assert "records" not in tr
+
+
+def test_run_trace_endpoint_loads_persisted_trace_after_session_drop():
+    client, h, store = build()
+    hdrs = {"X-OpenGuide-Contract": h, "X-OpenGuide-Session": "run-c"}
+    body = {"model": "openai:gpt-4o", "messages": [{"role": "user", "content": "go"}]}
+    client.post("/v1/chat/completions", headers=hdrs, json=body)
+    client.app.state.governor.sessions.drop("run-c")
+
+    tr = client.get("/v1/openguide/runs/run-c/trace").json()
+    assert tr["verified"] is True
+    assert tr["cas_key"] == store.get_run("run-c").trace_cas_key
+    assert tr["records"][0]["ev"] == "STATE"
+
+
+def test_run_trace_endpoint_metadata_only_after_session_drop():
+    client, h, _ = build()
+    hdrs = {"X-OpenGuide-Contract": h, "X-OpenGuide-Session": "run-meta-cas"}
+    body = {"model": "openai:gpt-4o", "messages": [{"role": "user", "content": "go"}]}
+    client.post("/v1/chat/completions", headers=hdrs, json=body)
+    client.app.state.governor.sessions.drop("run-meta-cas")
+
+    tr = client.get(
+        "/v1/openguide/runs/run-meta-cas/trace",
+        params={"metadata_only": "true"},
+    ).json()
+    assert tr["verified"] is True
+    assert tr["record_count"] == 1
+    assert "records" not in tr
 
 
 def test_runs_endpoint_501_without_store():

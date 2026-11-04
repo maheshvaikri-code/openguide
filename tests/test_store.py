@@ -2,11 +2,12 @@
 from guidancegrid.store import RunRecord, Store
 
 
-def _run(run_id, contract_hash="sha256:abc", max_drift=0.1, halted=False):
+def _run(run_id, contract_hash="sha256:abc", max_drift=0.1, halted=False,
+         trace_cas_key=""):
     return RunRecord(
         run_id=run_id, contract_hash=contract_hash, model="openai:gpt-4o", tier="t2",
         turns=50, max_drift=max_drift, recoveries=1, halted=halted, verified=True,
-        trace_hash="sha256:deadbeef", created="2026-06-12",
+        trace_hash="sha256:deadbeef", trace_cas_key=trace_cas_key, created="2026-06-12",
     )
 
 
@@ -50,3 +51,9 @@ def test_run_replace_on_same_id():
     s.put_run(_run("r1", max_drift=0.2))
     s.put_run(_run("r1", max_drift=0.8))
     assert s.get_run("r1").max_drift == 0.8
+
+
+def test_run_roundtrip_keeps_trace_cas_key():
+    s = Store()
+    s.put_run(_run("r1", trace_cas_key="sha256:tracebody"))
+    assert s.get_run("r1").trace_cas_key == "sha256:tracebody"

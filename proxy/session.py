@@ -4,6 +4,9 @@ A conversation id maps to one persistent Session holding the Reconciler (and its
 accumulating hash-chained Trace), the turn counter, and a pending re-anchor.
 The re-anchor computed after turn N is injected into the request of turn N+1 —
 this is the "feeds forward" claim made real across separate HTTP calls.
+
+Callers must pass ``X-OpenGuide-Session`` for continuity. Governed requests that
+omit it are isolated into generated anonymous sessions by the Governor.
 """
 from __future__ import annotations
 

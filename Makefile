@@ -1,5 +1,5 @@
 # OpenGuide developer targets.
-.PHONY: test lint demo bench fleet conformance quickstart all
+.PHONY: test lint demo corporate-demo cyber-demo bench fleet conformance quickstart all
 
 test:
 	python -m pytest
@@ -13,6 +13,14 @@ conformance:
 # The killer demo: baseline drifts vs governed holds (simulated, no network/GPU).
 demo:
 	python examples/demo/run.py
+
+# Corporate reference demo: live SEC EDGAR data + proxy tool-action governance.
+corporate-demo:
+	python examples/corporate-edgar/run.py --refresh --tickers AAPL MSFT
+
+# Cyber risk reference demo: live CISA KEV data + proxy tool-action governance.
+cyber-demo:
+	python examples/cyber-kev/run.py --refresh --vendors Microsoft Apple
 
 quickstart:
 	python examples/quickstart-proxy/run.py

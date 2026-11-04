@@ -65,9 +65,26 @@ def test_governed_call_emits_headers_and_span():
     assert r.status_code == 200
     assert r.headers["x-openguide-tier"] == "t2"
     assert r.headers["x-openguide-contract"] == h
+    assert r.headers["x-openguide-session"] == "c1"
+    assert "x-openguide-session-generated" not in {k.lower() for k in r.headers}
     spans = client.get("/v1/openguide/spans").json()["spans"]
     assert spans[-1]["attributes"]["gen_ai.behavior.contract_hash"] == h
     assert spans[-1]["attributes"]["gen_ai.behavior.tier"] == "t2"
+
+
+def test_missing_session_header_gets_isolated_generated_sessions():
+    client, h, _ = build()
+    body = {"model": "openai:gpt-4o", "messages": [{"role": "user", "content": "x"}]}
+    r1 = client.post("/v1/chat/completions", headers={"X-OpenGuide-Contract": h}, json=body)
+    r2 = client.post("/v1/chat/completions", headers={"X-OpenGuide-Contract": h}, json=body)
+
+    s1 = r1.headers["x-openguide-session"]
+    s2 = r2.headers["x-openguide-session"]
+    assert s1.startswith("anon:") and s2.startswith("anon:")
+    assert s1 != s2
+    assert r1.headers["x-openguide-session-generated"] == "true"
+    assert client.get(f"/v1/openguide/sessions/{s1}").json()["turns"] == 1
+    assert client.get(f"/v1/openguide/sessions/{s2}").json()["turns"] == 1
 
 
 def test_drift_appears_in_headers_and_session():
@@ -117,6 +134,7 @@ def test_streaming_passthrough_is_byte_identical_and_governed():
             "messages": [{"role": "user", "content": "go"}]}
     with client.stream("POST", "/v1/chat/completions", headers=hdrs, json=body) as r:
         raw = b"".join(r.iter_bytes())
+        assert r.headers["x-openguide-session"] == "c5"
     text = raw.decode()
     assert "data: [DONE]" in text
     assert "hello wo" in text                        # streamed content present

@@ -1,0 +1,55 @@
+# OBC v0.1 - corporate cyber-risk reference contract.
+# Demonstrates governance for a security operations agent using CISA KEV data
+# before it proposes actions against corporate security infrastructure.
+
+[contract]
+name = "corporate-kev-security-agent"
+version = "0.1.0"
+enforcement_floor = "t3"
+
+[identity]
+persona = "evidence-first security operations analyst"
+boundaries = [
+  "use CISA Known Exploited Vulnerabilities catalog entries as evidence",
+  "do not isolate production assets or change firewall policy without approval",
+  "record CVE, vendor, product, date added, and remediation due date",
+]
+
+[[invariants]]
+id = "kev_source_present"
+measure = "structural:kev_catalog_present"
+hard = true
+
+[[invariants]]
+id = "kev_grounding"
+measure = "external:kev_grounding"
+floor = 0.90
+weight = 0.7
+
+[[invariants]]
+id = "action_scope"
+measure = "external:security_action_scope"
+floor = 1.00
+weight = 0.5
+
+[[phases]]
+name = "triage"
+window = { turns = [0, 1] }
+signals = [{ ref = "evidence", gain = 0.6 }]
+
+[[phases]]
+name = "response"
+window = { turns = [1, -1] }
+signals = [{ ref = "approval", gain = 0.7 }]
+
+[[triggers]]
+on = "state:drift>0.10"
+apply = { ref = "approval", gain = 0.8, decay_tau = 4 }
+
+[recovery]
+drift_threshold = 0.10
+actions = ["re_anchor", "escalate@0.30", "halt@0.50"]
+
+[signals]
+evidence = { pack = "sha256:0000000000000000000000000000000000000000000000000000000000000000", t2_template = "templates/evidence.md" }
+approval = { pack = "sha256:0000000000000000000000000000000000000000000000000000000000000000", t2_template = "templates/approval.md" }

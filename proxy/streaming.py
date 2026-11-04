@@ -8,6 +8,7 @@ message while the raw bytes still pass straight through to the client.
 """
 from __future__ import annotations
 
+import codecs
 import json
 from typing import Any
 
@@ -36,6 +37,8 @@ class StreamAssembler:
         self._tools: dict[int, dict[str, Any]] = {}
         self.finish_reason: str | None = None
         self.done = False
+        self._decoder = codecs.getincrementaldecoder("utf-8")(errors="replace")
+        self._line_buffer = ""
 
     def feed_chunk(self, chunk: dict[str, Any]) -> None:
         for choice in chunk.get("choices", []):
@@ -61,13 +64,21 @@ class StreamAssembler:
                 self.finish_reason = choice["finish_reason"]
 
     def feed_bytes(self, raw: bytes) -> None:
-        """Feed a raw SSE byte chunk (may contain several lines)."""
-        for line in raw.decode("utf-8", errors="replace").splitlines():
-            parsed = parse_sse_line(line)
-            if parsed == "[DONE]":
-                self.done = True
-            elif isinstance(parsed, dict):
-                self.feed_chunk(parsed)
+        """Feed a raw SSE byte chunk (may contain partial or several lines)."""
+        text = self._line_buffer + self._decoder.decode(raw)
+        self._line_buffer = ""
+        for line in text.splitlines(keepends=True):
+            if not line.endswith(("\n", "\r")):
+                self._line_buffer = line
+                continue
+            self._feed_line(line.rstrip("\r\n"))
+
+    def _feed_line(self, line: str) -> None:
+        parsed = parse_sse_line(line)
+        if parsed == "[DONE]":
+            self.done = True
+        elif isinstance(parsed, dict):
+            self.feed_chunk(parsed)
 
     @property
     def content(self) -> str:

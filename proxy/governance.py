@@ -13,7 +13,9 @@ The client's response bytes are never rewritten — governance is side-channel.
 """
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any, AsyncIterator
+from uuid import uuid4
 
 from .otel import InMemorySpanEmitter
 from .registry import ContractRegistry
@@ -23,6 +25,7 @@ from .streaming import (
     detect_trigger_tokens,
     message_from_completion,
 )
+from .tool_policy import ToolPolicy, ToolPolicyDecision
 from .upstream import Upstream
 
 CONTRACT_HEADER = "x-openguide-contract"
@@ -33,14 +36,30 @@ class ContractNotFound(KeyError):
     pass
 
 
+class ToolPolicyDenied(Exception):
+    def __init__(self, decision: ToolPolicyDecision, headers: dict[str, str]):
+        super().__init__(decision.reason)
+        self.decision = decision
+        self.headers = headers
+
+
+@dataclass(frozen=True)
+class ResolvedGovernance:
+    session_id: str
+    compiled: Any
+    generated_session: bool = False
+
+
 class Governor:
     def __init__(self, registry: ContractRegistry, upstream: Upstream,
-                 sessions: SessionStore | None = None, emitter=None, store=None):
+                 sessions: SessionStore | None = None, emitter=None, store=None,
+                 tool_policy: ToolPolicy | None = None):
         self.registry = registry
         self.upstream = upstream
         self.sessions = sessions or SessionStore()
         self.emitter = emitter or InMemorySpanEmitter()
         self.store = store                      # optional guidancegrid.store.Store
+        self.tool_policy = tool_policy or ToolPolicy()
 
     # ── helpers ──────────────────────────────────────────────────────
     def _manifest(self, compiled, session_id: str) -> dict[str, Any]:
@@ -51,14 +70,35 @@ class Governor:
         msg = {"role": "system", "content": text}
         return {**body, "messages": [msg, *body.get("messages", [])]}
 
-    def _gov_headers(self, compiled, out) -> dict[str, str]:
+    def _base_gov_headers(self, compiled, resolved: ResolvedGovernance) -> dict[str, str]:
         h = {
             "X-OpenGuide-Contract": compiled.contract_hash,
             "X-OpenGuide-Tier": compiled.tier_active,
+            "X-OpenGuide-Session": resolved.session_id,
+        }
+        if resolved.generated_session:
+            h["X-OpenGuide-Session-Generated"] = "true"
+        return h
+
+    def _gov_headers(self, compiled, out, resolved: ResolvedGovernance) -> dict[str, str]:
+        h = {
+            **self._base_gov_headers(compiled, resolved),
             "X-OpenGuide-Drift": f"{out.drift:.6f}",
         }
         if out.action:
             h["X-OpenGuide-Recovery"] = out.action
+        return h
+
+    def _tool_policy_headers(self, decision: ToolPolicyDecision) -> dict[str, str]:
+        if not decision.tools:
+            return {}
+        h = {
+            "X-OpenGuide-Tool-Decision": decision.decision,
+            "X-OpenGuide-Tool-Reason": decision.reason,
+            "X-OpenGuide-Tool-Names": ",".join(t["name"] for t in decision.tools),
+        }
+        if decision.denied:
+            h["X-OpenGuide-Blocked"] = "tool_policy"
         return h
 
     def _reconcile(self, session_id: str, compiled, body, assistant_msg) -> Any:
@@ -86,22 +126,45 @@ class Governor:
         self._persist(sess, compiled)
         return sess, out
 
+    def _record_tool_policy(self, sess, decision: ToolPolicyDecision) -> None:
+        if not decision.tools:
+            return
+        sess.reconciler.trace.append({
+            "turn": sess.turn - 1,
+            "ev": "TOOL_POLICY",
+            "decision": decision.decision,
+            "reason": decision.reason,
+            "tools": decision.tools,
+        })
+        self._persist(sess, sess.compiled)
+
+    def _evaluate_tool_policy(self, sess, assistant_msg) -> ToolPolicyDecision:
+        decision = self.tool_policy.evaluate(assistant_msg.get("tool_calls", []))
+        self._record_tool_policy(sess, decision)
+        return decision
+
     def _persist(self, sess, compiled) -> None:
-        """Upsert the run row into the fleet index (cheap, every turn)."""
+        """Persist the trace snapshot and upsert the run row every turn."""
         if self.store is None:
             return
         from guidancegrid.store import RunRecord
 
+        trace_cas_key = self.store.put_trace(sess.reconciler.trace)
         self.store.put_run(RunRecord(
             run_id=sess.session_id, contract_hash=compiled.contract_hash,
             model=compiled.model_id, tier=compiled.tier_active, turns=sess.turn,
             max_drift=round(sess.max_drift, 6), recoveries=sess.recoveries,
             halted=sess.halted, verified=sess.reconciler.trace.verify(),
-            trace_hash=sess.reconciler.trace.head, created="",
+            trace_hash=sess.reconciler.trace.head, trace_cas_key=trace_cas_key, created="",
         ))
 
-    def _resolve(self, body, headers) -> tuple[str, Any] | None:
-        """Return (session_id, compiled) if governed, else None for passthrough."""
+    def _resolve(self, body, headers) -> ResolvedGovernance | None:
+        """Return governance context if governed, else None for passthrough.
+
+        Explicit ``X-OpenGuide-Session`` drives cross-call continuity. If the
+        caller omits it, create a unique anonymous session for this request so
+        unrelated governed calls never share behavioral state by accident.
+        """
         ch = headers.get(CONTRACT_HEADER)
         if not ch:
             return None
@@ -109,32 +172,79 @@ class Governor:
             raise ContractNotFound(ch)
         model = body.get("model", "unknown")
         compiled = self.registry.compiled(ch, model)
-        session_id = headers.get(SESSION_HEADER) or f"anon:{ch[:16]}"
-        return session_id, compiled
+        supplied = (headers.get(SESSION_HEADER) or "").strip()
+        if supplied:
+            return ResolvedGovernance(supplied, compiled, generated_session=False)
+        return ResolvedGovernance(f"anon:{uuid4().hex}", compiled, generated_session=True)
 
     # ── non-streaming ────────────────────────────────────────────────
     async def chat(self, body: dict[str, Any], headers: dict[str, str]):
         resolved = self._resolve(body, headers)
         if resolved is None:
             return await self.upstream.chat(body, headers), {}
-        session_id, compiled = resolved
+        session_id, compiled = resolved.session_id, resolved.compiled
         sess = self.sessions.get(session_id)
         send_body = body
         if sess is not None and sess.pending_reanchor:
             send_body = self._inject(body, sess.pending_reanchor)
         resp = await self.upstream.chat(send_body, headers)
         msg = message_from_completion(resp)
-        _, out = self._reconcile(session_id, compiled, body, msg)
-        return resp, self._gov_headers(compiled, out)
+        sess, out = self._reconcile(session_id, compiled, body, msg)
+        gov_headers = self._gov_headers(compiled, out, resolved)
+        decision = self._evaluate_tool_policy(sess, msg)
+        gov_headers = {**gov_headers, **self._tool_policy_headers(decision)}
+        if decision.denied:
+            raise ToolPolicyDenied(decision, gov_headers)
+        return resp, gov_headers
 
     # ── streaming ────────────────────────────────────────────────────
-    async def stream(self, body: dict[str, Any], headers: dict[str, str]) -> AsyncIterator[bytes]:
+    def open_stream(
+        self, body: dict[str, Any], headers: dict[str, str]
+    ) -> tuple[AsyncIterator[bytes], dict[str, str]]:
         resolved = self._resolve(body, headers)
         if resolved is None:
-            async for chunk in self.upstream.stream(body, headers):
-                yield chunk
-            return
-        session_id, compiled = resolved
+            return self.upstream.stream(body, headers), {}
+        return (
+            self._stream_resolved(body, headers, resolved),
+            self._base_gov_headers(resolved.compiled, resolved),
+        )
+
+    async def stream(self, body: dict[str, Any], headers: dict[str, str]) -> AsyncIterator[bytes]:
+        gen, _ = self.open_stream(body, headers)
+        async for chunk in gen:
+            yield chunk
+
+    async def preflight_stream(
+        self, body: dict[str, Any], headers: dict[str, str]
+    ) -> tuple[list[bytes], dict[str, str]]:
+        """Buffer a governed stream so tool policy can deny before bytes leave."""
+        resolved = self._resolve(body, headers)
+        if resolved is None:
+            chunks = [chunk async for chunk in self.upstream.stream(body, headers)]
+            return chunks, {}
+
+        session_id, compiled = resolved.session_id, resolved.compiled
+        sess = self.sessions.get(session_id)
+        send_body = body
+        if sess is not None and sess.pending_reanchor:
+            send_body = self._inject(body, sess.pending_reanchor)
+
+        assembler = StreamAssembler()
+        chunks: list[bytes] = []
+        async for chunk in self.upstream.stream(send_body, headers):
+            assembler.feed_bytes(chunk)
+            chunks.append(chunk)
+        sess, out = self._reconcile(session_id, compiled, body, assembler.message())
+        gov_headers = self._gov_headers(compiled, out, resolved)
+        decision = self._evaluate_tool_policy(sess, assembler.message())
+        gov_headers = {**gov_headers, **self._tool_policy_headers(decision)}
+        if decision.denied:
+            raise ToolPolicyDenied(decision, gov_headers)
+        return chunks, gov_headers
+
+    async def _stream_resolved(self, body: dict[str, Any], headers: dict[str, str],
+                               resolved: ResolvedGovernance) -> AsyncIterator[bytes]:
+        session_id, compiled = resolved.session_id, resolved.compiled
         sess = self.sessions.get(session_id)
         send_body = body
         if sess is not None and sess.pending_reanchor:
@@ -145,4 +255,7 @@ class Governor:
             assembler.feed_bytes(chunk)
             yield chunk                       # client stream is byte-identical
         # turn complete: reconcile + emit side-channel (no stream mutation)
-        self._reconcile(session_id, compiled, body, assembler.message())
+        sess, _ = self._reconcile(session_id, compiled, body, assembler.message())
+        self._evaluate_tool_policy(sess, assembler.message())
+        # Streaming headers were sent before the final tool decision was known.
+        # Enforcing policies should use preflight_stream, which buffers first.

@@ -98,7 +98,9 @@ class MockUpstream:
         import json
 
         comp = self._completion(body)
-        content = comp["choices"][0]["message"].get("content") or ""
+        message = comp["choices"][0]["message"]
+        content = message.get("content") or ""
+        tool_calls = message.get("tool_calls") or []
         cid = comp["id"]
         model = comp["model"]
         # role chunk, then token-ish chunks, then finish, then [DONE]
@@ -109,8 +111,30 @@ class MockUpstream:
             d = {"id": cid, "object": "chat.completion.chunk", "model": model,
                  "choices": [{"index": 0, "delta": {"content": piece}, "finish_reason": None}]}
             yield f"data: {json.dumps(d)}\n\n".encode()
+        for idx, tc in enumerate(tool_calls):
+            fn = tc.get("function", {})
+            d = {
+                "id": cid,
+                "object": "chat.completion.chunk",
+                "model": model,
+                "choices": [{
+                    "index": 0,
+                    "delta": {"tool_calls": [{
+                        "index": idx,
+                        "id": tc.get("id"),
+                        "type": tc.get("type", "function"),
+                        "function": {
+                            "name": fn.get("name", ""),
+                            "arguments": fn.get("arguments", ""),
+                        },
+                    }]},
+                    "finish_reason": None,
+                }],
+            }
+            yield f"data: {json.dumps(d)}\n\n".encode()
+        finish_reason = "tool_calls" if tool_calls else "stop"
         fin = {"id": cid, "object": "chat.completion.chunk", "model": model,
-               "choices": [{"index": 0, "delta": {}, "finish_reason": "stop"}]}
+               "choices": [{"index": 0, "delta": {}, "finish_reason": finish_reason}]}
         yield f"data: {json.dumps(fin)}\n\n".encode()
         yield b"data: [DONE]\n\n"
 

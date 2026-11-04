@@ -1,0 +1,109 @@
+# Skill: Web Publishing (GitHub Pages, project website, GitHub wiki)
+
+**Scope.** Publishing a repo's content to a web surface — **GitHub Pages** (a docs/
+project site), a **project website** (Pages or an external static host), and the
+**GitHub repo wiki** — and doing it **automatically on push when, and only when, the
+user opts in.** The pieces live elsewhere (`skills/cicd.md` = the Actions mechanism,
+`roles/tech-writer.md` = content, `skills/ui.md` = the site, `skills/accessibility.md`
++ `skills/i18n.md` = quality); this skill governs the *publish*. Owning roles:
+Tech Writer, Frontend Engineer, DevOps Engineer.
+
+## The one rule that changes everything: auto-publish is auto-EXPOSE
+
+A Pages site or a wiki on a **public** repo puts whatever is in the published source
+**on the open internet, on every push.** So the governance is not optional:
+
+- **Opt-in is a §5 decision, made once.** Turning on auto-publish to a public surface
+  is an external-publish action — the human chooses it explicitly and it is recorded
+  (`Web publish: pages | site | wiki | off` in `docs/brief.md`). It is **never on by
+  default.** After the opt-in, pushes auto-publish under that standing authorization —
+  the *choice* was the escalation, not each push.
+- **Never publish secrets, drafts, or unreleased material.** Publish from a
+  **designated source only** (`/docs`, a `site/` dir, or a built artifact) — never the
+  whole repo. No `.env`, no internal notes, no not-yet-released content on a public
+  surface (non-negotiable #2 + the public-surface rule).
+- **Fail closed.** The publish workflow **builds and verifies** (build succeeds, links
+  resolve, secret-scan clean) *before* it deploys. A broken or leaky build does **not**
+  go live.
+
+## GitHub Pages
+
+- **Deploy path:** prefer the **GitHub Actions Pages workflow** (`actions/deploy-pages`)
+  over the legacy branch / `/docs`-folder setting — it builds, gates, and deploys in one
+  auditable run. Source = a generator (MkDocs / Docusaurus / Hugo / Astro) or static `/docs`.
+- **Auto-on-push (opt-in):** the workflow triggers on `push` to the default branch,
+  path-scoped to the docs paths (see the reference workflow below).
+- **Custom domain + HTTPS:** `CNAME` in the published output; enforce HTTPS. The domain
+  is a §5 external decision (DNS).
+
+## Project website
+
+- Same discipline; the host may be Pages or an external static host — then
+  `skills/platform-engineering.md` and the cloud-provider skills govern the target
+  (Vercel / Netlify / Cloudflare Pages). One build, verified, published on opt-in.
+
+## GitHub wiki
+
+- The wiki is a **separate git repo** (`<repo>.wiki.git`), editable in the GitHub UI
+  **and** via git — so it drifts from `/docs` easily. Pick **one source of truth:** if
+  `/docs` is canonical, **auto-sync docs → wiki one-way** on push and treat UI edits as
+  read-only. **Never two-way sync** (merge conflicts + lost edits). Same publish
+  governance: designated source, no secrets, build-verify.
+
+## The opt-in auto-publish workflow (reference)
+
+```yaml
+# .github/workflows/pages.yml  — opt in by adding this; deploys on push to main.
+name: pages
+on: { push: { branches: [main], paths: ['docs/**', 'mkdocs.yml'] } }
+permissions: { contents: read, pages: write, id-token: write }
+concurrency: { group: pages, cancel-in-progress: true }
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    environment: github-pages
+    steps:
+      - uses: actions/checkout@<pinned-sha>
+      - run: <build the site into ./site>          # same build as local
+      - run: <link-check + secret-scan ./site>     # fail closed BEFORE publish
+      - uses: actions/upload-pages-artifact@<sha>  # with: { path: ./site }
+      - uses: actions/deploy-pages@<sha>
+```
+
+Pin action SHAs (supply-chain); the `paths:` scope keeps unrelated pushes from
+redeploying; the gate step means a broken/leaky build never reaches the deploy step.
+
+## Do / Don't
+
+**Do:** opt in explicitly and record it · publish a designated source only ·
+build + verify before deploy · pin action SHAs · one-way docs→wiki.
+**Don't:** default auto-publish on · publish the whole repo · publish a broken/leaky
+build · two-way wiki sync · let the site build read secrets into its output.
+
+## Review checklist
+
+- [ ] Opt-in recorded (`Web publish:` in the brief); **off by default**
+- [ ] Publishes a designated source only; no secrets/drafts in the output
+- [ ] Workflow fails closed (build + link-check + secret-scan before deploy); action SHAs pinned
+- [ ] Wiki (if used) is one-way from a single source of truth
+- [ ] Custom domain / DNS treated as a §5 external decision
+
+## Common failure modes
+
+Auto-publishing the whole repo (leaks internal files); a public Pages site shipping a
+broken build because the deploy didn't gate on it; two-way wiki sync eating edits; an
+unpinned action compromised in the deploy path; auto-publish left on by default, so a
+routine push exposes unreleased content.
+
+## Signature
+
+<!-- SIGNATURE:BEGIN (generated by doctrine_signature - do not edit) -->
+- **Roles:** `roles/tech-writer.md` · `roles/web-designer.md`
+- **Skills:** `skills/web-publishing.md` (self)
+- **Tools:** —
+- **Plugins:** the Doctrine plugin (shared)
+- **Workflows:** —
+- **Hooks:** opt-in auto-publish on push (§5)
+- **MCP servers:** —
+- **Subagents:** —
+<!-- SIGNATURE:END -->

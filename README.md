@@ -26,10 +26,29 @@ provable behavior.**
 | [`guidancegrid/`](guidancegrid/) | Reference runtime (numpy-only): `core/` `obc/` `compiler/` `sensors/` `channels/` `controller/` `store/` `tune/`. |
 | [`proxy/`](proxy/) | The wedge — an OpenAI-compatible FastAPI proxy with header-activated governance. |
 | [`integrations/`](integrations/) | OpenAI SDK drop-in, LiteLLM callback, LangGraph middleware. |
-| [`deploy/compose/`](deploy/compose/) | `docker compose up` → proxy + Jaeger + postgres. |
+| [`examples/`](examples/) | Quickstarts, case studies, the simulated killer demo, and real-data SEC EDGAR + CISA KEV corporate reference demos. |
+| [`deploy/compose/`](deploy/compose/) | `docker compose up` → proxy + Jaeger + persisted sqlite store. |
 | [`tests/`](tests/) | Test suite (core invariants, OBC, conformance, runtime gate, proxy). |
 | [`docs/`](docs/) | Blueprint, positioning, architecture diagrams, replay-console prototype. |
 | [`archive/`](archive/) | The original v0.1.0 reference drop, kept for provenance. |
+
+For enterprise positioning and adoption detail:
+
+- [`docs/enterprise-capabilities.md`](docs/enterprise-capabilities.md) explains capabilities, usage, adoption readiness, and enterprise value.
+- [`docs/enterprise-governance-layer.md`](docs/enterprise-governance-layer.md) frames OpenGuide as the governance layer between autonomous agents and real corporate action.
+
+Local compose storage note: the current reference compose stack uses a persisted
+sqlite volume for the fleet index and CAS. Postgres remains a roadmap item for
+self-hosted enterprise deployments.
+
+Real-data corporate reference demos:
+
+- Run `make corporate-demo` to fetch public SEC EDGAR companyfacts for
+  AAPL/MSFT, route a corporate finance agent through the proxy, allow a CRM
+  note, block an ERP risk update that requires approval, and verify the trace.
+- Run `make cyber-demo` to fetch CISA Known Exploited Vulnerabilities data,
+  route a security operations agent through the proxy, allow a SIEM case,
+  block production host isolation that requires approval, and verify the trace.
 
 ## Layout
 
@@ -109,8 +128,11 @@ bit-identical — while an ungoverned counterfactual runs to the halt threshold.
 `X-OpenGuide-Contract: <hash>` activates governance with zero app changes
 (pass-through by default). Streaming SSE with tool-call delta reassembly,
 session continuity that feeds the re-anchor forward across calls, and
-`gen_ai.behavior.*` spans. `docker compose up` → point any OpenAI SDK at it →
-behavioral state in Jaeger. Governance overhead ≈ 0.4 ms p50.
+`gen_ai.behavior.*` spans. Optional tool-call authorization gates can allow,
+deny, or require approval for configured tool names before the tool call is
+exposed to the client, with the decision recorded in the trace. `docker compose
+up` → point any OpenAI SDK at it → behavioral state in Jaeger. Governance
+overhead ≈ 0.4 ms p50.
 
 **Phase 4 — Signal Tier (T0/T1): complete (steering core; real-model evals
 pending weights).** Real PyTorch forward-hook activation steering
@@ -133,7 +155,11 @@ drift benchmark, a synthetic fleet generator, the one-command killer demo
 re-anchor), and the multi-tenant + injection-detection case studies. All run
 offline; results are **simulated** and clearly labeled — real closed/open-model
 numbers require keys/weights and replace them
-([`benchmarks/REPORT.md`](benchmarks/REPORT.md)). 137 tests total.
+([`benchmarks/REPORT.md`](benchmarks/REPORT.md)). The repo also includes
+real-data corporate reference demos over SEC EDGAR companyfacts
+([`examples/corporate-edgar/`](examples/corporate-edgar/)) and CISA KEV
+([`examples/cyber-kev/`](examples/cyber-kev/)) to show action governance on
+public corporate data. 158 tests total.
 
 Next: **Phase 3 — Console** (the dashboard, Next.js). See
 [`docs/blueprint.md`](docs/blueprint.md) for the full phase plan.

@@ -32,3 +32,8 @@ guidancegrid-0.1.0.zip
 # Generated benchmark artifacts + fleet db
 benchmarks/*_results.json
 *.db
+examples/corporate-edgar/.cache/
+examples/cyber-kev/.cache/
+
+# doctrine state plane (machine-local only)
+.doctrine-state/local/

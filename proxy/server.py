@@ -12,6 +12,7 @@ from .app import create_app
 from .config import ProxyConfig
 from .otel import InMemorySpanEmitter
 from .registry import ContractRegistry
+from .tool_policy import ToolPolicy
 from .upstream import HttpxUpstream
 
 
@@ -23,19 +24,39 @@ def build(config: ProxyConfig | None = None):
     upstream = HttpxUpstream(config.upstream_base_url, config.upstream_api_key)
     emitter = _build_emitter(config)
     store = _build_store(config)
-    return create_app(registry=registry, upstream=upstream, emitter=emitter, store=store)
+    tool_policy = ToolPolicy.from_csv(
+        allow=config.tool_allowlist,
+        deny=config.tool_denylist,
+        require_approval=config.tool_require_approval,
+    )
+    return create_app(
+        registry=registry,
+        upstream=upstream,
+        emitter=emitter,
+        store=store,
+        admin_token=config.admin_token,
+        tool_policy=tool_policy,
+    )
 
 
 def _build_store(config: ProxyConfig):
-    """Build the fleet-index store. sqlite today (file or in-memory); a postgres
-    DSN is recognised and noted but falls back to sqlite until the pg backend
-    lands (blueprint: sqlite -> postgres)."""
+    """Build the fleet-index store.
+
+    Supported DSNs today:
+      - unset / empty: in-memory sqlite
+      - sqlite:<path>: file-backed sqlite, or sqlite: for in-memory
+
+    Unsupported DSNs fail fast so deployments do not accidentally believe they
+    have durable storage while using an in-memory fallback.
+    """
     from guidancegrid.store import Store
 
     dsn = config.store_dsn
-    if dsn and dsn.startswith("sqlite:"):
+    if not dsn:
+        return Store(":memory:")
+    if dsn.startswith("sqlite:"):
         return Store(dsn[len("sqlite:"):] or ":memory:")
-    return Store(":memory:")
+    raise ValueError(f"unsupported OPENGUIDE_STORE_DSN {dsn!r}; only sqlite: DSNs are supported")
 
 
 def _build_emitter(config: ProxyConfig):

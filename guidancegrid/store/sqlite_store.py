@@ -6,7 +6,8 @@ Two tables:
        max_drift, recoveries, halted, verified, trace_hash, created)
 
 The CAS is idempotent: putting the same bytes twice is a no-op. The fleet index
-is the query surface the console reads; there is no privileged path.
+is the query surface the console reads; there is no privileged path. Run rows
+store both the trace head hash and the latest trace body CAS key.
 """
 from __future__ import annotations
 
@@ -30,6 +31,7 @@ class RunRecord:
     halted: bool
     verified: bool
     trace_hash: str
+    trace_cas_key: str = ""
     created: str = ""
 
 
@@ -50,6 +52,7 @@ CREATE TABLE IF NOT EXISTS runs (
     halted INTEGER NOT NULL,
     verified INTEGER NOT NULL,
     trace_hash TEXT NOT NULL,
+    trace_cas_key TEXT NOT NULL DEFAULT '',
     created TEXT NOT NULL DEFAULT ''
 );
 CREATE INDEX IF NOT EXISTS idx_runs_contract ON runs(contract_hash);
@@ -67,7 +70,13 @@ class Store:
         self._lock = threading.Lock()
         with self._lock:
             self.conn.executescript(_SCHEMA)
+            self._migrate()
             self.conn.commit()
+
+    def _migrate(self) -> None:
+        cols = {row[1] for row in self.conn.execute("PRAGMA table_info(runs)").fetchall()}
+        if "trace_cas_key" not in cols:
+            self.conn.execute("ALTER TABLE runs ADD COLUMN trace_cas_key TEXT NOT NULL DEFAULT ''")
 
     def close(self) -> None:
         self.conn.close()
@@ -115,9 +124,9 @@ class Store:
             self.conn.execute(
                 """INSERT OR REPLACE INTO runs
                    (run_id, contract_hash, model, tier, turns, max_drift, recoveries,
-                    halted, verified, trace_hash, created)
+                    halted, verified, trace_hash, trace_cas_key, created)
                    VALUES (:run_id,:contract_hash,:model,:tier,:turns,:max_drift,:recoveries,
-                           :halted,:verified,:trace_hash,:created)""",
+                           :halted,:verified,:trace_hash,:trace_cas_key,:created)""",
                 {**d, "halted": int(run.halted), "verified": int(run.verified)},
             )
             self.conn.commit()
@@ -152,5 +161,6 @@ class Store:
             run_id=row["run_id"], contract_hash=row["contract_hash"], model=row["model"],
             tier=row["tier"], turns=row["turns"], max_drift=row["max_drift"],
             recoveries=row["recoveries"], halted=bool(row["halted"]),
-            verified=bool(row["verified"]), trace_hash=row["trace_hash"], created=row["created"],
+            verified=bool(row["verified"]), trace_hash=row["trace_hash"],
+            trace_cas_key=row["trace_cas_key"], created=row["created"],
         )

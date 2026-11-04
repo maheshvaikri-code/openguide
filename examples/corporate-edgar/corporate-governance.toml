@@ -1,0 +1,55 @@
+# OBC v0.1 - corporate SEC/ERP reference contract.
+# Demonstrates governance for a finance/risk agent using public EDGAR facts
+# before it proposes actions against corporate systems.
+
+[contract]
+name = "corporate-edgar-risk-agent"
+version = "0.1.0"
+enforcement_floor = "t3"
+
+[identity]
+persona = "evidence-first corporate finance analyst"
+boundaries = [
+  "use SEC EDGAR companyfacts as the source of financial metrics",
+  "do not write to ERP or payment systems without approval",
+  "record source, filing form, fiscal year, and filed date for each metric",
+]
+
+[[invariants]]
+id = "sec_source_present"
+measure = "structural:sec_facts_present"
+hard = true
+
+[[invariants]]
+id = "financial_grounding"
+measure = "external:financial_grounding"
+floor = 0.90
+weight = 0.7
+
+[[invariants]]
+id = "action_scope"
+measure = "external:action_scope"
+floor = 1.00
+weight = 0.5
+
+[[phases]]
+name = "evidence"
+window = { turns = [0, 1] }
+signals = [{ ref = "evidence", gain = 0.6 }]
+
+[[phases]]
+name = "action"
+window = { turns = [1, -1] }
+signals = [{ ref = "approval", gain = 0.7 }]
+
+[[triggers]]
+on = "state:drift>0.10"
+apply = { ref = "approval", gain = 0.8, decay_tau = 4 }
+
+[recovery]
+drift_threshold = 0.10
+actions = ["re_anchor", "escalate@0.30", "halt@0.50"]
+
+[signals]
+evidence = { pack = "sha256:0000000000000000000000000000000000000000000000000000000000000000", t2_template = "templates/evidence.md" }
+approval = { pack = "sha256:0000000000000000000000000000000000000000000000000000000000000000", t2_template = "templates/approval.md" }

@@ -73,7 +73,44 @@ slots are present and unfilled in each pack's `eval_card.json`. See
 [`../packs/README.md`](../packs/README.md). No retention numbers are claimed
 until that harness runs on weights.
 
-## 4. Case studies (reference scenarios — simulated)
+## 4. Corporate reference demos (real public data)
+
+[`../examples/corporate-edgar/`](../examples/corporate-edgar/) is a real-data
+reference implementation for finance/risk adoption conversations. It fetches
+public SEC EDGAR `companyfacts` JSON for AAPL/MSFT, extracts latest annual
+revenue and net income facts, routes a scripted finance/risk agent through the
+OpenAI-compatible proxy, and demonstrates action governance:
+
+- `crm.create_account_note` is allowed and recorded.
+- `erp.update_vendor_risk` is blocked as `approval_required:*`.
+- The run trace verifies and includes `STATE` plus `TOOL_POLICY` events.
+- Tool-policy audit events record tool id, tool name, decision, and reason
+  without storing tool arguments.
+
+[`../examples/cyber-kev/`](../examples/cyber-kev/) is a separate real-data
+reference implementation for security operations and corporate cyber risk. It
+fetches CISA's Known Exploited Vulnerabilities JSON catalog, selects recent
+entries for configured vendors, routes a scripted security agent through the
+proxy, and demonstrates action governance:
+
+- `siem.create_case` is allowed and recorded.
+- `edr.isolate_host` is blocked as `approval_required:*`.
+- The run trace verifies and includes `STATE` plus `TOOL_POLICY` events.
+- The source data includes CVE, vendor, product, date added, due date, and
+  required action from the CISA KEV catalog.
+
+Reproduce with live internet data:
+
+```bash
+make corporate-demo
+make cyber-demo
+```
+
+These are not model-quality benchmarks. They are reference implementations
+showing how OpenGuide can sit between autonomous corporate agents and systems
+of record while using real public internet data.
+
+## 5. Case studies (reference scenarios — simulated)
 
 - **Coding-agent fleet** — [`fleet_gen.py`](fleet_gen.py) generates realistic
   runs into the store's fleet index (drift / recovery / halt distributions).
@@ -84,10 +121,14 @@ until that harness runs on weights.
   a poisoned page is caught the moment context-obedience overtakes
   user-adherence — a behavioral-state shape, detected before the agent acts.
 
-## 5. Threats to validity
+## 6. Threats to validity
 
 The simulation is favorable to the control plane by construction (the restore
 model is idealized and the disturbance is synthetic). It demonstrates the
 *shape* of the expected result and exercises the real control path, but the
 magnitude means nothing until the real-model harness runs. Treat §1–§2 as a
 methodology preview, not evidence.
+
+The SEC EDGAR and CISA KEV demos use real public data but scripted agents, so
+they prove integration mechanics and auditability rather than model
+performance.
