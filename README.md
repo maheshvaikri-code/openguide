@@ -1,6 +1,17 @@
 # OpenGuide
 
-**A behavioral control plane for AI agents.**
+<p align="center">
+  <img src="Logo/OGLogo_BW_transparent.png" alt="OpenGuide logo" width="280">
+</p>
+
+<b> A behavioral control plane for AI agents.</b>
+
+[![CI](https://github.com/maheshvaikri-code/openguide/actions/workflows/ci.yml/badge.svg)](https://github.com/maheshvaikri-code/openguide/actions/workflows/ci.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](pyproject.toml)
+[![Status: Research](https://img.shields.io/badge/status-research-orange)](#evidence-and-roadmap)
+
+
 
 OpenGuide explores how teams can define expected agent behavior, monitor it over
 time, and record the resulting decisions. Its reference runtime, **GuidanceGrid**,

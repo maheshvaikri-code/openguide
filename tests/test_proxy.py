@@ -4,6 +4,7 @@ import os
 
 from fastapi.testclient import TestClient
 
+from guidancegrid.obc import load_contract
 from guidancegrid.sensors import JudgeMeasure, MeasureRegistry, StructuralMeasure
 from proxy.app import create_app
 from proxy.registry import ContractRegistry
@@ -145,9 +146,7 @@ def test_streaming_passthrough_is_byte_identical_and_governed():
 
 def test_register_contract_endpoint():
     client, _, _ = build()
-    import tomllib
-    with open(CONTRACT, "rb") as f:
-        obc = tomllib.load(f)
+    obc = load_contract(CONTRACT)
     r = client.post("/v1/openguide/contracts", json=obc)
     assert r.status_code == 200 and r.json()["contract_hash"].startswith("sha256:")
 
