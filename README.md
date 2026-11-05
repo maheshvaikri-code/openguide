@@ -36,20 +36,7 @@ to explore that approach.
 
 ## How it works
 
-```text
-  Agent / application
-          |
-          v
-  OpenGuide proxy <---- OBC contract + sensors + tool-name policy
-          |
-          +-----------> Behavioral state, telemetry, and trace
-          |
-          v
-  Model provider -----> Proposed response / tool call
-          |
-          v
-  Application or tool gateway -----> Corporate systems
-```
+![OpenGuide architecture showing an agent interacting with a model through the proxy and GuidanceGrid runtime, with trace storage and a separate tool gateway leading to corporate systems.](docs/openguide-guidancegrid-architecture.png)
 
 1. Register or load an OBC contract describing expected behavior.
 2. Send a request to the proxy with `X-OpenGuide-Contract` and, for continuity,
@@ -64,6 +51,86 @@ and authorizing actions against corporate systems. Governance is opt-in: request
 without a contract header pass through the proxy without these controls. The
 proxy does not enforce actions that bypass it. See [enterprise governance](docs/enterprise-governance-layer.md)
 for the trust boundary and outstanding work.
+
+### Implemented proxy architecture
+
+![Implemented OpenGuide proxy architecture: request and session handling, model and reconciliation, tool-name policy, and records and access.](docs/openguide-implemented-architecture.png)
+
+**At a glance:** The proxy connects an application to a model, runs the
+GuidanceGrid reconciler on supported governed responses, and can return an
+allowed response or an HTTP 403 for a denied tool call.
+
+- **Request and session:** A contract header selects governance. The proxy
+  resolves the contract and maintains in-memory state for the session.
+- **Model and reconciliation:** The proxy forwards the request, assembles the
+  assistant message, and records drift and recovery decisions. A pending
+  re-anchor can be added to a subsequent request in the same session.
+- **Tool policy:** Supported model-proposed tool names can be allowed or
+  denied. `approval_required` is a denial reason, not a human approval queue.
+- **Records and access:** Trace snapshots and the run index can be stored in
+  SQLite; telemetry is emitted separately. Admin-token protection is optional.
+
+**Enterprise significance:** This is a foundation for observing agent
+behavior and filtering supported proposed calls. An independent tool gateway,
+enterprise access controls, and a real approval process are still needed.
+Requests without a contract header pass through without governance; when a
+tool policy is enabled, streaming responses are buffered for inspection.
+
+### GuidanceGrid runtime components
+
+![Detailed GuidanceGrid runtime architecture showing contract compilation, model control channels, the per-turn control loop, and evidence recording.](docs/guidancegrid-detailed-architecture.png)
+
+**At a glance:** GuidanceGrid turns a behavioral contract into runtime
+configuration, measures behavior against it, and records what the controller
+observed and decided.
+
+- **Contract compilation:** The OBC contract describes invariants, phases,
+  triggers, and recovery. The compiler and capability resolver produce a
+  contract configuration for the target model and available tier.
+- **Control channels:** T0 activation steering, T1 constrained decoding, T2
+  text re-anchoring, and T3 structural validation are reference components.
+  Their availability and integration depend on the model and deployment;
+  the diagram does not imply that all four run together in the proxy.
+- **Per-turn control:** Registered sensors supply readings or report gaps. The
+  reconciler calculates drift, evaluates validation results and triggers, and
+  selects a recovery decision when configured thresholds are met.
+- **Evidence:** Behavioral state is appended to a hash-chained trace. The
+  proxy can persist trace snapshots and run metadata, and emit telemetry.
+
+**Enterprise significance:** Contracts and traceable runtime decisions offer a
+common way to examine agent behavior across workflows. A verified trace can
+detect changes to the chain, but does not establish that the source data or
+sensor judgments are correct.
+
+### Runtime workflow for one governed turn
+
+![GuidanceGrid runtime architecture and seven-step workflow from contract and session resolution through response or tool-policy denial.](docs/guidancegrid-runtime-architecture-workflow.png)
+
+**At a glance:** Each governed turn moves through a repeatable loop from
+contract selection to an observable decision. The proxy implementation is in
+[`proxy/governance.py`](proxy/governance.py); the runtime reconciliation is in
+[`guidancegrid/controller/reconciler.py`](guidancegrid/controller/reconciler.py).
+
+1. **Resolve:** Look up the contract and use the supplied session ID, or create
+   a generated session ID when none is provided.
+2. **Prepare:** Add any pending re-anchor from the prior turn to the request.
+3. **Call:** Forward the request to the model and assemble the response for
+   analysis. Streaming behavior depends on whether tool policy is enabled.
+4. **Measure:** Read registered sensors and run structural validation. Missing
+   sensors are recorded as gaps rather than treated as successful readings.
+5. **Reconcile:** Calculate drift, evaluate triggers, and determine any
+   configured recovery decision. Re-anchor text can feed the next turn.
+6. **Record:** Append behavioral state and, for proposed tool calls, the
+   proxy's tool-policy decision to the trace. Persist snapshots when a store is
+   configured and emit telemetry through the configured emitter.
+7. **Respond:** Return an allowed response or, for a supported denied tool
+   call, HTTP 403. Halt and escalation are runtime decisions; they do not
+   themselves provide an enforced stop or an approval workflow.
+
+**Enterprise significance:** The loop links declared expectations,
+measurements, recovery decisions, and action-policy outcomes. That evidence
+can support investigation, but it is not a substitute for system-level access
+controls or compliance certification.
 
 ## Get started
 
