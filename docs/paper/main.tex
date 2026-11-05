@@ -1,0 +1,481 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+
+\newcommand{\sys}{OpenGuide}
+\newcommand{\rt}{GuidanceGrid}
+\newcommand{\obc}{OBC}
+\newcommand{\code}[1]{\texttt{#1}}
+
+\title{\textbf{OpenGuide: A Control Plane for LLM Inference Trajectories}\\[2pt]
+\large Declared behavior, tiered enforcement, and a replayable hash-chained record}
+\author{Mahesh Vaikri\\\small\texttt{mahesh.vaikri@gmail.com}}
+\date{Draft --- \today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Production LLM agents are deployed with a data plane---application, orchestration,
+model, inference server---but no control plane: nothing continuously compares the
+behavior an operator \emph{declared} with the behavior a running trajectory
+\emph{exhibits}, corrects divergence, and keeps a verifiable record of having done
+so. Observability tools sense but do not act; prompt and activation-steering
+methods act but do not sense against a declared setpoint or leave an auditable
+record. We present \sys, a behavioral control plane that closes this loop. A
+declarative, content-addressed \emph{Open Behavioral Contract} (\obc) states
+invariants, phases, triggers and a recovery ladder; a compiler resolves one
+contract to the strongest enforcement channel a target model permits (activation
+steering, constrained decoding, scheduled re-anchoring, or structural validation)
+and \emph{refuses to run} rather than silently degrade below the contract's floor;
+typed sensors read behavioral state each turn; a reconciler computes drift and
+dispatches recovery; and every control action is appended to a hash-chained trace
+with a bit-identical replay property. We describe the design, the reference
+implementation (\rt), and a conformance suite of golden vectors. We evaluate the
+control path on a deterministic \emph{simulated} agent: against fixed-cadence
+re-prompting at matched intervention count, reactive contract-driven re-anchoring
+raises mean adherence by $+0.064$ (steady) and $+0.112$ (sparse-shock) over 50
+seeds, at about $1\%$ more tokens. These are methodology-preview results from an
+idealized simulator, \emph{not} evidence about real models; we state this and the
+resulting threats to validity prominently, and we do not report any
+capability-retention numbers because the real-model harness has not been run.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+Agentic LLM systems run for tens to hundreds of turns. Over such horizons,
+instruction adherence erodes: constraints stated at turn zero are weighted less
+as context grows, scope creeps, and tone or policy drifts. Turn-wise measurements
+of this effect in multi-turn interaction are now reported in the literature
+\citep{dongre2025drift}. The operational response today is largely manual:
+engineers re-edit prompts, add periodic reminders, or inspect traces after the
+fact.
+
+The surrounding infrastructure is organized as a data plane. Requests flow from
+application through orchestration to model and inference server, and each layer
+has tooling for \emph{seeing} what happened. What is missing is the analogue of a
+control plane in cluster orchestration: a component that holds a \emph{declared}
+desired state, continuously measures \emph{actual} state, reconciles the two, and
+records what it did. We argue that three existing families each supply one
+sub-function of this loop but none closes it:
+
+\begin{itemize}[nosep,leftmargin=*]
+\item \textbf{Observability} senses, but is read-only by definition.
+\item \textbf{Steering and prompting} acts---on activations
+  \citep{turner2023actadd,zou2023repe,li2023iti,rimsky2023caa} or on text---but is
+  typically open-loop: it emits and hopes, with no declared setpoint and no
+  record that the intervention held.
+\item \textbf{Governance tooling} declares policy and produces documents, but
+  gates or documents rather than continuously correcting.
+\end{itemize}
+
+\sys{} composes these into one loop: \emph{declare} behavior, \emph{compile} it
+to whatever enforcement the target allows, \emph{sense} behavioral state,
+\emph{reconcile} drift against setpoints, \emph{actuate} a correction, and
+\emph{record} every step in a tamper-evident trace.
+
+\paragraph{Scope and honesty.}
+We deliberately avoid several claims. \sys{} \emph{biases} trajectories
+statistically; it does not guarantee behavior (only hard structural invariants at
+the decoding and validation tiers are mechanically enforced). We do not claim a
+novel control-theoretic framing of steering---feedback-controller formulations of
+activation steering exist \citep{nguyen2025pidsteer}---nor the first time-varying
+steering \citep{scalena2024dac}. Our contribution is systems-level: persistence,
+addressability, cross-tier compilation, and verifiable replay of the control
+record. Our quantitative results are from a simulator (Section~\ref{sec:eval}).
+
+\paragraph{Contributions.}
+\begin{enumerate}[nosep,leftmargin=*]
+\item \textbf{A contract format} (\obc) that is declarative, model-independent,
+  and content-addressed, so a contract hash is a deployment identity
+  (Section~\ref{sec:obc}).
+\item \textbf{A tiered compiler} that resolves one contract to the strongest
+  available enforcement channel and refuses to run below a declared floor
+  (Section~\ref{sec:compiler}).
+\item \textbf{A reconciliation loop with a single write path}, in which the only
+  side effect of the control channel is appending a record to a hash-chained trace
+  with a bit-identical replay property (Sections~\ref{sec:reconciler}
+  and~\ref{sec:trace}), together with a cross-implementation conformance suite.
+\item \textbf{A simulated evaluation protocol with an explicit kill criterion},
+  and an honest account of what it does and does not show
+  (Section~\ref{sec:eval}).
+\end{enumerate}
+
+\section{Related work}
+\label{sec:related}
+
+\paragraph{Activation steering.}
+Adding vectors to the residual stream to shift behavior is established
+\citep{turner2023actadd,rimsky2023caa,li2023iti}, with a broader
+representation-engineering view of reading and controlling internal state
+\citep{zou2023repe}. Conditional activation steering applies an intervention only
+when a detector fires \citep{lee2024cast}; dynamic activation composition varies
+steering strength across generation steps \citep{scalena2024dac}; and a
+feedback-controller formulation treats steering as closed-loop control over
+activations \citep{nguyen2025pidsteer}. Selective Steering studies norm-preserving
+control with discriminative layer selection \citep{dang2026selective}. \sys{} uses
+norm-preserving injection of this kind at its open-weight tier, but its focus is
+different: it is the \emph{surrounding system}---contract, compiler, state,
+trace---not a new steering rule.
+
+\paragraph{Constrained decoding.}
+Grammar- and automaton-guided generation provides hard structural guarantees on
+output \citep{willard2023outlines}. \sys{} treats this as its decoding tier and as
+the home of \emph{hard} invariants.
+
+\paragraph{Multi-turn drift.}
+\citet{dongre2025drift} formalize turn-wise divergence in multi-turn interaction.
+We adopt the idea of summarizing a run by cumulative deficit below a floor
+(Section~\ref{sec:eval}); we do not claim to reproduce their methodology.
+
+\paragraph{Where \sys{} sits.}
+Relative to observability, \sys{} adds actuation. Relative to steering and
+prompting, it adds a declared setpoint, sensing, and a verifiable record.
+Relative to governance, it adds continuous correction. Removing any one leg
+collapses it into an existing category: without actuation it is an observability
+tool, without sensing a guardrail, without the contract a steering library.
+
+\section{Design}
+\label{sec:design}
+
+\subsection{Open Behavioral Contracts}
+\label{sec:obc}
+
+An \obc{} is a TOML document with sections for identity (persona, boundaries),
+\emph{invariants}, \emph{phases}, \emph{triggers}, a \emph{recovery} ladder, and a
+signal table that binds abstract signal names to tier-specific artifacts. Each
+invariant names a \emph{measure} whose prefix types its honesty:
+\code{structural:} (deterministic check), \code{probe:} (linear probe on the
+residual stream, open weights only), \code{external:} (webhook or registered
+callable), or \code{judge:} (LLM-as-judge, explicitly tagged stochastic). An
+invariant carries either a soft \code{floor} that contributes to drift or
+\code{hard = true}, meaning it is enforced and never advisory.
+
+A contract is content-addressed: $\text{hash}(c)=\mathrm{sha256}(\mathrm{canon}(c))$
+where $\mathrm{canon}$ sorts keys, rounds floats to nine significant digits, and
+emits UTF-8 JSON without insignificant whitespace. The same contract therefore
+hashes identically across languages and TOML libraries; the hash is the
+deployment identity (the proxy is activated by presenting it in a request
+header).
+
+\subsection{Enforcement tiers and the capability resolver}
+\label{sec:compiler}
+
+\begin{table}[t]
+\centering
+\caption{Enforcement tiers. Higher fidelity requires more access to the model.}
+\label{tab:tiers}
+\begin{tabular}{@{}llll@{}}
+\toprule
+Tier & Channel & Requires & Nature \\
+\midrule
+T0 & Activation steering & open weights & soft, statistical \\
+T1 & Constrained decoding & local decoding control & hard (structural) \\
+T2 & Scheduled re-anchoring & prompt access (closed APIs) & soft, text-level \\
+T3 & Structural validation & output access (universal) & hard (detect/retry) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Each target model has a static \emph{capability descriptor} listing the tiers it
+supports (e.g.\ closed APIs: T2, T3; vLLM and HF Transformers: T0--T3; llama.cpp:
+T1--T3). The resolver selects the strongest supported tier that is at least as
+strong as the contract's \code{enforcement\_floor}. If none exists it raises an
+error: \emph{the runtime refuses to run rather than silently degrading
+enforcement.} Unknown providers are assumed to be closed-API-equivalent (T2/T3).
+The compiler then emits tier artifacts: T2 prompt fragments and a re-anchor plan,
+T3 validators, probe specifications, a trigger table, and a recovery plan.
+
+\subsection{The gain grid (open-weight tier)}
+\label{sec:grid}
+
+At T0, steering strength is a \emph{total} scalar field $G[\ell,t]$ over the
+(layer $\times$ step) lattice: every coordinate is defined, unset cells are zero.
+Storage is sparse globally and dense locally (fixed-width time frames holding
+dense layer-by-frame tiles). Fields are closed under addition, scalar scaling,
+masking, shifting and cropping, so grids \emph{compose}: a tenant temperament and
+a task schedule combine as $G_3=G_1\oplus\alpha G_2$ and the result is itself a
+hashable artifact. Injection is norm-preserving,
+\[
+ h' = \frac{\lVert h\rVert}{\lVert h+g\,v\rVert}\,(h+g\,v),
+\]
+and a per-layer cap $\Sigma$ on summed absolute gain across signals is enforced
+\emph{mechanically} (columns are scaled down and the correction recorded), not
+advisorily. Steering vectors live in a content-addressed \emph{signal pack}
+referenced by hash only.
+
+\subsection{Sensing and the reconciler}
+\label{sec:reconciler}
+
+Each turn the reconciler: (1) reads every invariant's measure, yielding a value
+or a \emph{gap}; (2) computes drift; (3) runs hard validators; (4) evaluates
+state-predicate triggers; (5) dispatches recovery from the ladder; (6) assembles
+the T2 re-anchor text to inject on the next turn; and (7) appends one behavioral
+state record to the trace.
+
+Drift is the weighted \emph{sum} of soft-floor violations, clipped to $[0,1]$:
+\[
+ d_t=\min\!\Big(1,\ \sum_{i\in\mathcal S} w_i\,\max(0,\,f_i-r_{i,t})\Big),
+\]
+where $f_i$ is the floor, $w_i$ the invariant's drift weight and $r_{i,t}$ its
+reading; invariants without a positive floor and invariants whose reading is a gap
+do not contribute. A sum (rather than a mean) is used so that a healthy invariant
+contributes zero and never dilutes another's violation. The recovery ladder maps
+$d_t$ to an action (\code{re\_anchor}, \code{escalate}, \code{halt}); a hard
+validation failure forces \code{re\_anchor}.
+
+Two engineering rules matter. First, \emph{the data plane never blocks on the
+control plane}: a sensor timeout or failure yields a recorded \emph{sensor gap}
+and the run proceeds. Second, measures are \emph{typed by honesty}: each declares
+whether it is deterministic or stochastic and a latency class, and a judge-based
+measure never silently substitutes for a structural one.
+
+\subsection{The trace: hash-chained, replayable}
+\label{sec:trace}
+
+A trace is a \emph{manifest}---model, contract hash and body, pack hash, seed,
+runtime version---plus an append-only record list. With $\mathrm{chash}$ the
+canonical hash,
+\[
+ \text{head}_0=\mathrm{chash}(\text{manifest}),\qquad
+ \text{head}_i=\mathrm{chash}\big(\{\text{prev}:\text{head}_{i-1},\ \dots\text{event}_i\}\big).
+\]
+Verification recomputes the chain and compares the final head. Editing,
+reordering, inserting or deleting any record changes the head. \emph{Replay
+identity}: the same manifest and the same recorded events yield a bit-identical
+head. The central invariant, enforced by construction, is that run state mutates
+only through the control channel and the channel's only side effect is appending a
+record---there is no side door.
+
+\paragraph{What the chain does and does not give.}
+The chain provides \emph{tamper-evidence relative to a trusted head}. It does not
+provide authenticity: a party with write access to the whole trace can recompute a
+self-consistent chain. Anchoring the head externally (signing, a transparency log,
+or write-once object storage) is required for non-repudiation and is outside the
+current implementation.
+
+\section{Implementation}
+\label{sec:impl}
+
+\rt{} is a Python reference implementation. Packages cover the
+core (canonical encoding, gain field, grid, trace), the \obc{} loader and schema
+validator, the compiler and capability resolver, the four channels, typed
+sensors, the reconciler, and a SQLite content-addressed store with a fleet index
+(runs queryable by contract hash, drift and halt status).
+
+A FastAPI proxy exposes an OpenAI-compatible \code{/v1/chat/completions}
+endpoint (including streaming). It is pass-through by default; presenting a
+contract hash in a request header activates governance. The proxy reassembles
+content and tool-call deltas from the stream, maps a conversation identifier to a
+persistent reconciler and trace so that state carries across calls, injects the
+pending re-anchor on the next turn, and emits one OpenTelemetry span per turn with
+\code{gen\_ai.behavior.*} attributes. Client response bytes are not rewritten. A
+tool-policy layer can additionally allow, or require approval for, named tool
+calls, recording the decision and reason (but not arguments) as a trace event.
+
+The T0 channel registers PyTorch forward hooks on decoder layers; a single forward
+pass is one step, so it composes with \code{generate()}. The T1 channel implements
+logit masking with allowlist and sequence constraints, and names a grammar engine
+\citep{willard2023outlines} as the intended production backend (not installed in
+the reference environment).
+
+\paragraph{Conformance.}
+Because hashes are only useful if independent implementations agree, the
+specification ships golden vectors: ten canonical-encoding vectors, five
+chain-verification vectors (valid, and tampered by edit, reorder and delete), and
+contract-hash vectors. An independent runner that uses only the written
+specification re-derives every hash; the suite currently passes 28 of 28 checks,
+and CI regenerates the vectors from the reference implementation and fails on
+drift between specification and implementation. The runtime test suite (305 tests)
+passes in our environment.
+
+\section{Evaluation}
+\label{sec:eval}
+
+\paragraph{Status.}
+\textbf{All results in this section are simulated.} They come from a deterministic
+mock agent, not a language model. They fix the methodology and exercise the real
+control path end to end; they do not measure real-model behavior, and their
+magnitudes should not be read as expected real-world gains.
+
+\subsection{Setup}
+A coding-agent adherence signal $a_t$ evolves over $T=60$ turns under a
+disturbance: slow, late-growing decay plus irregular scope-creep shocks. Two
+regimes are used: \emph{steady} (continuous decay, regular shocks) and
+\emph{sparse} (mostly healthy, rare large shocks). An intervention restores a
+fixed amount of adherence on the following turn and costs a fixed number of
+tokens; base cost is 180 tokens/turn and each intervention adds 130. Three arms
+share these constants, so only \emph{timing} differs:
+\emph{none}; \emph{naive}, which re-prompts at a fixed cadence; and
+\emph{contract}, which runs the actual \rt{} reconciler and re-anchors only when
+drift crosses the contract threshold. The naive cadence is set to
+$\mathrm{round}(T/n_c)$, where $n_c$ is the contract arm's intervention count,
+matching the number of interventions.
+
+\paragraph{Kill criterion (declared in advance).}
+If naive fixed-cadence re-prompting matches contract-driven re-anchoring at equal
+cost, \sys{} should be scoped to observability and the open-weight tiers, and say
+so.
+
+\subsection{Intervention benchmark}
+
+\begin{table}[t]
+\centering
+\caption{Single draw (seed 7), simulated. Adherence floor $0.85$.}
+\label{tab:t1}
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+Regime & Arm & Mean adherence & \% turns in violation & Tokens \\
+\midrule
+steady & none     & 0.303 & 88\% & 10{,}800 \\
+steady & naive    & 0.819 & 57\% & 11{,}710 \\
+steady & contract & \textbf{0.869} & \textbf{38\%} & 11{,}840 \\
+sparse & none     & 0.483 & 73\% & 10{,}800 \\
+sparse & naive    & 0.802 & 62\% & 11{,}190 \\
+sparse & contract & \textbf{0.913} & \textbf{17\%} & 11{,}320 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:t1} shows one draw. To avoid resting on a single seed we repeat the
+identical protocol over 50 seeds (Table~\ref{tab:sweep}); the sweep script is in
+the repository.
+
+\begin{table}[t]
+\centering
+\caption{50-seed sweep, simulated. $\Delta$ is contract minus naive.}
+\label{tab:sweep}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Regime & Contract adh. & Naive adh. & $\Delta$ mean (sd) & Win rate & $\Delta$ tokens \\
+\midrule
+steady & 0.877 & 0.813 & $+0.064$ ($0.032$) & 100\% & $+130$ \\
+sparse & 0.884 & 0.773 & $+0.112$ ($0.039$) & 100\% & $+130$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+In both regimes the contract arm holds higher adherence, and the gap is larger
+when disturbances are rare and large: a fixed cadence either spends budget
+re-prompting a healthy agent or misses a shock, whereas reactive re-anchoring
+spends only when drift demands it. Note that the contract arm spends 130 more
+tokens per run (one intervention's worth, about $1.1\%$), so ``equal cost'' holds
+to that tolerance, not exactly.
+
+\paragraph{Sensitivity: a poorly tuned contract loses.}
+The result depends on the contract's \code{drift\_threshold}. The benchmark
+contract uses a floor-targeting threshold of $0.05$. With the default
+coding-agent threshold of $0.27$ the reconciler re-anchors only near catastrophe,
+and fixed-cadence re-prompting holds the floor better. The value is therefore in
+\emph{reactive timing}, and threshold selection is a first-class part of
+authoring a contract. This also means the headline comparison involves a
+benchmark-specific tuning choice that favors the contract arm.
+
+\subsection{Drift benchmark}
+Following the idea of summarizing a run by deficit below the floor, we report
+area-under-drift (cumulative floor deficit), peak drift, and turns in violation
+(Table~\ref{tab:drift}, seed 7). The governed trace verifies in both regimes, so
+every recovery is recorded and replayable.
+
+\begin{table}[t]
+\centering
+\caption{Governed vs.\ ungoverned, simulated, seed 7.}
+\label{tab:drift}
+\begin{tabular}{@{}llrrrr@{}}
+\toprule
+Regime & Arm & Area-under-drift & Peak drift & Turns in violation & Recovery (turns) \\
+\midrule
+steady & ungoverned & 33.19 & 0.85 & 53 & never \\
+steady & governed   & 1.19  & 0.18 & 23 & 1 \\
+sparse & ungoverned & 23.13 & 0.81 & 44 & never \\
+sparse & governed   & 0.86  & 0.26 & 10 & 4 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Overhead}
+In-process, against a mock upstream, governance adds about $0.25$\,ms at the
+median (pass-through $1.64$\,ms, governed $1.89$\,ms; $n=200$), against a design
+gate of $25$\,ms. This excludes network and real-model latency and says nothing
+about judge-sensor cost, which dominates in practice.
+
+\subsection{Integration demonstrations on public data}
+Two reference implementations route a \emph{scripted} agent through the proxy
+using live public data---SEC EDGAR company facts, and the CISA Known Exploited
+Vulnerabilities catalog---and demonstrate action governance: a low-risk tool call
+(\code{crm.create\_account\_note}, \code{siem.create\_case}) is allowed and
+recorded, while a consequential one (\code{erp.update\_vendor\_risk},
+\code{edr.isolate\_host}) is blocked as approval-required. The run trace verifies
+and contains the state and tool-policy events. Because the agents are scripted,
+these demonstrate integration mechanics and auditability, \emph{not} model
+quality.
+
+\section{Limitations and threats to validity}
+\label{sec:limits}
+
+\begin{itemize}[nosep,leftmargin=*]
+\item \textbf{The evaluation is simulated and favorable by construction.} The
+  restore model is idealized (an intervention restores a fixed amount of
+  adherence), the disturbance is synthetic, and the adherence signal is observed
+  without noise. Real models may respond to re-anchoring non-monotonically, and
+  real judge sensors are noisy and costly. The \emph{shape} of the result is
+  plausible; its magnitude is not evidence.
+\item \textbf{Tuning asymmetry.} The contract arm uses a threshold chosen to hold
+  the benchmark floor, while the naive arm's only free parameter is cadence. A
+  different tuning could reverse the outcome, as the sensitivity analysis shows.
+\item \textbf{No capability-retention results.} Whether T0 steering at deployed
+  gains preserves benchmark capability (e.g.\ MMLU, GSM8K) is unmeasured. The pack
+  evaluation cards have empty slots for these numbers and the real-model gate is
+  not implemented. We make no retention claim.
+\item \textbf{Statistical, not guaranteed.} Soft floors are reconciled
+  statistically; only hard invariants at T1/T3 are mechanical.
+\item \textbf{T2 is text-level.} On closed APIs, enforcement is prompt injection
+  and post-hoc validation, with the corresponding limits.
+\item \textbf{Trace authenticity.} See Section~\ref{sec:trace}: the chain is
+  tamper-evident only against a trusted head.
+\item \textbf{Sensor fidelity.} Drift is only as good as the measures behind it;
+  stochastic judge measures add variance, and sensor gaps are recorded, not
+  repaired.
+\item \textbf{Single reference implementation.} Conformance vectors cover
+  canonical encoding, chain verification and contract hashing, but a second
+  independent runtime has not been built.
+\end{itemize}
+
+\section{Conclusion and future work}
+\label{sec:conclusion}
+
+\sys{} frames reliable agent behavior as a control problem: declare it, enforce it
+at the strongest available tier, sense it, reconcile, and keep a record that can
+be verified and replayed. The contract format, the refuse-to-degrade compiler and
+the single-write-path trace are the parts we consider durable; the quantitative
+claim is, for now, a simulated methodology preview.
+
+The decisive next step is to replace Section~\ref{sec:eval} with real-model
+results: the intervention benchmark on a closed and an open model at matched token
+budgets, and the capability-retention ladder on an open-weight model. Per our
+kill criterion these will be reported regardless of outcome. Further work includes
+externally anchored (signed) trace heads, a second independent runtime, a
+learned re-anchor schedule evaluated against constant baselines, and a
+standardized \code{gen\_ai.behavior.*} attribute set for telemetry.
+
+\section*{Reproducibility}
+The specification, reference implementation, conformance vectors and benchmark
+scripts are in the \sys{} repository. From the repository root:
+\code{make bench} (single-seed tables), \code{python benchmarks/seed\_sweep.py}
+(50-seed sweep), \code{python spec/conformance/run\_conformance.py}
+(28 checks), and \code{python scripts/bench\_proxy.py} (overhead).
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}
