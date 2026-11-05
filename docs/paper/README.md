@@ -26,16 +26,16 @@ generated `main.bbl`), and no other files — there are no figures.
 
 ## References
 
-All ten entries in `references.bib` were generated from the arXiv API record for
-each ID, not typed by hand. `docs/blueprint.md` also mentions **LiSeCo** and
-**RE-Control**; an arXiv search did not find them, so they are *not* cited.
-Add them only after locating the actual papers.
+All twelve entries in `references.bib` were generated from the arXiv API record
+for each ID, not typed by hand. LiSeCo (2405.15454) and RE-Control (2406.05954,
+"Aligning LLMs with Representation Editing: A Control Perspective") were located
+by title search and are cited by title/topic only; skim their abstracts before
+submitting to confirm the one-line characterizations in Sections 1-2 are fair.
 
 ## Before submitting
 
-- [ ] Add a `LICENSE` file (pyproject declares Apache-2.0; none is in the repo) and
-      then restore the license statement in Section 4.
-- [ ] Confirm author name/affiliation/email and the arXiv category
+- [x] `LICENSE` (Apache-2.0) added; license statement restored in Section 4.
+- [ ] Confirm affiliation/email and the arXiv category
       (suggest cs.AI primary, cs.SE or cs.CR secondary).
 - [ ] Re-read the claims against `docs/blueprint.md` §0 "Claims to NEVER make".
 - [ ] Decide whether to wait for real-model results (stronger) or submit as a

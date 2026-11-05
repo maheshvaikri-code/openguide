@@ -18,7 +18,7 @@
 
 \title{\textbf{OpenGuide: A Control Plane for LLM Inference Trajectories}\\[2pt]
 \large Declared behavior, tiered enforcement, and a replayable hash-chained record}
-\author{Mahesh Vaikri\\\small\texttt{mahesh.vaikri@gmail.com}}
+\author{Mahesh Vaijainthymala Krishnamoorthy\\\small\texttt{mahesh.vaikri@gmail.com}}
 \date{Draft --- \today}
 
 \begin{document}
@@ -88,8 +88,9 @@ to whatever enforcement the target allows, \emph{sense} behavioral state,
 We deliberately avoid several claims. \sys{} \emph{biases} trajectories
 statistically; it does not guarantee behavior (only hard structural invariants at
 the decoding and validation tiers are mechanically enforced). We do not claim a
-novel control-theoretic framing of steering---feedback-controller formulations of
-activation steering exist \citep{nguyen2025pidsteer}---nor the first time-varying
+novel control-theoretic framing of steering---control-theoretic treatments of
+steering and representation editing exist
+\citep{nguyen2025pidsteer,cheng2024liseco,kong2024recontrol}---nor the first time-varying
 steering \citep{scalena2024dac}. Our contribution is systems-level: persistence,
 addressability, cross-tier compilation, and verifiable replay of the control
 record. Our quantitative results are from a simulator (Section~\ref{sec:eval}).
@@ -122,7 +123,10 @@ representation-engineering view of reading and controlling internal state
 when a detector fires \citep{lee2024cast}; dynamic activation composition varies
 steering strength across generation steps \citep{scalena2024dac}; and a
 feedback-controller formulation treats steering as closed-loop control over
-activations \citep{nguyen2025pidsteer}. Selective Steering studies norm-preserving
+activations \citep{nguyen2025pidsteer}. Linear semantic control
+\citep{cheng2024liseco} and a control-perspective treatment of representation
+editing \citep{kong2024recontrol} similarly bring control theory to generation.
+Selective Steering studies norm-preserving
 control with discriminative layer selection \citep{dang2026selective}. \sys{} uses
 norm-preserving injection of this kind at its open-weight tier, but its focus is
 different: it is the \emph{surrounding system}---contract, compiler, state,
@@ -267,7 +271,7 @@ current implementation.
 \section{Implementation}
 \label{sec:impl}
 
-\rt{} is a Python reference implementation. Packages cover the
+\rt{} is a Python reference implementation released under the Apache-2.0 license. Packages cover the
 core (canonical encoding, gain field, grid, trace), the \obc{} loader and schema
 validator, the compiler and capability resolver, the four channels, typed
 sensors, the reconciler, and a SQLite content-addressed store with a fleet index
