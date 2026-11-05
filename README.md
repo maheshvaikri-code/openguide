@@ -1,169 +1,178 @@
 # OpenGuide
 
-**A control plane for LLM inference trajectories — the last unmanaged layer of the AI stack.**
+**A behavioral control plane for AI agents.**
 
-The AI stack has seven data-plane layers and zero control plane. OpenGuide is
-the control plane: the reconciliation loop between the *declared* behavior of an
-agent and its *actual* behavior, running for the entire life of every trajectory.
+OpenGuide explores how teams can define expected agent behavior, monitor it over
+time, and record the resulting decisions. Its reference runtime, **GuidanceGrid**,
+compiles behavioral contracts for different model capabilities. An
+OpenAI-compatible proxy brings these controls to chat-based workflows.
 
-A behavioral contract (**OBC**) declares invariants, phases, triggers, and
-recovery. The runtime compiles it to the strongest enforcement channel each
-model allows — activation steering on open weights → constrained decoding →
-scheduled re-anchoring on closed APIs — measures behavioral state every turn
-through typed sensors, reconciles drift against setpoints, and records
-everything in a hash-chained, replayable trace. **One contract, any model,
-provable behavior.**
+[Get started](#get-started) | [How it works](#how-it-works) | [Corporate demos](#corporate-demos) | [Evidence and roadmap](#evidence-and-roadmap) | [Documentation](#documentation)
 
-## What's here
+> **Project status:** Research and reference implementation, not a complete
+> enterprise security gateway. Benchmarks are simulated, and the corporate
+> demos use real public data with scripted agents and simulated tool calls.
 
-| Path | What |
-|------|------|
-| [`spec/`](spec/) | The standard — published first. OBC, behavioral state, trace, conformance vectors. |
-| [`spec/obc/`](spec/obc/) | OBC v0.1 JSON Schema + 3 worked contracts |
-| [`spec/state/`](spec/state/) | Behavioral State schema + `gen_ai.behavior.*` OTel mapping |
-| [`spec/trace/`](spec/trace/) | Trace format: canonical encoding, chain construction, verification, replay |
-| [`spec/conformance/`](spec/conformance/) | Golden vectors + an independent runner (the Phase 0 gate) |
-| [`guidancegrid/`](guidancegrid/) | Reference runtime (numpy-only): `core/` `obc/` `compiler/` `sensors/` `channels/` `controller/` `store/` `tune/`. |
-| [`proxy/`](proxy/) | The wedge — an OpenAI-compatible FastAPI proxy with header-activated governance. |
-| [`integrations/`](integrations/) | OpenAI SDK drop-in, LiteLLM callback, LangGraph middleware. |
-| [`examples/`](examples/) | Quickstarts, case studies, the simulated killer demo, and real-data SEC EDGAR + CISA KEV corporate reference demos. |
-| [`deploy/compose/`](deploy/compose/) | `docker compose up` → proxy + Jaeger + persisted sqlite store. |
-| [`tests/`](tests/) | Test suite (core invariants, OBC, conformance, runtime gate, proxy). |
-| [`docs/`](docs/) | Blueprint, positioning, architecture diagrams, replay-console prototype. |
-| [`archive/`](archive/) | The original v0.1.0 reference drop, kept for provenance. |
+## Why OpenGuide?
 
-For enterprise positioning and adoption detail:
+AI agents increasingly make decisions across long workflows and propose actions
+in business systems. Teams need to understand whether an agent is staying within
+its intended boundaries, what happened when it drifted, and which actions were
+allowed or blocked.
 
-- [`docs/enterprise-capabilities.md`](docs/enterprise-capabilities.md) explains capabilities, usage, adoption readiness, and enterprise value.
-- [`docs/enterprise-governance-layer.md`](docs/enterprise-governance-layer.md) frames OpenGuide as the governance layer between autonomous agents and real corporate action.
+OpenGuide combines three ideas in one project:
 
-Local compose storage note: the current reference compose stack uses a persisted
-sqlite volume for the fleet index and CAS. Postgres remains a roadmap item for
-self-hosted enterprise deployments.
+- **Behavior as a contract:** Declare invariants, phases, triggers, and recovery
+  actions in an Open Behavioral Contract (OBC).
+- **A feedback loop:** Measure behavioral signals, detect drift, and generate
+  a re-anchor or other recovery decision as the workflow progresses.
+- **Reviewable evidence:** Record runtime state and supported tool-policy
+  decisions in a hash-chained trace that can be verified and inspected.
 
-Real-data corporate reference demos:
+For AI platform, security, and risk teams, the opportunity is to connect
+behavioral observability with runtime control. For developers, the repository
+provides an executable runtime, a proxy, contracts, examples, and test fixtures
+to explore that approach.
 
-- Run `make corporate-demo` to fetch public SEC EDGAR companyfacts for
-  AAPL/MSFT, route a corporate finance agent through the proxy, allow a CRM
-  note, block an ERP risk update that requires approval, and verify the trace.
-- Run `make cyber-demo` to fetch CISA Known Exploited Vulnerabilities data,
-  route a security operations agent through the proxy, allow a SIEM case,
-  block production host isolation that requires approval, and verify the trace.
+## How it works
 
-## Layout
-
-```
-OpenGuide/
-├── guidancegrid/        # the importable runtime package (no double-nesting)
-│   ├── core/  obc/  compiler/  sensors/  channels/  controller/  store/  tune/
-├── proxy/               # OpenAI-compatible governance proxy (FastAPI)
-├── integrations/        # openai-sdk / litellm / langgraph
-├── tests/               # pytest suite
-├── spec/                # the standard (obc, state, trace, conformance)
-├── docs/                # blueprint + design docs + diagrams
-├── deploy/  packs/      # compose stack; SignalPack registry (later phases)
-├── archive/             # original v0.1.0 reference
-├── pyproject.toml  conftest.py  README.md
+```text
+  Agent / application
+          |
+          v
+  OpenGuide proxy <---- OBC contract + sensors + tool-name policy
+          |
+          +-----------> Behavioral state, telemetry, and trace
+          |
+          v
+  Model provider -----> Proposed response / tool call
+          |
+          v
+  Application or tool gateway -----> Corporate systems
 ```
 
-## Names
+1. Register or load an OBC contract describing expected behavior.
+2. Send a request to the proxy with `X-OpenGuide-Contract` and, for continuity,
+   `X-OpenGuide-Session`.
+3. The runtime measures the response, records behavioral state, and can prepare
+   re-anchoring text for a later turn.
+4. For governed requests, an optional proxy policy can allow or deny supported
+   model-proposed tool calls by name. Decisions are recorded in the trace.
 
-- **OpenGuide** — the open standard / project umbrella
-- **OBC (Open Behavioral Contract)** — the contract file format
-- **GuidanceGrid** — the reference runtime
-- **Console** — the dashboard product surface (Phase 3)
+The application or a separate tool gateway remains responsible for executing
+and authorizing actions against corporate systems. Governance is opt-in: requests
+without a contract header pass through the proxy without these controls. The
+proxy does not enforce actions that bypass it. See [enterprise governance](docs/enterprise-governance-layer.md)
+for the trust boundary and outstanding work.
 
-## The differentiators
+## Get started
 
-1. **Per-token hash-chained control-signal trace** — tamper-evident, replay-identical.
-2. **The `(layer × step)` grid** as a persisted, addressable, composable, learnable artifact.
-3. **Behavior as a content-addressed, versioned, eval-scored deployment artifact.**
-4. **One contract compiling across the open/closed model divide** (tiered fidelity).
+**Prerequisites:** Python 3.10 or later. The proxy quickstart uses FastAPI and
+HTTPX; the development extra also installs the test and lint tools.
 
-## Prior art, honestly
-
-OpenGuide does **not** guarantee behavior — it biases trajectories
-statistically. Control-theoretic steering is established work: **PID Steering**,
-**LiSeCo**, and **RE-Control** occupy the closed-loop-control framing, and
-**Dynamic Activation Composition** already does time-varying steering — we cite
-them, we don't claim to have invented them. The honest delta is **persistence,
-addressability, composition, replay, and universality**: the grid as a saved
-artifact you can hash, diff, compose, learn, and replay across any model.
-Soft floors are reconciled statistically; only `hard` invariants on tier 1/3
-are mechanically enforced. Toy results are labeled toy.
-
-## Quickstart (reference runtime)
+From the repository root:
 
 ```bash
-python -m pytest          # from repo root: 18 core invariants + OBC + conformance
+python -m pip install -e ".[dev,obc]"
+python examples/quickstart-proxy/run.py
 ```
+
+The offline quickstart uses a mock upstream and scripted sensor readings. It
+prints per-turn drift and recovery decisions, followed by a trace verification
+result. It requires no API key or GPU.
+
+Run the tests and conformance checks:
+
+```bash
+python -m pytest
+python -m ruff check .
+python spec/conformance/run_conformance.py
+```
+
+For a locally hosted proxy and Jaeger, see the
+[Docker Compose guide](deploy/compose/README.md). Its SQLite volume persists
+the fleet index and content-addressed trace snapshots; PostgreSQL is not yet a
+supported proxy backend.
+
+### Use a contract
+
+Contracts are TOML files with a reproducible content hash:
 
 ```python
-from guidancegrid.obc import load_contract, validate_contract, contract_hash
-c = validate_contract(load_contract("spec/obc/examples/coding-agent-default.toml"))
-print(contract_hash(c))   # sha256:026d89e9...
+from guidancegrid.obc import contract_hash, load_contract, validate_contract
+
+contract = load_contract("spec/obc/examples/coding-agent-default.toml")
+validate_contract(contract)
+print(contract_hash(contract))
 ```
 
-Verify the spec is self-sufficient (independent of the runtime):
+Explore the [contract specification](spec/obc/) and its
+[examples](spec/obc/examples/) for the available fields.
 
-```bash
-python spec/conformance/generate.py        # emit golden vectors from the ref impl
-python spec/conformance/run_conformance.py # re-derive them from the spec rules alone
-```
+## Corporate demos
 
-## Status
+These reference scenarios use public internet data and a scripted agent. They
+do not connect to a real CRM, ERP, SIEM, or EDR system.
 
-**Phase 0 — Spec Core: complete.** OBC schema + 3 contracts, behavioral state +
-OTel mapping, trace format spec, golden conformance vectors, and an independent
-runner that verifies a reference-runtime trace using the spec docs alone.
+| Scenario | Live data source | Scripted action decisions | Run |
+| --- | --- | --- | --- |
+| Finance and risk | SEC EDGAR company facts | Allow a CRM note; deny an ERP risk update as approval-required | `python examples/corporate-edgar/run.py --refresh` |
+| Security operations | CISA Known Exploited Vulnerabilities catalog | Allow a SIEM case; deny host isolation as approval-required | `python examples/cyber-kev/run.py --refresh` |
 
-**Phase 1 — Universal Runtime: complete.** OBC→tier compiler (capability
-resolver), T2 re-anchor + T3 validator channels, typed sensors, the per-turn
-reconciler (drift + recovery, single write path through the trace), and a
-sqlite CAS + fleet index. Gate: a 50-turn mock agent drifts at turn 30, the
-reconciler re-anchors, drift recovers, the trace verifies, and replay is
-bit-identical — while an ungoverned counterfactual runs to the halt threshold.
+Both demos require the development dependencies above and internet access for a
+fresh data fetch. Set `SEC_USER_AGENT` to an identifying organization and
+contact when using the SEC demo. They can also be run through `make
+corporate-demo` and `make cyber-demo` where Make is available.
 
-**Phase 2 — The Proxy Wedge: complete.** An OpenAI-compatible FastAPI proxy;
-`X-OpenGuide-Contract: <hash>` activates governance with zero app changes
-(pass-through by default). Streaming SSE with tool-call delta reassembly,
-session continuity that feeds the re-anchor forward across calls, and
-`gen_ai.behavior.*` spans. Optional tool-call authorization gates can allow,
-deny, or require approval for configured tool names before the tool call is
-exposed to the client, with the decision recorded in the trace. `docker compose
-up` → point any OpenAI SDK at it → behavioral state in Jaeger. Governance
-overhead ≈ 0.4 ms p50.
+The `approval_required` outcome is currently a **deny reason**, not an
+implemented human approval queue or a mechanism to resume an approved action.
+The demos show policy and trace mechanics, not model quality or production
+security outcomes.
 
-**Phase 4 — Signal Tier (T0/T1): complete (steering core; real-model evals
-pending weights).** Real PyTorch forward-hook activation steering
-([`channels/t0_activation.py`](guidancegrid/channels/t0_activation.py)) with
-norm-preserving injection, the mechanical Σ-cap, and replay-identical traces;
-linear-probe sensors on the residual stream; safetensors SignalPacks + a build
-script; and dependency-light constrained decoding for T1
-([`channels/t1_decoding.py`](guidancegrid/channels/t1_decoding.py)). The T0
-loop is proven on a tiny synthetic model in CI; the Qwen2.5-7B adherence/MMLU
-gate is a runnable, honestly-labeled harness
-([`scripts/qwen_t0_gate.py`](scripts/qwen_t0_gate.py)) that needs weights + a
-GPU. **Capability-retention numbers are not claimed until that gate runs on
-real weights** — see [`packs/README.md`](packs/README.md).
+## Capabilities and boundaries
 
-**Phase 5 — Benchmarks, Demo, Case Studies: complete (simulated).** The
-intervention benchmark ([`benchmarks/t1_bench.py`](benchmarks/t1_bench.py): T2
-contract re-anchor vs naive re-prompt vs none at matched token budget), the
-drift benchmark, a synthetic fleet generator, the one-command killer demo
-(`make demo` — baseline visibly drifts, governed holds, replay scrubs to the
-re-anchor), and the multi-tenant + injection-detection case studies. All run
-offline; results are **simulated** and clearly labeled — real closed/open-model
-numbers require keys/weights and replace them
-([`benchmarks/REPORT.md`](benchmarks/REPORT.md)). The repo also includes
-real-data corporate reference demos over SEC EDGAR companyfacts
-([`examples/corporate-edgar/`](examples/corporate-edgar/)) and CISA KEV
-([`examples/cyber-kev/`](examples/cyber-kev/)) to show action governance on
-public corporate data. 158 tests total.
+| Area | Available in this repository | Important boundary |
+| --- | --- | --- |
+| Contracts and runtime | OBC validation, capability resolution, sensors, drift reconciliation, and recovery decisions | Sensor coverage and recovery effectiveness depend on the deployment and measures supplied. |
+| Proxy | OpenAI-compatible chat-completions proxy with opt-in governance and streaming support | Not every provider or response shape is covered; validate integrations before use. |
+| Tool policy | Name-pattern allowlist, denylist, and approval-required denial for supported governed responses | No identity-aware or argument-aware authorization, real approval flow, or enforcement at the corporate tool itself. Policy-enabled streaming is buffered. |
+| Trace and telemetry | Hash-chained records, verification, SQLite-backed snapshots, and OpenTelemetry integration | A valid hash chain does not prove source data is correct or provide immutable, signed, independently anchored storage. |
+| Access and privacy | Optional admin token and metadata-only trace response | Enterprise identity, RBAC, tenant isolation, redaction, retention, and production secrets management remain open work. |
+| Model control | Reference T2/T3 paths and T0/T1 steering components | Tier fidelity varies by model and integration; real-model capability-retention evaluations remain outstanding. |
 
-Next: **Phase 3 — Console** (the dashboard, Next.js). See
-[`docs/blueprint.md`](docs/blueprint.md) for the full phase plan.
+OpenGuide does not guarantee model behavior or compliance. Deployment requires
+security review, independently enforced tool permissions, and testing against
+the intended models and workflows.
+
+## Evidence and roadmap
+
+The project has a working contract/runtime/proxy foundation, conformance
+vectors, offline tests, and two public-data corporate reference scenarios.
+The [benchmark report](benchmarks/REPORT.md) describes simulated comparisons
+and their limitations. Results from real enterprise workloads and real-model
+capability-retention tests are still needed.
+
+The next milestones for enterprise evaluation include authenticated identities
+and tenant isolation, policy approval workflows, production storage, a tool
+gateway, privacy and retention controls, immutable or externally anchored
+evidence, and realistic model and workflow evaluations. These are goals, not
+claims of completed product functionality. See the
+[enterprise capabilities assessment](docs/enterprise-capabilities.md) and
+[governance roadmap](docs/enterprise-governance-layer.md).
+
+## Documentation
+
+| Path | Contents |
+| --- | --- |
+| [spec/](spec/) | Behavioral contract, state and trace specifications, examples, and conformance vectors. |
+| [guidancegrid/](guidancegrid/) | Reference runtime, compiler, sensors, control channels, and SQLite store. |
+| [proxy/](proxy/) | OpenAI-compatible proxy and tool-name policy. |
+| [integrations/](integrations/) | OpenAI SDK, LiteLLM, and LangGraph integration examples. |
+| [examples/](examples/) | Offline quickstart, simulated scenarios, and corporate reference demos. |
+| [benchmarks/REPORT.md](benchmarks/REPORT.md) | Simulated results, methodology, and threats to validity. |
+| [docs/blueprint.md](docs/blueprint.md) | Architecture, rationale, and phased project plan. |
+| [packs/README.md](packs/README.md) | Signal packs and pending real-model evaluations. |
 
 ## License
 
-Apache-2.0 throughout. The spec and runtime are never monetized.
+The project declares the Apache License 2.0 in [pyproject.toml](pyproject.toml).
