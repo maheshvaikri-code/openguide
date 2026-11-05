@@ -1,10 +1,10 @@
-# OpenGuide
+
 
 <p align="center">
-  <img src="Logo/OGLogo_BW_transparent.png" alt="OpenGuide logo" width="280">
+  <img src="Logo/OGLogo_BW_transparent.png" alt="OpenGuide logo" width="480">
 </p>
 
-<b> A behavioral control plane for AI agents.</b>
+# A behavioral control plane for AI agents.
 
 [![CI](https://github.com/maheshvaikri-code/openguide/actions/workflows/ci.yml/badge.svg)](https://github.com/maheshvaikri-code/openguide/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)
