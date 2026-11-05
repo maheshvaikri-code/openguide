@@ -142,6 +142,14 @@ def classify_verdict_line(line: str) -> str | None:
     return None
 
 
+def _parse_iso(value: str) -> _dt.datetime:
+    """fromisoformat, tolerant of a trailing 'Z' (rejected before Python 3.11)."""
+    value = value.strip()
+    if value.endswith("Z"):
+        value = value[:-1] + "+00:00"
+    return _dt.datetime.fromisoformat(value)
+
+
 def _release_tags(repo: Path) -> list[str]:
     tags = [t for t in git(repo, "tag", "--list", "v*").splitlines()
             if TAG_RE.match(t)]
@@ -176,10 +184,8 @@ def cmd_gates(repo: Path, out_rel: Path | None) -> int:
     totals = {"commits": 0, "fixes": 0, "adverse": 0, "clearing": 0}
     for prev, cur in zip(tags, tags[1:]):
         spec = f"{prev}..{cur}"
-        t0 = _dt.datetime.fromisoformat(
-            git(repo, "log", "-1", "--format=%cI", prev))
-        t1 = _dt.datetime.fromisoformat(
-            git(repo, "log", "-1", "--format=%cI", cur))
+        t0 = _parse_iso(git(repo, "log", "-1", "--format=%cI", prev))
+        t1 = _parse_iso(git(repo, "log", "-1", "--format=%cI", cur))
         hours = (t1 - t0).total_seconds() / 3600
         commits = int(git(repo, "rev-list", "--count", spec))
         fixes = int(git(repo, "rev-list", "--count",
