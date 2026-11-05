@@ -36,6 +36,20 @@ def test_drift_triggers_reanchor():
     assert out.reanchor_text is not None
 
 
+def test_drift_is_weighted_sum_of_violations():
+    # spec/state: "weighted sum of invariant floor violations, in [0,1]".
+    # adherence: (0.85-0.55)*1.0 = 0.30 ; cesr: (0.80-0.50)*0.5 = 0.15 -> 0.45.
+    # A weighted *mean* would give 0.45/1.5 = 0.30, so this pins sum semantics.
+    out = _setup(0.55).step(0, {"adherence": 0.55, "cesr": 0.5})
+    assert abs(out.drift - 0.45) < 1e-6
+
+
+def test_healthy_invariant_does_not_dilute_a_violation():
+    # cesr is above its floor (contributes 0); adherence violation is 0.30 in full.
+    out = _setup(0.55).step(0, {"adherence": 0.55, "cesr": 0.9})
+    assert abs(out.drift - 0.30) < 1e-6
+
+
 def test_halt_at_severe_drift():
     rc = _setup(0.0)
     out = rc.step(0, {"adherence": 0.0, "cesr": 0.0})

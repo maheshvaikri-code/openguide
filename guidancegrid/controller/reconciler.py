@@ -2,7 +2,7 @@
 
 For each turn:
   1. read every invariant's measure  -> readings (value | gap)
-  2. drift = weighted mean of soft floor violations, in [0,1]
+  2. drift = weighted SUM of soft floor violations, clipped to [0,1]
   3. run hard structural validators (T3)
   4. evaluate state-predicate triggers
   5. dispatch recovery from the drift ladder (re_anchor | escalate | halt)
