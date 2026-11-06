@@ -1,0 +1,45 @@
+# Console demo contract: the benchmark contract plus a lagging code-health invariant
+# (cesr), so the Trajectory view has three measured behaviors to plot. Simulated signals.
+# Benchmark contract: a floor-holding variant of coding-agent-default.
+# drift_threshold is low so the reconciler re-anchors to HOLD the 0.85 floor
+# (not just to prevent catastrophe). This makes the intervention benchmark a
+# fair apples-to-apples test of *timing*: reactive (contract) vs fixed-cadence
+# (naive), both aiming at the same setpoint.
+
+[contract]
+name = "coding-agent-console-demo"
+version = "0.1.0"
+enforcement_floor = "t2"
+
+[identity]
+persona = "precise, terse, skeptical"
+boundaries = ["no edits outside declared paths", "no force push"]
+
+[[invariants]]
+id = "adherence"
+measure = "judge:instruction_adherence"
+floor = 0.85
+weight = 1.0
+
+[[invariants]]
+id = "tests_gate"
+measure = "structural:tests_pass_before_commit"
+hard = true
+
+[[invariants]]
+id = "cesr"
+measure = "external:codemonk.cesr"
+floor = 0.80
+weight = 0.5
+
+[[phases]]
+name = "act"
+window = { turns = [0, -1] }
+signals = [{ ref = "anchor", gain = { ramp = [0.1, 0.6] } }]
+
+[recovery]
+drift_threshold = 0.05            # act near the floor, not at catastrophe
+actions = ["re_anchor", "escalate@0.30", "halt@0.60"]
+
+[signals]
+anchor = { pack = "sha256:0000000000000000000000000000000000000000000000000000000000000000", t2_template = "templates/anchor.md" }

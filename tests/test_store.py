@@ -57,3 +57,15 @@ def test_run_roundtrip_keeps_trace_cas_key():
     s = Store()
     s.put_run(_run("r1", trace_cas_key="sha256:tracebody"))
     assert s.get_run("r1").trace_cas_key == "sha256:tracebody"
+
+
+def test_query_runs_can_require_a_stored_trace_before_the_limit_applies():
+    s = Store()
+    for i in range(10):                                   # many high-drift runs with no trace
+        s.put_run(_run(f"hot{i}", max_drift=0.9))
+    s.put_run(_run("traced", max_drift=0.1, trace_cas_key="sha256:k"))
+    # without the filter, the low-drift traced run is cut off by the limit
+    assert "traced" not in [r.run_id for r in s.query_runs(limit=5)]
+    got = s.query_runs(has_trace=True, limit=5)
+    assert [r.run_id for r in got] == ["traced"]
+    assert len(s.query_runs(has_trace=False, limit=100)) == 10

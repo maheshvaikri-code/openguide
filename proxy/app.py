@@ -16,9 +16,10 @@ from __future__ import annotations
 import secrets
 from typing import Any
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Query, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 
+from . import console_api
 from .governance import ContractNotFound, Governor, ToolPolicyDenied
 from .otel import InMemorySpanEmitter
 from .registry import ContractRegistry
@@ -29,7 +30,8 @@ from .upstream import MockUpstream, Upstream
 
 def create_app(*, registry: ContractRegistry | None = None, upstream: Upstream | None = None,
                sessions: SessionStore | None = None, emitter=None, store=None,
-               admin_token: str | None = None, tool_policy: ToolPolicy | None = None) -> FastAPI:
+               admin_token: str | None = None, tool_policy: ToolPolicy | None = None,
+               packs_dir: str | None = None, console_dir: str | None = None) -> FastAPI:
     app = FastAPI(title="OpenGuide Proxy", version="0.1.0")
 
     registry = registry or ContractRegistry()
@@ -68,15 +70,20 @@ def create_app(*, registry: ContractRegistry | None = None, upstream: Upstream |
     async def healthz() -> dict[str, str]:
         return {"status": "ok"}
 
+    console_api.install(app, registry=registry, store=store, require_admin=require_admin,
+                        packs_dir=packs_dir, auth_required=bool(admin_token))
+    console_api.mount_console(app, console_dir)
+
     @app.post("/v1/openguide/contracts")
     async def register_contract(req: Request):
         denied = require_admin(req)
         if denied is not None:
             return denied
-        body = await req.json()
         try:
-            h = registry.register(body)
-        except Exception as exc:  # validation error
+            h = registry.register(await console_api.read_json(req))
+        except console_api.BodyTooLarge:
+            return console_api.too_large()
+        except Exception as exc:  # malformed JSON or contract validation error
             return JSONResponse({"error": str(exc)}, status_code=422)
         return {"contract_hash": h}
 
@@ -111,14 +118,15 @@ def create_app(*, registry: ContractRegistry | None = None, upstream: Upstream |
 
     @app.get("/v1/openguide/runs")
     async def runs(req: Request, contract: str | None = None, min_drift: float | None = None,
-                   halted: bool | None = None, limit: int = 100):
+                   halted: bool | None = None, has_trace: bool | None = None,
+                   limit: int = Query(100, ge=1, le=10000)):
         denied = require_admin(req)
         if denied is not None:
             return denied
         if store is None:
             return JSONResponse({"error": "no store configured"}, status_code=501)
         rows = store.query_runs(contract_hash=contract, min_drift=min_drift,
-                                halted=halted, limit=limit)
+                                halted=halted, has_trace=has_trace, limit=limit)
         return {"runs": [r.__dict__ for r in rows]}
 
     def trace_payload(t, cas_key: str | None, metadata_only: bool = False) -> dict[str, Any]:
@@ -126,6 +134,7 @@ def create_app(*, registry: ContractRegistry | None = None, upstream: Upstream |
             "manifest": t.manifest,
             "head": t.head,
             "verified": t.verify(),
+            "chain": console_api.chain_report(t),
             "cas_key": cas_key,
         }
         if metadata_only:

@@ -137,8 +137,12 @@ class Store:
         return self._row_to_run(row) if row else None
 
     def query_runs(self, *, contract_hash: str | None = None, min_drift: float | None = None,
-                   halted: bool | None = None, limit: int = 100) -> list[RunRecord]:
+                   halted: bool | None = None, has_trace: bool | None = None,
+                   limit: int = 100) -> list[RunRecord]:
+        """``has_trace`` filters on whether a full trace is stored (applied before ``limit``)."""
         clauses, params = [], []
+        if has_trace is not None:
+            clauses.append("trace_cas_key != ''" if has_trace else "trace_cas_key = ''")
         if contract_hash is not None:
             clauses.append("contract_hash=?")
             params.append(contract_hash)

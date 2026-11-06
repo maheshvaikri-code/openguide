@@ -40,3 +40,18 @@ def test_build_store_rejects_unsupported_dsn():
         assert "only sqlite: DSNs are supported" in str(exc)
     else:  # pragma: no cover
         raise AssertionError("unsupported DSN should fail fast")
+
+
+def test_build_warns_when_the_control_plane_has_no_admin_token(caplog):
+    import logging
+
+    from proxy.server import build
+
+    with caplog.at_level(logging.WARNING, logger="openguide.proxy"):
+        build(ProxyConfig(admin_token=None))
+    assert any("OPENGUIDE_ADMIN_TOKEN" in r.getMessage() for r in caplog.records)
+
+    caplog.clear()
+    with caplog.at_level(logging.WARNING, logger="openguide.proxy"):
+        build(ProxyConfig(admin_token="s3cret"))
+    assert not any("OPENGUIDE_ADMIN_TOKEN" in r.getMessage() for r in caplog.records)

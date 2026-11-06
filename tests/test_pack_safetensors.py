@@ -48,3 +48,20 @@ def test_build_pack_script_synthetic(tmp_path):
     assert card["status"] == "synthetic"
     # eval slots present but unfilled (require a real model)
     assert card["evals"]["mmlu_delta_at_gain"]["0.4"] is None
+
+
+def test_synthetic_pack_is_labelled_synthetic_whatever_the_model_is_called(tmp_path):
+    """A pack built with --synthetic must never claim to be derived from the model, even when
+    it is named after a real one (the documented command is --model qwen2.5-7b)."""
+    import importlib.util
+    import os
+
+    here = os.path.dirname(__file__)
+    spec = importlib.util.spec_from_file_location(
+        "build_pack", os.path.join(here, "..", "packs", "build_pack.py"))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    pack = mod.synthetic_pack("qwen2.5-7b", layers=4, d=8)
+    assert mod.eval_card(pack, "qwen2.5-7b", 4, synthetic=True)["status"] == "synthetic"
+    assert mod.eval_card(pack, "qwen2.5-7b", 4)["status"] == "derived"     # default unchanged

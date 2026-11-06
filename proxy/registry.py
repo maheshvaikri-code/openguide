@@ -45,6 +45,10 @@ class ContractRegistry:
     def get(self, contract_hash_: str) -> dict[str, Any] | None:
         return self._contracts.get(contract_hash_)
 
+    def items(self) -> list[tuple[str, dict[str, Any]]]:
+        """(hash, contract) pairs in registration order."""
+        return list(self._contracts.items())
+
     def compiled(self, contract_hash_: str, model_id: str) -> CompiledContract:
         key = (contract_hash_, model_id)
         if key not in self._compiled:

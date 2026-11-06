@@ -38,7 +38,7 @@ def synthetic_pack(model_id: str, layers: int, d: int, seed: int = 7) -> SignalP
     return pack
 
 
-def eval_card(pack: SignalPack, model_id: str, layers: int) -> dict:
+def eval_card(pack: SignalPack, model_id: str, layers: int, synthetic: bool = False) -> dict:
     return {
         "model_id": model_id,
         "pack_hash": pack.hash(),
@@ -51,7 +51,7 @@ def eval_card(pack: SignalPack, model_id: str, layers: int) -> dict:
             "gsm8k_delta_at_gain": {"0.2": None, "0.4": None, "0.6": None},
             "coherence_ok": None,
         },
-        "status": "synthetic" if "synthetic" in model_id else "derived",
+        "status": "synthetic" if synthetic or "synthetic" in model_id else "derived",
         "note": "MMLU/GSM8K deltas require a real model + GPU; see scripts/qwen_t0_gate.py.",
     }
 
@@ -71,7 +71,7 @@ def main() -> None:
     os.makedirs(args.out, exist_ok=True)
     pack = synthetic_pack(args.model, args.layers, args.dim)
     h = pack.save_safetensors(os.path.join(args.out, "pack.safetensors"))
-    card = eval_card(pack, args.model, args.layers)
+    card = eval_card(pack, args.model, args.layers, synthetic=True)  # only --synthetic is supported
     with open(os.path.join(args.out, "eval_card.json"), "w", encoding="utf-8") as f:
         json.dump(card, f, indent=2)
     print(f"wrote pack {h} for {args.model} -> {args.out}")

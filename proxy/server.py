@@ -8,6 +8,8 @@ in-memory emitter for local inspection at /v1/openguide/spans).
 """
 from __future__ import annotations
 
+import logging
+
 from .app import create_app
 from .config import ProxyConfig
 from .otel import InMemorySpanEmitter
@@ -15,9 +17,17 @@ from .registry import ContractRegistry
 from .tool_policy import ToolPolicy
 from .upstream import HttpxUpstream
 
+log = logging.getLogger("openguide.proxy")
+
 
 def build(config: ProxyConfig | None = None):
     config = config or ProxyConfig.from_env()
+    if not config.admin_token:
+        log.warning(
+            "OPENGUIDE_ADMIN_TOKEN is not set: /v1/openguide/* (traces, contracts, runs) is open to "
+            "anyone who can reach this proxy, and contracts can be registered without credentials. "
+            "Set a token before exposing the proxy beyond localhost."
+        )
     registry = ContractRegistry()
     if config.contracts_dir:
         registry.load_dir(config.contracts_dir)
@@ -36,6 +46,8 @@ def build(config: ProxyConfig | None = None):
         store=store,
         admin_token=config.admin_token,
         tool_policy=tool_policy,
+        packs_dir=config.packs_dir,
+        console_dir=config.console_dir,
     )
 
 

@@ -37,3 +37,11 @@ examples/cyber-kev/.cache/
 
 # doctrine state plane (machine-local only)
 .doctrine-state/local/
+
+# Console (Node)
+console/node_modules/
+console/dist/
+console/*.tsbuildinfo
+.console-demo/
+.playwright-mcp/
+node_modules/

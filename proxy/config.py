@@ -17,6 +17,8 @@ class ProxyConfig:
     tool_denylist: str | None = None
     tool_require_approval: str | None = None
     port: int = 8088
+    packs_dir: str | None = None
+    console_dir: str | None = None
 
     @classmethod
     def from_env(cls) -> "ProxyConfig":
@@ -31,4 +33,6 @@ class ProxyConfig:
             tool_denylist=os.environ.get("OPENGUIDE_TOOL_DENYLIST") or None,
             tool_require_approval=os.environ.get("OPENGUIDE_TOOL_REQUIRE_APPROVAL") or None,
             port=int(os.environ.get("OPENGUIDE_PORT", "8088")),
+            packs_dir=os.environ.get("OPENGUIDE_PACKS_DIR") or None,
+            console_dir=os.environ.get("OPENGUIDE_CONSOLE_DIR") or None,
         )
