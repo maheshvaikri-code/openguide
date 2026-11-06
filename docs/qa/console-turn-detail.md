@@ -1,8 +1,8 @@
 # QA + Security Report: per-turn detail and Fleet explanations (opt-in content capture)
 
 **Reviews:** security review and code review by independent reviewer agents (read-only), then fixes and re-test.
-**Scope:** `TURN` trace record and `OPENGUIDE_CAPTURE_CONTENT` (ADR-002), Console Run replay detail, Fleet guide
-and series view, `benchmarks/real_rebuild.py`.
+**Scope:** `TURN` trace record and `OPENGUIDE_CAPTURE_CONTENT` (ADR-002), Console Run replay detail, Fleet
+explanations (in the selected-run panel) and the optional series view, `benchmarks/real_rebuild.py`.
 
 ## What was asked
 "More details on each turn and what we detected is not seen, and the blocks in Fleet need more information to

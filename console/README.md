@@ -52,10 +52,12 @@ message text appears only if the proxy recorded it: start the proxy with `OPENGU
 **off by default** because the text is the prompts and replies themselves (see `docs/adr/002-opt-in-content-capture.md`).
 Without it the sensor results and drift arithmetic still show.
 
-On the Fleet, a "How to read this page" panel explains the squares, the colour scale and the marks. Runs named
-alike (`arm-a-s0`, `arm-a-s1`, ...) are grouped into series with a one-line summary each; switch between "By
-series" and "All runs". Selecting a run explains in plain words what its peak drift means against its own
-contract's threshold.
+On the Fleet, the squares are laid out as one grid. Click a square and its panel on the right opens three
+collapsible parts: *Why this colour* (what drift is, this run's peak against its own contract's gate, and what
+each mark on the square means, only the marks it actually has), *What was detected in this run* (read from its
+own trace: turns at or above the gate, when the first correction fired, whether drift came back down, and a
+per-rule table of how often each rule was missed) and *Run details*. Runs named alike (`arm-a-s0`, `arm-a-s1`,
+...) can optionally be grouped with "By series", which appears only when the runs form several series.
 
 ## Security
 

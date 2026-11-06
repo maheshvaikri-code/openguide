@@ -185,6 +185,15 @@ ul.key li { display: flex; gap: 12px; align-items: flex-start; }
 .swatch.broken { outline: 2px solid var(--red); outline-offset: 1px; }
 .swatch.fresh { outline: 2px solid var(--cyan); outline-offset: 1px; }
 .squares { display: flex; flex-wrap: wrap; gap: 6px; }
+details.explain { border-top: 1px solid var(--rule); padding-top: 10px; }
+details.explain > summary { cursor: pointer; list-style: none; }
+details.explain > summary::-webkit-details-marker { display: none; }
+details.explain > summary h3 { display: inline; color: var(--strong); font-weight: 600; }
+details.explain > summary h3::before { content: "▸ "; color: var(--muted); }
+details.explain[open] > summary h3::before { content: "▾ "; }
+details.explain > *:not(summary) { margin-top: 10px; }
+.swatch.inline { display: inline-block; vertical-align: -3px; margin: 0 8px 0 0; width: 14px; height: 14px; }
+
 button.sq {
   width: 26px; height: 26px; padding: 0; border: 0; border-radius: 3px; cursor: pointer; position: relative;
 }

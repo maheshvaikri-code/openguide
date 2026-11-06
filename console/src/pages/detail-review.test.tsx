@@ -248,6 +248,8 @@ const showFleet = (a: Api) => render(<ApiProvider api={a}><FleetPage /></ApiProv
 describe("the Fleet's series view", () => {
   it("says the figures cover only the matching runs when a filter is on", async () => {
     showFleet(fleetApi([ARMS]));
+    await screen.findByLabelText("Fleet summary");
+    fireEvent.click(screen.getByRole("radio", { name: "By series" }));                      // the series view is opt-in
     await screen.findByLabelText("Series a");
     expect(screen.queryByText(/Filters are on/)).not.toBeInTheDocument();
     fireEvent.click(screen.getByLabelText("Halted runs only"));
@@ -260,16 +262,18 @@ describe("the Fleet's series view", () => {
     const first = [r("a-s0"), r("a-s1", { verified: false }), r("b-s0"), r("b-s1")];
     showFleet(fleetApi([first, [...first, r("a-s2")]]));
     await act(async () => void (await vi.advanceTimersByTimeAsync(0)));
+    fireEvent.click(screen.getByRole("radio", { name: "By series" }));
     const a = screen.getByLabelText("Series a");
     expect(within(a).getByRole("button", { name: /^a-s1: .*trace chain broken$/ })).toBeInTheDocument();
     await act(async () => void (await vi.advanceTimersByTimeAsync(3000)));                 // a new run arrives
     expect(within(screen.getByLabelText("Series a")).getByRole("button", { name: /^a-s2: .*arrived since you opened this page/ })).toBeInTheDocument();
   });
 
-  it("does not re-decide the layout when live updates change what the runs look like", async () => {
+  it("keeps the layout you chose when live updates change what the runs look like", async () => {
     vi.useFakeTimers();
     showFleet(fleetApi([ARMS, [r("only-1"), r("only-2"), r("only-3")]]));                  // later: no longer several series
     await act(async () => void (await vi.advanceTimersByTimeAsync(0)));
+    fireEvent.click(screen.getByRole("radio", { name: "By series" }));
     expect(screen.getByLabelText("Series a")).toBeInTheDocument();
     await act(async () => void (await vi.advanceTimersByTimeAsync(3000)));
     expect(screen.queryByLabelText("Series a")).not.toBeInTheDocument();                   // the runs really changed...

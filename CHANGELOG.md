@@ -24,8 +24,9 @@ All notable changes to this project are documented here. Format follows
   metadata-only view. See ADR-002 and `spec/trace/README.md`.
 - Console Run replay: per-turn panel (what was said, rule-by-rule results and the drift arithmetic, the
   contract's response steps), an "Every turn" list, and a panel of what the contract requires.
-- Console Fleet: a "How to read this page" key, runs grouped into series with summaries, a plain-language
-  explanation of the selected run against its own contract's threshold, richer hover cards.
+- Console Fleet: the grid, legend and side panel layout, with the explanation inside the panel that opens when a
+  square is clicked (why it has its colour, what the marks mean, what was detected in that run from its own trace,
+  run details). Grouping runs into series is an optional "By series" view; richer hover cards.
 - `benchmarks/real_rebuild.py`: rebuild saved real-model runs with message text, refusing to write unless every
   turn reproduces the recording exactly.
 
