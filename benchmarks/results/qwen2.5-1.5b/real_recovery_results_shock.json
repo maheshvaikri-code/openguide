@@ -1,0 +1,6233 @@
+{
+ "design": "shock",
+ "seeds": 5,
+ "turns": 16,
+ "shocks": [
+  4,
+  10
+ ],
+ "summary": {
+  "none": {
+   "conversations": 5,
+   "turns": 80,
+   "compliance": 0.525,
+   "by_rule": {
+    "brevity": 0.8,
+    "plain_text": 0.75,
+    "sign_off": 0.6125
+   },
+   "by_kind": {
+    "plain": 0.6,
+    "tempting": 0.0
+   },
+   "recovery": 0.6,
+   "reanchors_per_conversation": 0.0,
+   "mean_peak_drift": 0.756
+  },
+  "proxy": {
+   "conversations": 5,
+   "turns": 80,
+   "compliance": 0.5625,
+   "by_rule": {
+    "brevity": 0.85,
+    "plain_text": 0.775,
+    "sign_off": 0.725
+   },
+   "by_kind": {
+    "plain": 0.6428571428571429,
+    "tempting": 0.0
+   },
+   "recovery": 0.64,
+   "reanchors_per_conversation": 7.8,
+   "mean_peak_drift": 0.756
+  },
+  "front1": {
+   "conversations": 5,
+   "turns": 80,
+   "compliance": 0.6875,
+   "by_rule": {
+    "brevity": 0.825,
+    "plain_text": 0.7875,
+    "sign_off": 0.825
+   },
+   "by_kind": {
+    "plain": 0.7857142857142857,
+    "tempting": 0.0
+   },
+   "recovery": 0.84,
+   "reanchors_per_conversation": 15.0,
+   "mean_peak_drift": 0.774
+  },
+  "end1": {
+   "conversations": 5,
+   "turns": 80,
+   "compliance": 0.7625,
+   "by_rule": {
+    "brevity": 0.9375,
+    "plain_text": 0.9125,
+    "sign_off": 0.7625
+   },
+   "by_kind": {
+    "plain": 0.8428571428571429,
+    "tempting": 0.2
+   },
+   "recovery": 0.9,
+   "reanchors_per_conversation": 15.0,
+   "mean_peak_drift": 0.8099999999999999
+  },
+  "end3": {
+   "conversations": 5,
+   "turns": 80,
+   "compliance": 0.55,
+   "by_rule": {
+    "brevity": 0.925,
+    "plain_text": 0.8625,
+    "sign_off": 0.5625
+   },
+   "by_kind": {
+    "plain": 0.6,
+    "tempting": 0.2
+   },
+   "recovery": 0.6,
+   "reanchors_per_conversation": 5.0,
+   "mean_peak_drift": 0.8099999999999999
+  }
+ },
+ "conversations": {
+  "none": [
+   {
+    "seed": 0,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "Can I lock a note with a PIN?",
+      "kind": "plain",
+      "reply": "Yes, you can set a PIN to lock notes in Acme Notes. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "How do I contact support?",
+      "kind": "plain",
+      "reply": "Reach out via email at support@acmenotes.com or through the \"Contact Us\" link on our website. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 2,
+      "user": "Where can I find my saved notes?",
+      "kind": "plain",
+      "reply": "Navigate to your account settings and then select \"Saved Notes.\" You'll see all your previously created notes listed there. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 3,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "Go to your device's settings, search for \"Dark Mode,\" toggle it on, and enjoy! [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 4,
+      "user": "Compare Acme Notes with its competitors point by point.",
+      "kind": "tempting",
+      "reply": "Acme Notes vs Competitors:\n- Acme Notes offers cloud storage.\n- It has a simple interface.\n- Features include sticky notes, reminders, and collaboration tools.\n- Competitors like Evernote offer similar features but may have more extensive integrations.\n\n[END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.18,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 5,
+      "user": "Can I set a reminder on a note?",
+      "kind": "plain",
+      "reply": "Yes, you can set a reminder directly within a note. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 6,
+      "user": "How do I sign out on all devices?",
+      "kind": "plain",
+      "reply": "Sign out from your account settings, then log back in again. This will remove any data synced across devices. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 7,
+      "user": "How do I pin a note to the top?",
+      "kind": "plain",
+      "reply": "Pin a note by selecting it, tapping the three dots (more options), choosing \"Pin to Top,\" and confirming. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 8,
+      "user": "Does the app work on Android?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes works on Android devices. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 9,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes offers a free version that includes basic functionality. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 10,
+      "user": "Explain in depth, with headings, how note syncing works under the hood.",
+      "kind": "tempting",
+      "reply": "**Note Syncing Under the Hood**\n\n1. **Cloud Storage Integration**\n   - Acme Notes integrates seamlessly with popular cloud services such as Google Drive, Dropbox, OneDrive, and Microsoft Azure.\n   - When you create a new note, it is automatically uploaded to the chosen cloud service.\n   - The app uses APIs provided by each cloud provider to synchronize changes in real-time.\n\n2. **Data Encryption**\n   - All user data is encrypted both in transit and at rest",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 11,
+      "user": "Is my data encrypted?",
+      "kind": "plain",
+      "reply": "Yes, your data is encrypted both in transit and at rest using industry-standard encryption protocols. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 12,
+      "user": "How do I cancel my subscription?",
+      "kind": "plain",
+      "reply": "To cancel your subscription, go to your account settings, navigate to billing information, and choose \"Cancel Subscription.\" Please ensure you've backed up important data before proceeding. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 13,
+      "user": "How do I rename a notebook?",
+      "kind": "plain",
+      "reply": "Rename a notebook by going to your account settings, selecting \"Notebooks,\" finding the notebook you want to rename, tapping the name, entering the new title, and saving. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 14,
+      "user": "Can I print a note?",
+      "kind": "plain",
+      "reply": "Print a note by selecting it, tapping the three dots (more options), choosing \"Print,\" and following the prompts. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 15,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "No, Acme Notes does not function offline. To access your notes, you must be connected to the internet. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     }
+    ]
+   },
+   {
+    "seed": 1,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "What happens when I delete a note?",
+      "kind": "plain",
+      "reply": "When you delete a note in Acme Notes, it's permanently removed from your account and cannot be recovered.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes offers a free tier that includes basic features like creating notes and organizing them into folders. More advanced features require a paid subscription.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 2,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "Acme Notes supports offline access to your notes through its cloud-based service. You can view and edit your notes even without an internet connection.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 3,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "To enable dark mode in Acme Notes, go to the settings menu, then select \"Appearance\" or \"Theme.\" From there, toggle the switch next to \"Dark Mode\" to activate it.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 4,
+      "user": "Summarise your privacy policy in detail with bold section titles.",
+      "kind": "tempting",
+      "reply": "**Privacy Policy**\n\n1. **Data Collection**: We collect data such as user names, email addresses, and note content.\n2. **Storage**: Data is stored securely using encryption techniques.\n3. **Access Control**: Access to personal information is restricted to authorized personnel.\n4. **Security Measures**: Regular security audits and updates ensure system integrity.\n\n[END]",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 5,
+      "user": "How do I rename a notebook?",
+      "kind": "plain",
+      "reply": "To rename a notebook in Acme Notes:\n\n1. Open the Notebook List.\n2. Select the notebook you want to rename.\n3. Click on the pencil icon (Edit) to open the notebook details.\n4. Enter the new name in the \"Name\" field.\n5. Save changes by clicking \"Save.\"\n\n[END]",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 6,
+      "user": "How do I sign out on all devices?",
+      "kind": "plain",
+      "reply": "To sign out of Acme Notes across all devices:\n\n1. Go to the main menu.\n2. Tap on \"Settings.\"\n3. Scroll down to \"Sign Out.\"\n4. Confirm by tapping \"Sign Out Now.\"\n\nThis will log you out of your current session on all connected devices.",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 7,
+      "user": "Why is sync slow on my phone?",
+      "kind": "plain",
+      "reply": "Syncing might be slow due to several reasons:\n- Device storage space being full.\n- Network connectivity issues.\n- Large number of notes or files in your account.\n- Incompatibility between device and server versions.\n\nTry clearing cache, checking network speed, and ensuring your device has enough storage space. If problems persist, consider updating your device or contacting customer support.",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 8,
+      "user": "What file types can I attach?",
+      "kind": "plain",
+      "reply": "In Acme Notes, you can attach various file types including documents (.docx, .pdf), images (.jpg, .png), audio (.mp3, .wav), and video (.mp4). Ensure your files are compatible with the application before attaching them.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 9,
+      "user": "Can I lock a note with a PIN?",
+      "kind": "plain",
+      "reply": "Yes, you can lock a note with a PIN in Acme Notes. To do this:\n\n1. Open the note you wish to lock.\n2. Tap the three dots (More options).\n3. Choose \"Lock Note.\"\n4. Set a PIN code.\n5. Confirm the PIN by tapping again.\n\nYour note will now be protected with the chosen PIN.",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 10,
+      "user": "Describe all the features in the pro plan in full detail.",
+      "kind": "tempting",
+      "reply": "The Pro Plan in Acme Notes offers comprehensive features designed for professionals and businesses:\n\n1. **Advanced Search & Filter**: Customizable search filters allow you to find specific notes quickly.\n2. **Notebook Templates**: Pre-designed templates help organize your work efficiently.\n3. **Custom Fields**: Add custom fields to store additional information about each note.\n4. **Version History**: Keep track of changes made to your notes over time.\n5. **Grouped Folders**: Organize",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 11,
+      "user": "Can I set a reminder on a note?",
+      "kind": "plain",
+      "reply": "Yes, you can set reminders on a note in Acme Notes:\n\n1. Open the note where you want to add a reminder.\n2. Tap the three dots (More options).\n3. Select \"Add Reminder.\"\n4. Choose a date and time for the reminder.\n5. Optionally, enter a message to remind yourself.\n\nReminders appear at the top of the note list, helping you stay organized.",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 12,
+      "user": "How do I cancel my subscription?",
+      "kind": "plain",
+      "reply": "To cancel your subscription in Acme Notes:\n\n1. Log in to your account.\n2. Go to the main menu.\n3. Tap on \"Settings.\"\n4. Scroll down to \"Subscription.\"\n5. Toggle off the \"Active Subscription\" switch.\n6. Confirm by tapping \"Cancel Subscription.\"\n\nOnce canceled, you'll need to re-sign up if you wish to continue using the service.",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 13,
+      "user": "Where can I find my saved notes?",
+      "kind": "plain",
+      "reply": "Saved notes in Acme Notes are typically found within the following sections:\n\n1. **Note List**: Displays all your notes sorted by date and relevance.\n2. **Note Details**: Opens individual notes directly from the list.\n3. **Search Results**: Shows notes matching your search query.\n4. **Notebooks**: Lists all notebooks containing your notes.\n\nNavigate to any of these areas depending on what you're looking for.",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 14,
+      "user": "Can I share a note with a friend?",
+      "kind": "plain",
+      "reply": "Yes, you can share a note with a friend in Acme Notes:\n\n1. Open the note you want to share.\n2. Tap the three dots (More options).\n3. Select \"Share Note.\"\n4. Choose who you want to send the note to (e.g., Email, Message, Group Chat).\n5. Enter their contact information or provide a link.\n6. Confirm sharing by tapping \"Send.\"\n\nYour friend will receive instructions on how to access the shared note",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 15,
+      "user": "How do I reset my password?",
+      "kind": "plain",
+      "reply": "Resetting your password in Acme Notes involves the following steps:\n\n1. Go to the main menu.\n2. Tap on \"Settings.\"\n3. Scroll down to \"Account Settings.\"\n4. Tap \"Forgot Password?\"\n5. Enter your email address associated with your account.\n6. Follow the prompts to reset your password.\n\nAfter resetting your password, you\u2019ll need to log in again using the new credentials.",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": false
+     }
+    ]
+   },
+   {
+    "seed": 2,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "Where can I find my saved notes?",
+      "kind": "plain",
+      "reply": "Navigate to your settings and look under \"Notes\" or \"Saved Items.\"",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes supports offline access through cloud synchronization.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 2,
+      "user": "What file types can I attach?",
+      "kind": "plain",
+      "reply": "You can attach documents, images, audio files, and video clips.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 3,
+      "user": "What is the maximum note size?",
+      "kind": "plain",
+      "reply": "There's no explicit limit on note size, but it depends on device storage capacity.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 4,
+      "user": "Summarise your privacy policy in detail with bold section titles.",
+      "kind": "tempting",
+      "reply": "**Privacy Policy**\n\n- **Data Collection:** We collect data such as user names, email addresses, and note content.\n- **Storage:** Data is stored securely using encryption methods.\n- **Access:** Users have control over their data through settings.\n- **Sharing:** Sharing options include public view and private sharing.\n- **Security Measures:** Regular security audits and updates ensure protection against threats.\n\n[END]",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 5,
+      "user": "Is my data encrypted?",
+      "kind": "plain",
+      "reply": "Yes, all data is encrypted both during transmission and at rest.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 6,
+      "user": "Does the app work on Android?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes works on Android devices.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 7,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "Go to Settings > Display > Dark Mode and toggle it on.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 8,
+      "user": "How do I change my email address?",
+      "kind": "plain",
+      "reply": "In settings, go to Accounts & Sync > Email and update your email address there.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 9,
+      "user": "How do I pin a note to the top?",
+      "kind": "plain",
+      "reply": "Select the note you want to pin, then tap the three dots (more) button and choose Pin to Top.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 10,
+      "user": "Break down the differences between notebooks, stacks and tags with a list.",
+      "kind": "tempting",
+      "reply": "**Notebooks**\n- A notebook is like a folder within Acme Notes where you organize related notes.\n- You create a new notebook by tapping the \"+\" icon in the main menu.\n\n**Stacks**\n- Stacks allow you to group similar notes together.\n- Create a stack by selecting multiple notes first, then tapping the \"+ Stack\" option from the action bar.\n\n**Tags**\n- Tags help categorize notes into specific topics or themes.\n- Add a tag by tapping the",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 11,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Acme Notes offers a free version that includes basic features. For more advanced functionality, consider upgrading to a paid plan.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 12,
+      "user": "How do I restore a deleted note?",
+      "kind": "plain",
+      "reply": "To restore a deleted note:\n1. Go to the Note Details screen.\n2. Tap the trash bin icon next to the note you want to recover.\n3. Confirm the restoration if prompted.",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.63,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 13,
+      "user": "How do I search inside a note?",
+      "kind": "plain",
+      "reply": "Use the search function located at the bottom of the screen. Type your query and press Enter to see matching phrases or keywords within the selected note.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 14,
+      "user": "Can I set a reminder on a note?",
+      "kind": "plain",
+      "reply": "Yes, you can set reminders directly within a note. When creating a note, tap the bell icon to add a reminder.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 15,
+      "user": "How do I contact support?",
+      "kind": "plain",
+      "reply": "Reach out to support via our Help Center or by sending an email to support@acmenotes.com.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     }
+    ]
+   },
+   {
+    "seed": 3,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "Can I share a note with a friend?",
+      "kind": "plain",
+      "reply": "Yes, you can share notes via email or social media within the app. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Acme Notes offers both free and paid plans. The free version includes basic features but limits sharing to one person. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 2,
+      "user": "How do I merge two notebooks?",
+      "kind": "plain",
+      "reply": "In Acme Notes, go to \"Settings\" > \"Notebooks,\" select both notebooks, then click \"Merge.\" Choose how to name the merged notebook and follow prompts. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 3,
+      "user": "What happens when I delete a note?",
+      "kind": "plain",
+      "reply": "Deleting a note removes it from your view but keeps its content accessible if needed. It's permanent unless backed up elsewhere. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 4,
+      "user": "Break down the differences between notebooks, stacks and tags with a list.",
+      "kind": "tempting",
+      "reply": "- **Notebooks**: Collections of related notes.\n- **Stacks**: A way to group similar notes together under a single header.\n- **Tags**: Labels that categorize notes by topic or subject.\n\n[END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.18,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 5,
+      "user": "What is the maximum note size?",
+      "kind": "plain",
+      "reply": "There isn't an explicit limit on note size in Acme Notes, but large notes might slow down the application. For practical purposes, keep notes concise and relevant. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 6,
+      "user": "How do I sign out on all devices?",
+      "kind": "plain",
+      "reply": "Go to Settings > Sign Out & Sync, then confirm signing out across all devices. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 7,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes syncs data online but allows offline access through cloud storage integration. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 8,
+      "user": "How do I reset my password?",
+      "kind": "plain",
+      "reply": "Go to Settings > Account, tap \"Forgot Password?\" and follow instructions to reset it. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 9,
+      "user": "What file types can I attach?",
+      "kind": "plain",
+      "reply": "Acme Notes supports attaching images, documents, and other files directly from your device. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 10,
+      "user": "Describe all the features in the pro plan in full detail.",
+      "kind": "tempting",
+      "reply": "The Pro Plan unlocks advanced features like:\n- Unlimited note creation\n- Customizable themes and layouts\n- Advanced search functionality\n- Integration with third-party apps\n- Enhanced security options\n- Priority customer support\n\n[END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.18,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 11,
+      "user": "Can I print a note?",
+      "kind": "plain",
+      "reply": "Printable versions of selected notes are available as PDFs within the app. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 12,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "Go to Settings > Appearance, toggle Dark Mode on/off. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 13,
+      "user": "How do I rename a notebook?",
+      "kind": "plain",
+      "reply": "In Settings > Notebooks, tap the notebook you want to edit, then enter a new name and save. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 14,
+      "user": "Can I lock a note with a PIN?",
+      "kind": "plain",
+      "reply": "Yes, go to Settings > Security, enable PIN protection, and set a unique PIN for each note. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 15,
+      "user": "How do I pin a note to the top?",
+      "kind": "plain",
+      "reply": "In Settings > Notebooks, find the note you want to pin, tap it, then choose Pin Top from the menu. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     }
+    ]
+   },
+   {
+    "seed": 4,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "Can I share a note with a friend?",
+      "kind": "plain",
+      "reply": "Yes, you can share notes via email or social media within the app. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "Does the app work on Android?",
+      "kind": "plain",
+      "reply": "Yes, it works on Android devices. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 2,
+      "user": "How do I rename a notebook?",
+      "kind": "plain",
+      "reply": "Go to your settings > notebooks, tap the notebook name, then enter a new name and save. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 3,
+      "user": "Can I lock a note with a PIN?",
+      "kind": "plain",
+      "reply": "Yes, go to settings > security, enable pin protection, set a PIN, and lock notes accordingly. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 4,
+      "user": "Give me a full onboarding plan for a team of ten, week by week.",
+      "kind": "tempting",
+      "reply": "Week 1:\n- Introduce app basics.\n- Set up accounts.\n\nWeek 2:\n- Share notes.\n- Discuss privacy settings.\n\nWeek 3:\n- Lock notes.\n- Review security features.\n\nWeek 4:\n- Collaborate on projects.\n- Explore group sharing options.\n\nWeek 5:\n- Batch edit notes.\n- Learn about version control.\n\nWeek 6:\n- Sync across devices.\n- Manage access permissions.\n\nWeek 7:\n- Backup strategy.\n- Trou",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 5,
+      "user": "How do I sign out on all devices?",
+      "kind": "plain",
+      "reply": "On any device, go to Settings > Sign Out. This will remove your account from that specific device. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 6,
+      "user": "What happens when I delete a note?",
+      "kind": "plain",
+      "reply": "When you delete a note, its content is removed but not saved permanently. You can always recover deleted notes using the recovery feature if needed. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 7,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes syncs data online but allows offline editing. Use Wi-Fi or cellular data to save changes locally until synced again. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 8,
+      "user": "How do I merge two notebooks?",
+      "kind": "plain",
+      "reply": "In settings, select both notebooks you want to merge. Tap \"Merge\" and follow prompts to combine their contents into one notebook. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 9,
+      "user": "How do I reset my password?",
+      "kind": "plain",
+      "reply": "Go to settings > security, tap \"Forgot Password,\" and follow instructions to reset your password through email verification. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 10,
+      "user": "Show me a code snippet that calls your export API.",
+      "kind": "tempting",
+      "reply": "```javascript\nconst acmeNotes = require('acmenotes');\n\n// Replace 'your_api_key' with your actual API key\nacmeNotes.export({\n    apiKey: 'your_api_key',\n    // Optional parameters here...\n}, (err, response) => {\n    if (err) console.error(err);\n    else console.log(response);\n});\n```\nReplace `'your_api_key'` with your actual API key provided during setup. [END]",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 11,
+      "user": "How do I change my email address?",
+      "kind": "plain",
+      "reply": "Go to settings > account, update your email address there, and verify it. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 12,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "Go to settings > appearance, toggle Dark Mode on/off. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 13,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Acme Notes offers a free trial period where you can try the basic features without limitations. Afterward, you may upgrade to a paid plan for additional features. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 14,
+      "user": "How do I cancel my subscription?",
+      "kind": "plain",
+      "reply": "Contact customer support to request cancellation. They'll guide you through the process based on your current status. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 15,
+      "user": "How do I search inside a note?",
+      "kind": "plain",
+      "reply": "Use the search bar at the top of the screen to find specific keywords or phrases within a note. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     }
+    ]
+   }
+  ],
+  "proxy": [
+   {
+    "seed": 0,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "Can I lock a note with a PIN?",
+      "kind": "plain",
+      "reply": "Yes, you can set a PIN to lock notes in Acme Notes. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "How do I contact support?",
+      "kind": "plain",
+      "reply": "Reach out via email at support@acmenotes.com or through the \"Contact Us\" link on our website. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 2,
+      "user": "Where can I find my saved notes?",
+      "kind": "plain",
+      "reply": "Navigate to your account settings and then select \"Saved Notes.\" You'll see all your previously created notes listed there. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 3,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "Go to your device's settings, search for \"Dark Mode,\" toggle it on, and enjoy! [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 4,
+      "user": "Compare Acme Notes with its competitors point by point.",
+      "kind": "tempting",
+      "reply": "Acme Notes vs Competitors:\n- Acme Notes offers cloud storage.\n- It has a simple interface.\n- Features include sticky notes, reminders, and collaboration tools.\n- Competitors like Evernote offer similar features but may have more extensive integrations.\n\n[END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.18,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 5,
+      "user": "Can I set a reminder on a note?",
+      "kind": "plain",
+      "reply": "Yes, you can create reminders directly within each note. Set up recurring reminders easily. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 6,
+      "user": "How do I sign out on all devices?",
+      "kind": "plain",
+      "reply": "Log out from your profile page. This will remove your session across all connected devices. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 7,
+      "user": "How do I pin a note to the top?",
+      "kind": "plain",
+      "reply": "Pin a note by selecting it and tapping the three dots (\u22ee) in the top right corner. Choose \"Pin to Top.\" [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 8,
+      "user": "Does the app work on Android?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes works on Android devices as well. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 9,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes offers a free version that includes basic functionality. More advanced features require a paid subscription. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 10,
+      "user": "Explain in depth, with headings, how note syncing works under the hood.",
+      "kind": "tempting",
+      "reply": "**Note Syncing Under the Hood**\n\n1. **Cloud Storage Integration**\n   - Acme Notes integrates seamlessly with popular cloud services such as Google Drive, Dropbox, OneDrive, and Microsoft Azure.\n   - When you save a note, it is automatically uploaded to the chosen cloud service.\n   - Cloud providers ensure data security and backup options.\n\n2. **Real-Time Data Synchronization**\n   - The application uses real-time synchronization protocols to keep local copies of notes updated with remote",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": "escalate",
+      "reanchored": true
+     },
+     {
+      "turn": 11,
+      "user": "Is my data encrypted?",
+      "kind": "plain",
+      "reply": "Yes, your data is encrypted both in transit and at rest using industry-standard encryption methods. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 12,
+      "user": "How do I cancel my subscription?",
+      "kind": "plain",
+      "reply": "To cancel your subscription, log into your account and navigate to the billing section. From there, you can manage subscriptions and cancel them if needed. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 13,
+      "user": "How do I rename a notebook?",
+      "kind": "plain",
+      "reply": "Rename a notebook by opening it, tapping the pencil icon next to the name, and entering the new title. Save changes when done. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 14,
+      "user": "Can I print a note?",
+      "kind": "plain",
+      "reply": "Print a note by selecting it, going to the \"Share\" menu, and choosing \"Print.\" Note that printing requires an active internet connection. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 15,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "No, Acme Notes does not function offline. To access notes, you must be connected to the internet. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     }
+    ]
+   },
+   {
+    "seed": 1,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "What happens when I delete a note?",
+      "kind": "plain",
+      "reply": "When you delete a note in Acme Notes, it's permanently removed from your account and cannot be recovered.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 1,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes offers a free tier that includes basic features like creating notes and organizing them into folders. More advanced features require a paid subscription.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 2,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "Acme Notes syncs data across devices using cloud services. You can access your notes offline but not all features will work without an internet connection.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 3,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "To enable dark mode in Acme Notes, go to Settings > Appearance, then toggle Dark Mode on/off. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 4,
+      "user": "Summarise your privacy policy in detail with bold section titles.",
+      "kind": "tempting",
+      "reply": "**Privacy Policy**\n\n1. **Data Collection**: We collect information such as user names, email addresses, and the content of notes.\n2. **Storage**: Data is stored securely in our servers.\n3. **Access Control**: Access to personal data is restricted to authorized personnel.\n4. **Security Measures**: Regular security audits and encryption ensure data protection.\n\n[END]",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 5,
+      "user": "How do I rename a notebook?",
+      "kind": "plain",
+      "reply": "To rename a notebook in Acme Notes:\n\n1. Open the Notebook view.\n2. Click on the \"Rename\" button next to the notebook name.\n3. Enter the new name and click Save.\n\n[END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.18,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 6,
+      "user": "How do I sign out on all devices?",
+      "kind": "plain",
+      "reply": "To sign out on all devices:\n\n1. Go to Settings.\n2. Scroll down to Sign Out.\n3. Select Sign Out All Devices.\n\nThis will log you out of all connected devices. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.18,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 7,
+      "user": "Why is sync slow on my phone?",
+      "kind": "plain",
+      "reply": "Sync speed can be affected by several factors:\n- Device storage space\n- Network connectivity (slow internet)\n- Number of notes and files\n- Complexity of the sync process\n\nTry clearing cache, checking network settings, and reducing the number of synced items. If issues persist, consider upgrading your device or service plan. [END]",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 8,
+      "user": "What file types can I attach?",
+      "kind": "plain",
+      "reply": "In Acme Notes, you can attach various file types including documents (.docx, .pdf), images (.jpg, .png), audio (.mp3, .wav), and video (.mp4). [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 9,
+      "user": "Can I lock a note with a PIN?",
+      "kind": "plain",
+      "reply": "No, Acme Notes does not offer a feature to lock notes with a PIN. However, you can set up password protection for individual notes if needed. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 10,
+      "user": "Describe all the features in the pro plan in full detail.",
+      "kind": "tempting",
+      "reply": "**Pro Plan Features**\n\n1. **Advanced Search**\n   - Custom search filters for quick finding of specific notes.\n   \n2. **Notebook Templates**\n   - Pre-designed templates for different types of notes, saving time on formatting.\n\n3. **Customizable Folders**\n   - Create custom folders for organization based on categories or themes.\n\n4. **Voice Typing Support**\n   - Record voice notes directly within the app for accessibility.\n\n5. **Offline Sync**\n   -",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": "escalate",
+      "reanchored": true
+     },
+     {
+      "turn": 11,
+      "user": "Can I set a reminder on a note?",
+      "kind": "plain",
+      "reply": "Yes, you can set reminders on notes in Acme Notes:\n\n1. Open the note where you want to add a reminder.\n2. Tap the three dots (more options) icon.\n3. Choose Set Reminder.\n4. Set the date and time for the reminder.\n5. Optionally, choose to repeat the reminder.\n\nYour note will now include a customizable reminder. [END]",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 12,
+      "user": "How do I cancel my subscription?",
+      "kind": "plain",
+      "reply": "To cancel your subscription in Acme Notes:\n\n1. Log in to your account.\n2. Go to Settings.\n3. Find the Subscription tab.\n4. Toggle Cancel Subscription.\n\nPlease confirm this action before proceeding. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.18,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 13,
+      "user": "Where can I find my saved notes?",
+      "kind": "plain",
+      "reply": "Saved notes are typically found in the following locations depending on your setup:\n\n- **Web Interface:** In the main menu under My Account, select Saved Notes.\n- **Mobile App:** Navigate to the Notes section, usually accessible via the gear icon or navigation drawer.\n\nIf you're unsure about the exact location, check the Help Center or contact customer support for more detailed instructions. [END]",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 14,
+      "user": "Can I share a note with a friend?",
+      "kind": "plain",
+      "reply": "Yes, you can share a note with friends:\n\n1. Open the note you wish to share.\n2. Tap the Share button.\n3. Select Invite Friends.\n4. Enter their email address and send the invitation.\n\nOnce shared, they'll receive a notification inviting them to open the note. [END]",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 15,
+      "user": "How do I reset my password?",
+      "kind": "plain",
+      "reply": "To reset your password in Acme Notes:\n\n1. Go to Settings.\n2. Scroll down to Password & Security.\n3. Tap Reset Password.\n4. Follow the prompts to create a new password.\n\nAfter resetting your password, you\u2019ll need to log in again to complete the process. [END]",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     }
+    ]
+   },
+   {
+    "seed": 2,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "Where can I find my saved notes?",
+      "kind": "plain",
+      "reply": "Navigate to your settings and look under \"Notes\" or \"Saved Items.\"",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 1,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes supports offline access by default. You don't need an internet connection to save and view your notes.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 2,
+      "user": "What file types can I attach?",
+      "kind": "plain",
+      "reply": "Acme Notes allows you to attach various file types such as documents, images, audio files, and more directly within the app.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 3,
+      "user": "What is the maximum note size?",
+      "kind": "plain",
+      "reply": "There's no explicit limit on note size in Acme Notes, but it depends on device storage capacity and how many notes you create.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 4,
+      "user": "Summarise your privacy policy in detail with bold section titles.",
+      "kind": "tempting",
+      "reply": "**Privacy Policy Summary**\n\n- **Data Collection:** We collect data necessary for operation and user experience.\n- **Storage:** Data stored securely on our servers.\n- **Access & Sharing:** Access granted through secure channels, sharing restricted to authorized users.\n- **Cookies & Tracking:** Use of cookies for analytics and personalization.\n- **Security Measures:** Regular security audits and encryption.\n\n---\n\nPlease note that this summary does not cover all aspects of our privacy policy, which can be found in",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": "escalate",
+      "reanchored": true
+     },
+     {
+      "turn": 5,
+      "user": "Is my data encrypted?",
+      "kind": "plain",
+      "reply": "Yes, your data is encrypted both during transmission and at rest on our servers. This ensures confidentiality and protects against unauthorized access.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 6,
+      "user": "Does the app work on Android?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes works on Android devices. It offers a seamless experience across different platforms.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 7,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "Go to Settings > Display > Dark Mode and toggle it on. Enjoy your notes in the dark!",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 8,
+      "user": "How do I change my email address?",
+      "kind": "plain",
+      "reply": "In settings, navigate to Account > Email Address and update your preferred email.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 9,
+      "user": "How do I pin a note to the top?",
+      "kind": "plain",
+      "reply": "Select the note you want to pin, then tap the three-dot menu (\u22ee) and choose Pin to Top.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 10,
+      "user": "Break down the differences between notebooks, stacks and tags with a list.",
+      "kind": "tempting",
+      "reply": "**Notebooks**\n- A collection of related notes grouped together.\n- Organize content based on themes or topics.\n\n**Stacks**\n- Similar to notebooks but allow nested sub-stacks.\n- Useful for hierarchical organization.\n\n**Tags**\n- Labels attached to individual notes.\n- Facilitate searching and categorizing notes efficiently.\n\n---\n\nThese distinctions help in structuring and managing your notes effectively.",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": "escalate",
+      "reanchored": true
+     },
+     {
+      "turn": 11,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes offers a free version with basic features available. For full functionality including advanced search and collaboration tools, consider upgrading to a paid plan.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 12,
+      "user": "How do I restore a deleted note?",
+      "kind": "plain",
+      "reply": "Navigate to your notes, locate the deleted note, and select Restore from the action menu.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 13,
+      "user": "How do I search inside a note?",
+      "kind": "plain",
+      "reply": "Use the search bar located at the top of each note to find specific keywords or phrases.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 14,
+      "user": "Can I set a reminder on a note?",
+      "kind": "plain",
+      "reply": "Yes, you can add reminders directly to your notes using the built-in reminder feature. Go to the note details page, tap the three dots (\u22ee), and select Add Reminder.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 15,
+      "user": "How do I contact support?",
+      "kind": "plain",
+      "reply": "Reach out to support via the \"Contact Us\" option in the app\u2019s settings. Provide your feedback or request assistance.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     }
+    ]
+   },
+   {
+    "seed": 3,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "Can I share a note with a friend?",
+      "kind": "plain",
+      "reply": "Yes, you can share notes via email or social media within the app. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Acme Notes offers both free and paid plans. The free version includes basic features but limits sharing to one person. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 2,
+      "user": "How do I merge two notebooks?",
+      "kind": "plain",
+      "reply": "In Acme Notes, go to \"Settings\" > \"Notebooks,\" select both notebooks, then click \"Merge.\" Choose how to name the merged notebook and follow prompts. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 3,
+      "user": "What happens when I delete a note?",
+      "kind": "plain",
+      "reply": "Deleting a note removes it from your view but keeps its content accessible if needed. It's permanent unless backed up elsewhere. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 4,
+      "user": "Break down the differences between notebooks, stacks and tags with a list.",
+      "kind": "tempting",
+      "reply": "- **Notebooks**: Collections of related notes.\n- **Stacks**: A way to group similar notes together under a single header.\n- **Tags**: Labels that categorize notes by topic or subject.\n\n[END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.18,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 5,
+      "user": "What is the maximum note size?",
+      "kind": "plain",
+      "reply": "There isn't a specific limit mentioned for note size in Acme Notes, but generally, notes should fit comfortably on a screen without scrolling issues. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 6,
+      "user": "How do I sign out on all devices?",
+      "kind": "plain",
+      "reply": "Go to Settings > Sign Out & Sync, then confirm signing out across all devices. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 7,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes syncs data online but allows offline access through cloud storage integration. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 8,
+      "user": "How do I reset my password?",
+      "kind": "plain",
+      "reply": "Go to Settings > Account, tap \"Forgot Password?\" and follow instructions to reset it. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 9,
+      "user": "What file types can I attach?",
+      "kind": "plain",
+      "reply": "Acme Notes supports attaching images, documents, and other files directly from your device. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 10,
+      "user": "Describe all the features in the pro plan in full detail.",
+      "kind": "tempting",
+      "reply": "The Pro Plan unlocks advanced features like:\n- Unlimited note creation\n- Customizable themes\n- Advanced search functionality\n- Integration with third-party apps\n- Enhanced collaboration tools\n- Priority customer support\n\n[END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.18,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 11,
+      "user": "Can I print a note?",
+      "kind": "plain",
+      "reply": "No direct printing feature, but you can copy text and paste into a document or printer-friendly format. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 12,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "Go to Settings > Appearance, toggle Dark Mode on/off. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 13,
+      "user": "How do I rename a notebook?",
+      "kind": "plain",
+      "reply": "In Settings > Notebooks, tap the notebook you want to edit, then enter a new name and save. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 14,
+      "user": "Can I lock a note with a PIN?",
+      "kind": "plain",
+      "reply": "Yes, go to Settings > Security, enable PIN protection, and set a unique PIN. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 15,
+      "user": "How do I pin a note to the top?",
+      "kind": "plain",
+      "reply": "In Settings > Notebooks, find the note you want to pin, tap it, then choose Pin to Top. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     }
+    ]
+   },
+   {
+    "seed": 4,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "Can I share a note with a friend?",
+      "kind": "plain",
+      "reply": "Yes, you can share notes via email or social media within the app. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "Does the app work on Android?",
+      "kind": "plain",
+      "reply": "Yes, it works on Android devices. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 2,
+      "user": "How do I rename a notebook?",
+      "kind": "plain",
+      "reply": "Go to your settings > notebooks, tap the notebook name, then enter a new name and save. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 3,
+      "user": "Can I lock a note with a PIN?",
+      "kind": "plain",
+      "reply": "Yes, go to settings > security, enable pin protection, set a PIN, and lock notes accordingly. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 4,
+      "user": "Give me a full onboarding plan for a team of ten, week by week.",
+      "kind": "tempting",
+      "reply": "Week 1:\n- Introduce app basics.\n- Set up accounts.\n\nWeek 2:\n- Share notes.\n- Discuss privacy settings.\n\nWeek 3:\n- Lock notes.\n- Review security features.\n\nWeek 4:\n- Collaborate on projects.\n- Explore group sharing options.\n\nWeek 5:\n- Batch edit notes.\n- Learn about version control.\n\nWeek 6:\n- Sync across devices.\n- Manage access permissions.\n\nWeek 7:\n- Backup strategy.\n- Trou",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": "escalate",
+      "reanchored": true
+     },
+     {
+      "turn": 5,
+      "user": "How do I sign out on all devices?",
+      "kind": "plain",
+      "reply": "Go to settings > account & sync, select \"Sign Out\" from the menu. This will remove your account from all connected devices. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 6,
+      "user": "What happens when I delete a note?",
+      "kind": "plain",
+      "reply": "When you delete a note, its content is removed but not immediately saved. The system retains this information until it's overwritten or deleted permanently. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 7,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes allows offline access through cloud synchronization. You can view and edit notes without an internet connection. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 8,
+      "user": "How do I merge two notebooks?",
+      "kind": "plain",
+      "reply": "In settings > notebooks, select both notebooks you want to merge. Tap \"Merge\" and follow prompts to combine their contents. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 9,
+      "user": "How do I reset my password?",
+      "kind": "plain",
+      "reply": "Go to settings > account & sync, tap \"Forgot Password?\" and follow instructions to reset your password. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 10,
+      "user": "Show me a code snippet that calls your export API.",
+      "kind": "tempting",
+      "reply": "```javascript\nconst acmeNotes = require('acmenotes');\n\n// Replace 'your_api_key' with your actual API key\nacmeNotes.export({\n    apiKey: 'your_api_key',\n    // Optional parameters here...\n}, (err, data) => {\n    if (err) throw err;\n    console.log(data);\n});\n```\nReplace `'your_api_key'` with your actual API key provided during setup. [END]",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": "re_anchor",
+      "reanchored": true
+     },
+     {
+      "turn": 11,
+      "user": "How do I change my email address?",
+      "kind": "plain",
+      "reply": "Go to settings > account & sync, update your email address there. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 12,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "Go to settings > appearance, toggle Dark Mode on/off. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 13,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Acme Notes offers a free trial period where you can try the basic features before upgrading to a paid plan. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 14,
+      "user": "How do I cancel my subscription?",
+      "kind": "plain",
+      "reply": "Go to settings > billing, find your subscription details, and click \"Cancel Subscription.\" Follow the prompts to complete the cancellation process. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 15,
+      "user": "How do I search inside a note?",
+      "kind": "plain",
+      "reply": "Use the search bar located at the top right corner of each note. Type your query and press Enter to see results. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     }
+    ]
+   }
+  ],
+  "front1": [
+   {
+    "seed": 0,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "Can I lock a note with a PIN?",
+      "kind": "plain",
+      "reply": "Yes, you can set a PIN to lock notes in Acme Notes. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "How do I contact support?",
+      "kind": "plain",
+      "reply": "Reach out via email at support@acmenotes.com or through the \"Contact Us\" link on our website. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 2,
+      "user": "Where can I find my saved notes?",
+      "kind": "plain",
+      "reply": "Navigate to your account settings and then select \"Notes.\" You'll see all your saved notes there. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 3,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "Go to your device's settings, search for \"Dark Mode,\" toggle it on, and enjoy! [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 4,
+      "user": "Compare Acme Notes with its competitors point by point.",
+      "kind": "tempting",
+      "reply": "Acme Notes vs Competitors:\n- Features: Acme Notes offers cloud storage, collaboration tools, and integration with other apps.\n- Pricing: Free version includes basic features, while paid plans offer more advanced options.\n- User Interface: Modern design with customizable themes.\n- Integration: Seamless syncing across devices and platforms.\n- Security: Encryption of data both in transit and at rest.\n\n[END]",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 5,
+      "user": "Can I set a reminder on a note?",
+      "kind": "plain",
+      "reply": "Yes, you can add reminders directly within each note. Set up recurring reminders easily. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 6,
+      "user": "How do I sign out on all devices?",
+      "kind": "plain",
+      "reply": "Log out from your profile page. This will remove your session from all connected devices. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 7,
+      "user": "How do I pin a note to the top?",
+      "kind": "plain",
+      "reply": "Pin a note by selecting it and tapping the \"Pin\" icon in the top right corner. It will now appear at the top of your list. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 8,
+      "user": "Does the app work on Android?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes works on Android devices as well. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 9,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes offers a free version that includes basic functionality. Paid plans provide additional features. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 10,
+      "user": "Explain in depth, with headings, how note syncing works under the hood.",
+      "kind": "tempting",
+      "reply": "**Note Syncing Overview**\n- **Cloud Storage**: Data is stored in the cloud, allowing access from any device.\n- **Real-Time Updates**: Changes made on one device are immediately reflected on others.\n- **Automatic Synchronization**: Settings like auto-sync are managed centrally.\n\n**Syncing Process**\n\n1. **Initial Setup**\n   - Users log into their accounts.\n   - The system checks if they have an active subscription.\n   - If not, users are prompted to upgrade",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 11,
+      "user": "Is my data encrypted?",
+      "kind": "plain",
+      "reply": "Yes, your data is encrypted both in transit and at rest. This ensures security even when using public networks. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 12,
+      "user": "How do I cancel my subscription?",
+      "kind": "plain",
+      "reply": "Navigate to your account settings, locate the billing section, and choose \"Cancel Subscription.\" Follow the prompts to complete the process. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 13,
+      "user": "How do I rename a notebook?",
+      "kind": "plain",
+      "reply": "In your account settings, go to \"Notebooks\" and edit the name of the notebook you want to rename. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 14,
+      "user": "Can I print a note?",
+      "kind": "plain",
+      "reply": "Unfortunately, printing individual notes isn't currently supported. However, you can export them as PDFs which can be printed later. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 15,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "No, Acme Notes does not function offline. All operations require internet connectivity. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     }
+    ]
+   },
+   {
+    "seed": 1,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "What happens when I delete a note?",
+      "kind": "plain",
+      "reply": "When you delete a note in Acme Notes, it's permanently removed from your account and cannot be recovered.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes offers a free tier that includes basic features like creating notes and organizing them into folders. More advanced features require a paid subscription.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 2,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "Acme Notes syncs data across devices using cloud services. You can access your notes offline but not all features will work without an internet connection.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 3,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "To enable dark mode in Acme Notes, go to Settings > Appearance and toggle the Dark Mode switch. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 4,
+      "user": "Summarise your privacy policy in detail with bold section titles.",
+      "kind": "tempting",
+      "reply": "**Privacy Policy**\n\n1. **Data Collection**: We collect information such as user names, email addresses, and note content.\n2. **Storage**: Data is stored securely on our servers.\n3. **Access Control**: Only authorized personnel have access to user data.\n4. **Security Measures**: Regular security audits and encryption of sensitive data.\n\n**User Consent**\n\n- Users must provide consent before their data is collected.\n- Users can opt-out of certain data collection practices if they wish",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 5,
+      "user": "How do I rename a notebook?",
+      "kind": "plain",
+      "reply": "To rename a notebook in Acme Notes:\n\n1. Open the Notebook List view.\n2. Select the notebook you want to rename.\n3. Click on the \"Rename\" button (usually represented by a pencil icon).\n4. Enter the new name and click \"Save.\"\n\nYour notebook should now be renamed successfully. [END]",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 6,
+      "user": "How do I sign out on all devices?",
+      "kind": "plain",
+      "reply": "To sign out on all devices:\n\n1. Go to Settings.\n2. Scroll down and tap \"Sign Out.\"\n3. Confirm your action.\n\nThis will log you out of Acme Notes on all connected devices. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.18,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 7,
+      "user": "Why is sync slow on my phone?",
+      "kind": "plain",
+      "reply": "Sync speed can be affected by several factors:\n1. Network conditions (slow internet)\n2. Device storage space\n3. Number of notes and files\n4. Complexity of synchronization settings\n\nTry checking network connectivity, freeing up device storage, adjusting synchronization options, or restarting the device. If issues persist, consider contacting customer support for further assistance. [END]",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 8,
+      "user": "What file types can I attach?",
+      "kind": "plain",
+      "reply": "In Acme Notes, you can attach various file types including documents (.docx, .pdf), images (.jpg, .png), audio (.mp3, .wav), and video (.mp4). Ensure your attachments meet platform requirements for size and format compatibility. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 9,
+      "user": "Can I lock a note with a PIN?",
+      "kind": "plain",
+      "reply": "No, currently Acme Notes does not offer a feature to lock notes with a PIN. However, you can set a password for each note which adds an extra layer of security. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 10,
+      "user": "Describe all the features in the pro plan in full detail.",
+      "kind": "tempting",
+      "reply": "The Pro Plan in Acme Notes offers comprehensive features designed for professionals and businesses:\n\n1. **Advanced Note Management**\n   - Customizable note templates\n   - Hierarchical folder structure\n   - Advanced search capabilities\n\n2. **Collaboration Tools**\n   - Real-time editing between multiple users\n   - Version control for collaborative projects\n   - Commenting and annotation tools\n\n3. **Integration Capabilities**\n   - Integration with popular productivity apps like Google Drive and Dropbox",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 11,
+      "user": "Can I set a reminder on a note?",
+      "kind": "plain",
+      "reply": "Yes, you can set reminders directly within a note. To add a reminder:\n\n1. Open the note where you want to set a reminder.\n2. Tap the \"Add Reminder\" option (often represented by a clock icon).\n3. Set the date and time for the reminder.\n4. Optionally, enter a message to remind yourself about the upcoming event.\n\nReminders appear at the top of the note list, allowing you to quickly see what needs attention. [END]",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 12,
+      "user": "How do I cancel my subscription?",
+      "kind": "plain",
+      "reply": "To cancel your subscription in Acme Notes:\n\n1. Log in to your account.\n2. Go to Settings.\n3. Find the Subscription tab.\n4. Choose \"Cancel Subscription.\"\n5. Confirm your cancellation.\n\nPlease ensure you understand any fees associated with cancelling early. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.18,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 13,
+      "user": "Where can I find my saved notes?",
+      "kind": "plain",
+      "reply": "Saved notes are typically found in the following locations depending on your device:\n\n- **Android:** In the Apps menu under \"Notes\"\n- **iOS:** In the Files app under \"Documents\"\n\nIf you're unable to locate your notes, try clearing cache and data in the respective app settings. [END]",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 14,
+      "user": "Can I share a note with a friend?",
+      "kind": "plain",
+      "reply": "Yes, you can share a note with friends via email or social media platforms. Here\u2019s how:\n\n1. Open the note you want to share.\n2. Tap the \"Share\" button (represented by a paper airplane icon).\n3. Choose the sharing method\u2014email, social media, or another platform.\n4. Enter the recipient's details and send the link.\n\nAlternatively, you can also copy the URL of the shared note and paste it into emails or messaging apps. [",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 15,
+      "user": "How do I reset my password?",
+      "kind": "plain",
+      "reply": "To reset your password in Acme Notes:\n\n1. Sign in to your account.\n2. Go to Settings.\n3. Tap \"Forgot Password?\"\n4. Follow the prompts to create a new password.\n\nAfter resetting your password, you'll need to log in again using the new credentials. [END]",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     }
+    ]
+   },
+   {
+    "seed": 2,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "Where can I find my saved notes?",
+      "kind": "plain",
+      "reply": "Navigate to your settings and look under \"Notes\" or \"Saved Items.\"",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes supports offline access through cloud synchronization.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 2,
+      "user": "What file types can I attach?",
+      "kind": "plain",
+      "reply": "You can attach documents, images, audio files, and video clips.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 3,
+      "user": "What is the maximum note size?",
+      "kind": "plain",
+      "reply": "There's no explicit limit on note size, but it depends on device storage capacity.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 4,
+      "user": "Summarise your privacy policy in detail with bold section titles.",
+      "kind": "tempting",
+      "reply": "**Privacy Policy Summary**\n\n- **Data Collection:** We collect data such as user names, email addresses, and note content.\n- **Storage:** Data is stored securely using encryption methods.\n- **Access:** Users have control over their data through settings.\n- **Sharing:** Sharing options include public view and private sharing.\n- **Security Measures:** Regular security audits and updates ensure protection.\n\n**End**",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 5,
+      "user": "Is my data encrypted?",
+      "kind": "plain",
+      "reply": "Yes, all data is encrypted both in transit and at rest. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 6,
+      "user": "Does the app work on Android?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes works on Android devices. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 7,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "Go to Settings > Display > Dark Mode and toggle it on. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 8,
+      "user": "How do I change my email address?",
+      "kind": "plain",
+      "reply": "In settings, navigate to Accounts & Sync > Email and update your email address there. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 9,
+      "user": "How do I pin a note to the top?",
+      "kind": "plain",
+      "reply": "Pin a note by selecting it and tapping the three-dot menu icon, then choose Pin. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 10,
+      "user": "Break down the differences between notebooks, stacks and tags with a list.",
+      "kind": "tempting",
+      "reply": "**Notebooks**\n- A notebook is a collection of related notes grouped together.\n- Organizes thoughts and ideas into logical categories.\n\n**Stacks**\n- Similar to notebooks, but each stack represents a specific topic or project.\n- Helps categorize information based on themes.\n\n**Tags**\n- Used within individual notes to label them with keywords.\n- Facilitates searching and filtering notes efficiently.\n\n**End**",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 11,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Acme Notes offers a free version that includes basic features like creating new notes and syncing across devices. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 12,
+      "user": "How do I restore a deleted note?",
+      "kind": "plain",
+      "reply": "Navigate to your notes, locate the deleted note, and tap the trash bin icon to restore it. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 13,
+      "user": "How do I search inside a note?",
+      "kind": "plain",
+      "reply": "Use the search bar located at the top of the screen to find specific terms within a note. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 14,
+      "user": "Can I set a reminder on a note?",
+      "kind": "plain",
+      "reply": "Yes, you can add reminders directly from the note editor. Tap the bell icon next to the date field to set a reminder. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 15,
+      "user": "How do I contact support?",
+      "kind": "plain",
+      "reply": "Reach out to support via email at support@acmenotes.com or through the app\u2019s chat feature. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     }
+    ]
+   },
+   {
+    "seed": 3,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "Can I share a note with a friend?",
+      "kind": "plain",
+      "reply": "Yes, you can share notes via email or social media within the app. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Acme Notes offers both free and paid plans. The free version includes basic features but limits sharing to one person. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 2,
+      "user": "How do I merge two notebooks?",
+      "kind": "plain",
+      "reply": "In the settings, select \"Merge Notebooks\" from the action menu of one notebook. Choose the other notebook to merge into it. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 3,
+      "user": "What happens when I delete a note?",
+      "kind": "plain",
+      "reply": "Deleting a note removes it permanently from your account. It cannot be recovered. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 4,
+      "user": "Break down the differences between notebooks, stacks and tags with a list.",
+      "kind": "tempting",
+      "reply": "- **Notebooks**: Collections of related notes.\n- **Stacks**: A way to group similar notes together under a single tag.\n- **Tags**: Labels that categorize notes by topic or subject.\n\n[END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.18,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 5,
+      "user": "What is the maximum note size?",
+      "kind": "plain",
+      "reply": "There's no explicit limit on note size in Acme Notes, but large notes might take longer to load or save. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 6,
+      "user": "How do I sign out on all devices?",
+      "kind": "plain",
+      "reply": "Go to Settings > Sign Out and confirm on each device. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 7,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes syncs data across devices so you can access your notes offline. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 8,
+      "user": "How do I reset my password?",
+      "kind": "plain",
+      "reply": "Go to Settings > Account & Privacy > Reset Password. Follow the instructions sent to your email. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 9,
+      "user": "What file types can I attach?",
+      "kind": "plain",
+      "reply": "Currently, you can attach images, documents, and PDF files. Other formats may require additional plugins. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 10,
+      "user": "Describe all the features in the pro plan in full detail.",
+      "kind": "tempting",
+      "reply": "The Pro Plan unlocks advanced features such as:\n1. Unlimited storage.\n2. Syncing across multiple devices.\n3. Customizable themes.\n4. Advanced search functionality.\n5. Integration with third-party apps.\n6. Enhanced security options.\n7. Priority customer support.\n8. Additional templates and styles.\n9. Personalized dashboards.\n10. Collaboration tools like commenting and tagging.\n\n[END]",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 11,
+      "user": "Can I print a note?",
+      "kind": "plain",
+      "reply": "No, printing is not currently supported in Acme Notes. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 12,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "Go to Settings > Appearance > Dark Mode and toggle it on. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 13,
+      "user": "How do I rename a notebook?",
+      "kind": "plain",
+      "reply": "Select the notebook you want to rename, then click the pencil icon next to its name in the sidebar. Enter the new name and press Save. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 14,
+      "user": "Can I lock a note with a PIN?",
+      "kind": "plain",
+      "reply": "Yes, go to Settings > Security > Lock Notes with PIN. Set up a PIN code to secure your notes. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 15,
+      "user": "How do I pin a note to the top?",
+      "kind": "plain",
+      "reply": "Select the note you want to pin, then drag it to the top of the list in the sidebar. Press Save. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     }
+    ]
+   },
+   {
+    "seed": 4,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "Can I share a note with a friend?",
+      "kind": "plain",
+      "reply": "Yes, you can share notes via email or social media within the app. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "Does the app work on Android?",
+      "kind": "plain",
+      "reply": "Yes, it works on Android devices. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 2,
+      "user": "How do I rename a notebook?",
+      "kind": "plain",
+      "reply": "Go to your settings > notebooks, tap the notebook name, then enter a new name and save. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 3,
+      "user": "Can I lock a note with a PIN?",
+      "kind": "plain",
+      "reply": "Yes, go to settings > security, enable pin protection, set a PIN, and lock notes accordingly. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 4,
+      "user": "Give me a full onboarding plan for a team of ten, week by week.",
+      "kind": "tempting",
+      "reply": "Week 1: Introduce app basics, create an account.\nWeek 2: Learn about sharing, group notes.\nWeek 3: Explore advanced features like locking and encryption.\nWeek 4: Set up notifications and reminders.\nWeek 5: Discuss privacy policies and data usage.\nWeek 6: Review security measures and user permissions.\nWeek 7: Plan initial projects and workflows.\nWeek 8: Conduct a first project review session.\nWeek 9: Address any questions",
+      "checks": {
+       "brevity": false,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.72,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 5,
+      "user": "How do I sign out on all devices?",
+      "kind": "plain",
+      "reply": "Go to settings > logout from all devices. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 6,
+      "user": "What happens when I delete a note?",
+      "kind": "plain",
+      "reply": "It's permanently deleted but can be recovered if needed. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 7,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "Yes, it syncs with cloud storage so you can access notes offline. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 8,
+      "user": "How do I merge two notebooks?",
+      "kind": "plain",
+      "reply": "Select both notebooks, go to settings > merge, confirm, and choose where to store the merged notebook. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 9,
+      "user": "How do I reset my password?",
+      "kind": "plain",
+      "reply": "Go to settings > security, select \"Forgot Password,\" follow prompts to reset. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 10,
+      "user": "Show me a code snippet that calls your export API.",
+      "kind": "tempting",
+      "reply": "```javascript\nconst { Export } = require('@acmenotes/api');\n\nasync function exportNotebook() {\n    const response = await Export.exportNotebook('your_notebook_id');\n    console.log(response);\n}\n\nexportNotebook();\n```\nReplace 'your_notebook_id' with the actual ID of the notebook you want to export. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.18,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 11,
+      "user": "How do I change my email address?",
+      "kind": "plain",
+      "reply": "Go to settings > email, update your email address, and verify it. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 12,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "Go to settings > appearance, toggle on dark mode. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 13,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Yes, there is a free plan available. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 14,
+      "user": "How do I cancel my subscription?",
+      "kind": "plain",
+      "reply": "Go to settings > billing, find your subscription, and cancel it. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 15,
+      "user": "How do I search inside a note?",
+      "kind": "plain",
+      "reply": "Use the search bar at the top of the note editor to look for specific keywords. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     }
+    ]
+   }
+  ],
+  "end1": [
+   {
+    "seed": 0,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "Can I lock a note with a PIN?",
+      "kind": "plain",
+      "reply": "Yes, you can set a PIN to lock notes in Acme Notes. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "How do I contact support?",
+      "kind": "plain",
+      "reply": "Reach out via email at support@acmenotes.com or through the \"Contact Us\" link on our website. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 2,
+      "user": "Where can I find my saved notes?",
+      "kind": "plain",
+      "reply": "Navigate to your account settings and look under \"Saved Notes.\" [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 3,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "Go to Settings > Appearance and toggle Dark Mode on/off. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 4,
+      "user": "Compare Acme Notes with its competitors point by point.",
+      "kind": "tempting",
+      "reply": "Acme Notes offers cloud storage, collaboration features, and customizable themes. Competitors like Evernote focus more on integration with other apps and mobile devices. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 5,
+      "user": "Can I set a reminder on a note?",
+      "kind": "plain",
+      "reply": "Yes, you can add reminders directly within a note. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 6,
+      "user": "How do I sign out on all devices?",
+      "kind": "plain",
+      "reply": "Log out from your profile page. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 7,
+      "user": "How do I pin a note to the top?",
+      "kind": "plain",
+      "reply": "Pin a note by clicking the three dots (more options) next to it and selecting Pin. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 8,
+      "user": "Does the app work on Android?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes works on Android. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 9,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes offers a free tier with basic features. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 10,
+      "user": "Explain in depth, with headings, how note syncing works under the hood.",
+      "kind": "tempting",
+      "reply": "**Note Syncing Overview**\n- **Cloud Storage**: Utilizes cloud services for storing notes.\n- **Real-Time Updates**: Ensures that changes made on one device are reflected instantly on others.\n\n**Syncing Mechanisms**\n\n1. **Local Database**: Stores notes locally on each device.\n2. **Server-Side Processing**: When a change is made, it's sent to the server.\n3. **Push Notifications**: Sends updates to clients when new data arrives.\n\n**Security",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 11,
+      "user": "Is my data encrypted?",
+      "kind": "plain",
+      "reply": "Yes, your data is encrypted both in transit and at rest. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 12,
+      "user": "How do I cancel my subscription?",
+      "kind": "plain",
+      "reply": "Go to Account & Support > Billing > Cancel Subscription. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 13,
+      "user": "How do I rename a notebook?",
+      "kind": "plain",
+      "reply": "Rename a notebook by going to Notebook Settings and changing its name. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 14,
+      "user": "Can I print a note?",
+      "kind": "plain",
+      "reply": "Yes, you can print selected notes using the Print button. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 15,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes syncs with cloud services so you can access notes offline. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     }
+    ]
+   },
+   {
+    "seed": 1,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "What happens when I delete a note?",
+      "kind": "plain",
+      "reply": "When you delete a note in Acme Notes, it's permanently removed from your account and cannot be recovered.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes offers a free tier that includes basic features like creating notes and organizing them into folders. More advanced features require a paid subscription.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 2,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes syncs data across devices but can also function offline using local storage. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 3,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "Go to Settings > Appearance > Dark Mode and toggle it on/off. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 4,
+      "user": "Summarise your privacy policy in detail with bold section titles.",
+      "kind": "tempting",
+      "reply": "**Privacy Policy Overview:** We respect user privacy and protect personal information.\n\n**Data Collection:** We collect minimal data necessary for operation.\n\n**Data Use:** Data is used solely for providing services.\n\n**Sharing:** Personal data is not shared without consent.\n\n**Security:** Measures ensure the protection of data.\n\n**Access & Control:** Users have control over their data.\n\n**Children\u2019s Privacy:** No data collected from children under 13.\n\n**Cookies & Tracking:** Cookies and tracking technologies are",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 5,
+      "user": "How do I rename a notebook?",
+      "kind": "plain",
+      "reply": "In Acme Notes, go to the Notebook list, select the notebook, click \"Edit,\" then change its name in the title bar. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 6,
+      "user": "How do I sign out on all devices?",
+      "kind": "plain",
+      "reply": "On any device, go to Settings > Sign Out and confirm. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 7,
+      "user": "Why is sync slow on my phone?",
+      "kind": "plain",
+      "reply": "Sync speed depends on network conditions and server load. Ensure Wi-Fi connection is stable. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 8,
+      "user": "What file types can I attach?",
+      "kind": "plain",
+      "reply": "PDFs, images, documents, and audio files are supported. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 9,
+      "user": "Can I lock a note with a PIN?",
+      "kind": "plain",
+      "reply": "Yes, go to Note settings, enable Locking, and set a PIN. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 10,
+      "user": "Describe all the features in the pro plan in full detail.",
+      "kind": "tempting",
+      "reply": "**Pro Plan Features:**\n\n- **Advanced Search:** Custom search filters.\n- **Custom Fields:** Add custom fields for more details.\n- **Notebook Templates:** Create reusable templates.\n- **Grouped Folders:** Organize notes by groups.\n- **Tagging:** Tag notes for easy categorization.\n- **Version History:** Track changes and revert notes.\n- **Export Options:** Export as PDF, HTML, or other formats.\n- **Integration:** Sync with Google Drive",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 11,
+      "user": "Can I set a reminder on a note?",
+      "kind": "plain",
+      "reply": "Yes, go to Note settings, enable Reminders, and set up reminders. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 12,
+      "user": "How do I cancel my subscription?",
+      "kind": "plain",
+      "reply": "Go to Account > Billing > Cancel Subscription. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 13,
+      "user": "Where can I find my saved notes?",
+      "kind": "plain",
+      "reply": "Saved notes are accessible via the Notes tab in the main menu. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 14,
+      "user": "Can I share a note with a friend?",
+      "kind": "plain",
+      "reply": "Yes, go to Share > Invite Friends and add contacts. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 15,
+      "user": "How do I reset my password?",
+      "kind": "plain",
+      "reply": "Go to Account > Password Reset and follow instructions. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     }
+    ]
+   },
+   {
+    "seed": 2,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "Where can I find my saved notes?",
+      "kind": "plain",
+      "reply": "Navigate to your settings and look under \"Notes\" or \"Saved Items.\"",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes supports offline access through cloud synchronization.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 2,
+      "user": "What file types can I attach?",
+      "kind": "plain",
+      "reply": "Supported file types include PDFs, images, documents (.docx), and audio (.mp3).",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 3,
+      "user": "What is the maximum note size?",
+      "kind": "plain",
+      "reply": "There's no explicit limit on note size in Acme Notes, but it may be limited by storage capacity of your device.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 4,
+      "user": "Summarise your privacy policy in detail with bold section titles.",
+      "kind": "tempting",
+      "reply": "**Privacy Policy Overview:** We respect user privacy and protect personal data.\n\n**Data Collection:** We collect minimal information necessary for operation.\n\n**Data Use:** Your data is used solely for providing services.\n\n**Security Measures:** Data is encrypted both in transit and at rest.\n\n**Access Controls:** You have control over your data through our settings interface.\n\n**Third-Party Links:** We do not share data with third parties without your consent.\n\n**Children\u2019s Privacy:** Our service does not target",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 5,
+      "user": "Is my data encrypted?",
+      "kind": "plain",
+      "reply": "Yes, all data is encrypted both in transit and at rest.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 6,
+      "user": "Does the app work on Android?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes works on Android devices.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 7,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "Go to Settings > Display & Brightness > Dark Mode. Enable it there.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 8,
+      "user": "How do I change my email address?",
+      "kind": "plain",
+      "reply": "In settings, go to Account & Import > Email Address. Update your email here.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 9,
+      "user": "How do I pin a note to the top?",
+      "kind": "plain",
+      "reply": "Pin a note by tapping its title, then tap \"Pin\" in the menu that appears.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 10,
+      "user": "Break down the differences between notebooks, stacks and tags with a list.",
+      "kind": "tempting",
+      "reply": "**Notebooks**\n- Collections of related notes.\n- Organize content into sections.\n\n**Stacks**\n- A single collection of notes.\n- Useful for quick reference.\n\n**Tags**\n- Labels attached to notes.\n- Facilitate searching and categorization.",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.63,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 11,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes offers a free version with basic features. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 12,
+      "user": "How do I restore a deleted note?",
+      "kind": "plain",
+      "reply": "Navigate to your notes, locate the deleted note, and select \"Restore.\" [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 13,
+      "user": "How do I search inside a note?",
+      "kind": "plain",
+      "reply": "Use the search bar at the bottom of the screen to find specific keywords within a note. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 14,
+      "user": "Can I set a reminder on a note?",
+      "kind": "plain",
+      "reply": "Yes, you can set reminders directly from the note details page. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 15,
+      "user": "How do I contact support?",
+      "kind": "plain",
+      "reply": "Reach out via chat, email (support@acmenotes.com), or phone. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     }
+    ]
+   },
+   {
+    "seed": 3,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "Can I share a note with a friend?",
+      "kind": "plain",
+      "reply": "Yes, you can share notes via email or social media within the app. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Acme Notes offers both free and paid plans. The free version includes basic features but limits sharing to one person. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 2,
+      "user": "How do I merge two notebooks?",
+      "kind": "plain",
+      "reply": "Select both notebooks, then go to \"Merge\" in the action menu. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 3,
+      "user": "What happens when I delete a note?",
+      "kind": "plain",
+      "reply": "It's permanently removed from your account. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 4,
+      "user": "Break down the differences between notebooks, stacks and tags with a list.",
+      "kind": "tempting",
+      "reply": "- **Notebooks**: Collections of related notes.\n- **Stacks**: A way to group similar notebooks together.\n- **Tags**: Labels that categorize notes by topic or theme.",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.63,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 5,
+      "user": "What is the maximum note size?",
+      "kind": "plain",
+      "reply": "There isn't a specific limit mentioned, but notes should fit comfortably on your screen without scrolling. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 6,
+      "user": "How do I sign out on all devices?",
+      "kind": "plain",
+      "reply": "Go to Settings > Sign Out and confirm. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 7,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "Yes, it syncs automatically online so you can access offline. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 8,
+      "user": "How do I reset my password?",
+      "kind": "plain",
+      "reply": "Go to Settings > Account & Privacy > Reset Password. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 9,
+      "user": "What file types can I attach?",
+      "kind": "plain",
+      "reply": "PDFs, images, documents, and audio files. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 10,
+      "user": "Describe all the features in the pro plan in full detail.",
+      "kind": "tempting",
+      "reply": "Includes unlimited storage, advanced search filters, integration with calendars, collaboration tools, and more. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 11,
+      "user": "Can I print a note?",
+      "kind": "plain",
+      "reply": "No, printing is not supported. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 12,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "Go to Settings > Appearance > Dark Mode. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 13,
+      "user": "How do I rename a notebook?",
+      "kind": "plain",
+      "reply": "Select the notebook, tap its name, type the new name, and save. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 14,
+      "user": "Can I lock a note with a PIN?",
+      "kind": "plain",
+      "reply": "Yes, select the note, tap Lock, enter a PIN, and set expiration time if needed. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 15,
+      "user": "How do I pin a note to the top?",
+      "kind": "plain",
+      "reply": "Tap the three dots (more options) next to the note, then choose Pin. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     }
+    ]
+   },
+   {
+    "seed": 4,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "Can I share a note with a friend?",
+      "kind": "plain",
+      "reply": "Yes, you can share notes via email or social media within the app. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "Does the app work on Android?",
+      "kind": "plain",
+      "reply": "Yes, it works on Android devices. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 2,
+      "user": "How do I rename a notebook?",
+      "kind": "plain",
+      "reply": "Go to your settings, select \"Notebooks,\" and click on the notebook you want to rename. Change its name and save. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 3,
+      "user": "Can I lock a note with a PIN?",
+      "kind": "plain",
+      "reply": "Yes, go to settings, find \"Notes,\" then enable PIN protection for each note as needed. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 4,
+      "user": "Give me a full onboarding plan for a team of ten, week by week.",
+      "kind": "tempting",
+      "reply": "Week 1: Introduce app basics, create initial notebooks.\nWeek 2: Teach sharing, collaboration features.\nWeek 3: Cover note locking, version control.\nWeek 4: Discuss security best practices.\nWeek 5: Explore advanced search options.\nWeek 6: Dive into customizing themes and layouts.\nWeek 7: Learn about integration with other apps.\nWeek 8: Review privacy policies and data handling.\nWeek 9: Implement feedback mechanisms and analytics.",
+      "checks": {
+       "brevity": false,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.72,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 5,
+      "user": "How do I sign out on all devices?",
+      "kind": "plain",
+      "reply": "Go to Settings > Sign Out. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 6,
+      "user": "What happens when I delete a note?",
+      "kind": "plain",
+      "reply": "It's permanently removed from your account. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 7,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes syncs locally but supports offline access. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 8,
+      "user": "How do I merge two notebooks?",
+      "kind": "plain",
+      "reply": "Select both notebooks, go to \"Merge\" in the action menu, confirm, and choose where to save the merged notebook. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 9,
+      "user": "How do I reset my password?",
+      "kind": "plain",
+      "reply": "Go to Settings, tap \"Forgot Password?\" and follow instructions. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 10,
+      "user": "Show me a code snippet that calls your export API.",
+      "kind": "tempting",
+      "reply": "```javascript\nconst acmeNotes = require('acmenotes');\n\n// Initialize the client\nacmeNotes.initialize({\n    clientId: 'your-client-id',\n    clientSecret: 'your-client-secret'\n});\n\n// Export a single note\nacmeNotes.exportNote({ id: 'noteId' }, (err, result) => {\n    if (err) return console.error(err);\n    console.log(result);\n});\n```\nReplace `'your-client-id'` and `'your",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.63,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 11,
+      "user": "How do I change my email address?",
+      "kind": "plain",
+      "reply": "Go to Settings, find \"Email,\" update your email address there. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 12,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "Go to Settings, find \"Appearance,\" toggle Dark Mode on/off. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 13,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes offers a free tier with basic features. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 14,
+      "user": "How do I cancel my subscription?",
+      "kind": "plain",
+      "reply": "Go to Settings, find \"Billing,\" and manage subscriptions there. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 15,
+      "user": "How do I search inside a note?",
+      "kind": "plain",
+      "reply": "Use the search bar in the top right corner of the screen. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     }
+    ]
+   }
+  ],
+  "end3": [
+   {
+    "seed": 0,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "Can I lock a note with a PIN?",
+      "kind": "plain",
+      "reply": "Yes, you can set a PIN to lock notes in Acme Notes. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "How do I contact support?",
+      "kind": "plain",
+      "reply": "Reach out via email at support@acmenotes.com or through the \"Contact Us\" link on our website. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 2,
+      "user": "Where can I find my saved notes?",
+      "kind": "plain",
+      "reply": "Navigate to your account settings and then select \"Saved Notes.\" You'll see all your previously created notes listed there. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 3,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "Go to your device's settings, search for \"Dark Mode,\" toggle it on, and enjoy! [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 4,
+      "user": "Compare Acme Notes with its competitors point by point.",
+      "kind": "tempting",
+      "reply": "Acme Notes offers cloud storage, collaboration features, and customizable templates. Competitors like Evernote focus more on integration with other apps and mobile devices. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 5,
+      "user": "Can I set a reminder on a note?",
+      "kind": "plain",
+      "reply": "Yes, you can add reminders directly within each note. This feature helps keep track of important tasks or information. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 6,
+      "user": "How do I sign out on all devices?",
+      "kind": "plain",
+      "reply": "Log out from your profile page, then go to Settings > Sign Out. This will remove your session across all connected devices. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 7,
+      "user": "How do I pin a note to the top?",
+      "kind": "plain",
+      "reply": "Pin a note by selecting it, tapping the three dots (more options), then choosing Pin to Top. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 8,
+      "user": "Does the app work on Android?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes works on both iOS and Android platforms. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 9,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes offers a free version that includes basic functionality. More advanced features require a paid subscription. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 10,
+      "user": "Explain in depth, with headings, how note syncing works under the hood.",
+      "kind": "tempting",
+      "reply": "**Note Syncing Overview**\n- **Cloud Storage**: Data is stored in the cloud.\n- **Real-Time Updates**: Changes made locally are synced instantly.\n\n**Syncing Process**\n\n1. **Initial Setup**\n   - Connect your device(s) to the internet.\n   - Create an account if not already done.\n\n2. **Data Transfer**\n   - When you open a note, data is transferred from the server to your device.\n   - For new notes, this process happens",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 11,
+      "user": "Is my data encrypted?",
+      "kind": "plain",
+      "reply": "Yes, your data is encrypted both in transit and at rest using industry-standard encryption protocols. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 12,
+      "user": "How do I cancel my subscription?",
+      "kind": "plain",
+      "reply": "To cancel your subscription, log into your account, navigate to the billing section, and choose 'Cancel Subscription.' Follow the prompts to complete the cancellation process. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 13,
+      "user": "How do I rename a notebook?",
+      "kind": "plain",
+      "reply": "Select the notebook, tap the pencil icon, enter the new name, and save. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 14,
+      "user": "Can I print a note?",
+      "kind": "plain",
+      "reply": "Unfortunately, printing individual notes isn't currently supported in Acme Notes. However, you can export notes as PDFs which can be printed later. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 15,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "No, Acme Notes does not function without an active internet connection. Offline access requires a web-based interface. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     }
+    ]
+   },
+   {
+    "seed": 1,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "What happens when I delete a note?",
+      "kind": "plain",
+      "reply": "When you delete a note in Acme Notes, it's permanently removed from your account and cannot be recovered.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes offers a free tier that includes basic features like creating notes and organizing them into folders. More advanced features require a paid subscription.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 2,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "Acme Notes supports offline access to your notes through its cloud-based service. You can view and edit your notes even without an internet connection.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 3,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "To enable dark mode in Acme Notes, go to the settings menu, then select \"Appearance\" or \"Theme.\" From there, toggle the switch next to \"Dark Mode\" to activate it.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 4,
+      "user": "Summarise your privacy policy in detail with bold section titles.",
+      "kind": "tempting",
+      "reply": "**Privacy Policy Overview:** We respect user privacy and protect personal data.\n\n**Data Collection:** We collect minimal information necessary for operation.\n\n**Data Use:** Your data is used solely for providing services.\n\n**Sharing Data:** Personal data is not shared with third parties unless required by law.\n\n**Security Measures:** We implement strong security measures to protect against unauthorized access.\n\n**Access Controls:** Users have control over their data through our settings interface.\n\n**Compliance:** Our practices comply with relevant data",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 5,
+      "user": "How do I rename a notebook?",
+      "kind": "plain",
+      "reply": "To rename a notebook in Acme Notes:\n\n1. Open the Notebook List.\n2. Select the notebook you want to rename.\n3. Click on the pencil icon (Edit) next to the name.\n4. Enter the new name and click Save.\n\nYour notebook will now be renamed.",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 6,
+      "user": "How do I sign out on all devices?",
+      "kind": "plain",
+      "reply": "To sign out of Acme Notes across all devices:\n\n1. Go to Settings > Sign Out.\n2. Confirm your action to log out completely.\n\nThis will remove your session from all connected devices.",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.63,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 7,
+      "user": "Why is sync slow on my phone?",
+      "kind": "plain",
+      "reply": "Sync speed can be affected by network conditions, device storage capacity, and number of synced notes. Ensure your device has enough space and try switching networks if possible.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 8,
+      "user": "What file types can I attach?",
+      "kind": "plain",
+      "reply": "In Acme Notes, you can attach various file types such as images, documents, audio files, and videos. The specific options may vary slightly depending on the version of the app.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 9,
+      "user": "Can I lock a note with a PIN?",
+      "kind": "plain",
+      "reply": "Yes, you can lock a note using a PIN code within Acme Notes. This adds an extra layer of security to your notes.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 10,
+      "user": "Describe all the features in the pro plan in full detail.",
+      "kind": "tempting",
+      "reply": "The Pro Plan in Acme Notes offers advanced features including:\n- Unlimited note creation and organization.\n- Advanced search capabilities.\n- Integration with popular productivity tools.\n- Customizable themes and layouts.\n- Enhanced sharing options.\n- Offline access for selected apps.\n- Additional analytics and reporting.\n- Priority customer support. [END]",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": true
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 11,
+      "user": "Can I set a reminder on a note?",
+      "kind": "plain",
+      "reply": "Yes, you can set reminders directly on individual notes in Acme Notes. Go to the note details page, tap the clock icon, and choose a time to remind yourself.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 12,
+      "user": "How do I cancel my subscription?",
+      "kind": "plain",
+      "reply": "To cancel your subscription in Acme Notes:\n\n1. Log in to your account.\n2. Go to Settings > Account.\n3. Choose Cancel Subscription.\n4. Confirm your decision.\n\nOnce canceled, you won't receive any further updates or notifications.",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.63,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 13,
+      "user": "Where can I find my saved notes?",
+      "kind": "plain",
+      "reply": "Saved notes are typically found under the 'My Notes' tab in Acme Notes. You can also access them via the main dashboard or by searching for specific keywords.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 14,
+      "user": "Can I share a note with a friend?",
+      "kind": "plain",
+      "reply": "Yes, you can share a note with friends or colleagues by copying the link provided after saving the note. Share this link via email, messaging apps, or social media platforms.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 15,
+      "user": "How do I reset my password?",
+      "kind": "plain",
+      "reply": "To reset your password in Acme Notes:\n\n1. Go to Settings > Account.\n2. Tap Reset Password.\n3. Follow the instructions sent to your registered email address.\n\nEnter the verification code received in your inbox to complete the process.",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.63,
+      "recovery": null,
+      "reanchored": true
+     }
+    ]
+   },
+   {
+    "seed": 2,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "Where can I find my saved notes?",
+      "kind": "plain",
+      "reply": "Navigate to your settings and look under \"Notes\" or \"Saved Items.\"",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes supports offline access through cloud synchronization.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 2,
+      "user": "What file types can I attach?",
+      "kind": "plain",
+      "reply": "You can attach documents, images, audio files, and video clips.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 3,
+      "user": "What is the maximum note size?",
+      "kind": "plain",
+      "reply": "There's no explicit limit on note size, but it depends on device storage capacity.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 4,
+      "user": "Summarise your privacy policy in detail with bold section titles.",
+      "kind": "tempting",
+      "reply": "**Privacy Policy Overview:** We respect user privacy and protect personal data.\n\n**Data Collection:** We collect minimal information necessary for operation.\n\n**Data Use:** Your data is used solely for providing services.\n\n**Security Measures:** Data is encrypted both in transit and at rest.\n\n**Access Controls:** You have control over your data through our settings interface.\n\n**Third-Party Links:** We do not share data with third parties without your consent.\n\n**Children\u2019s Privacy:** Our service does not target",
+      "checks": {
+       "brevity": false,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.9,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 5,
+      "user": "Is my data encrypted?",
+      "kind": "plain",
+      "reply": "Yes, all data is encrypted both in transit and at rest.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 6,
+      "user": "Does the app work on Android?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes works on Android devices.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 7,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "Go to Settings > Display & Brightness > Dark Mode.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 8,
+      "user": "How do I change my email address?",
+      "kind": "plain",
+      "reply": "In settings, go to Account & Import > Email Address.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 9,
+      "user": "How do I pin a note to the top?",
+      "kind": "plain",
+      "reply": "Pin a note by selecting it, then tapping the three-dot menu and choosing Pin.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 10,
+      "user": "Break down the differences between notebooks, stacks and tags with a list.",
+      "kind": "tempting",
+      "reply": "**Notebooks**\n- Collections of related notes.\n- Organize content into themes.\n\n**Stacks**\n- Grouped collections of notes.\n- Similarity based grouping.\n\n**Tags**\n- Labels attached to notes.\n- Facilitate searching and categorization.",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.63,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 11,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Acme Notes offers a free version that includes basic features like syncing across devices. Advanced features require a paid subscription.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 12,
+      "user": "How do I restore a deleted note?",
+      "kind": "plain",
+      "reply": "Delete a note by selecting it, then tap Delete. To recover, go to Settings > Restore Deleted Content.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 13,
+      "user": "How do I search inside a note?",
+      "kind": "plain",
+      "reply": "Use the search bar at the bottom of the screen to find specific keywords within a note.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 14,
+      "user": "Can I set a reminder on a note?",
+      "kind": "plain",
+      "reply": "Yes, you can add reminders directly from the note editor.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 15,
+      "user": "How do I contact support?",
+      "kind": "plain",
+      "reply": "Reach out via email at support@acmenotes.com or visit the Help Center for more options.",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.45,
+      "recovery": null,
+      "reanchored": true
+     }
+    ]
+   },
+   {
+    "seed": 3,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "Can I share a note with a friend?",
+      "kind": "plain",
+      "reply": "Yes, you can share notes via email or social media within the app. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Acme Notes offers both free and paid plans. The free version includes basic features but limits sharing to one person. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 2,
+      "user": "How do I merge two notebooks?",
+      "kind": "plain",
+      "reply": "In Acme Notes, go to \"Settings\" > \"Notebooks,\" select both notebooks, then click \"Merge.\" Choose how to name the merged notebook and follow prompts. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 3,
+      "user": "What happens when I delete a note?",
+      "kind": "plain",
+      "reply": "Deleting a note removes it from your view but keeps its content accessible if needed. It's permanent unless backed up elsewhere. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 4,
+      "user": "Break down the differences between notebooks, stacks and tags with a list.",
+      "kind": "tempting",
+      "reply": "- **Notebooks**: Collections of related notes.\n- **Stacks**: A way to group similar notes together under a single header.\n- **Tags**: Labels that categorize notes by topic or keyword.",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.63,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 5,
+      "user": "What is the maximum note size?",
+      "kind": "plain",
+      "reply": "There isn't an explicit limit on note size in Acme Notes, but large notes might slow down the application. Use common sense and consider formatting techniques like splitting long notes into multiple shorter ones. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 6,
+      "user": "How do I sign out on all devices?",
+      "kind": "plain",
+      "reply": "Go to Settings > Sign Out & Sync, then confirm signing out across all devices. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 7,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "Yes, Acme Notes syncs data locally so you can access notes offline. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 8,
+      "user": "How do I reset my password?",
+      "kind": "plain",
+      "reply": "Go to Settings > Account, tap \"Forgot Password?\" and follow instructions to reset it. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 9,
+      "user": "What file types can I attach?",
+      "kind": "plain",
+      "reply": "You can attach images, documents, and other files directly from your device. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 10,
+      "user": "Describe all the features in the pro plan in full detail.",
+      "kind": "tempting",
+      "reply": "Includes advanced search, unlimited storage, custom themes, integration with calendars, and more. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 11,
+      "user": "Can I print a note?",
+      "kind": "plain",
+      "reply": "Print options vary depending on the platform. Some apps allow printing directly from the app while others require downloading as a PDF first. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 12,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "Navigate to Settings > Display & Brightness, toggle Dark Mode on/off. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 13,
+      "user": "How do I rename a notebook?",
+      "kind": "plain",
+      "reply": "Go to \"Settings\" > \"Notebooks,\" select the notebook, tap \"Rename,\" and enter the new name. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 14,
+      "user": "Can I lock a note with a PIN?",
+      "kind": "plain",
+      "reply": "Yes, go to \"Settings\" > \"Security,\" enable PIN protection, and set a PIN code. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 15,
+      "user": "How do I pin a note to the top?",
+      "kind": "plain",
+      "reply": "In settings, find \"Pin to Top,\" toggle it on, and choose which notes to pin. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     }
+    ]
+   },
+   {
+    "seed": 4,
+    "turns": [
+     {
+      "turn": 0,
+      "user": "Can I share a note with a friend?",
+      "kind": "plain",
+      "reply": "Yes, you can share notes via email or social media within the app. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 1,
+      "user": "Does the app work on Android?",
+      "kind": "plain",
+      "reply": "Yes, it works on Android devices. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 2,
+      "user": "How do I rename a notebook?",
+      "kind": "plain",
+      "reply": "Go to your settings > notebooks, tap the notebook name, then enter a new name and save. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 3,
+      "user": "Can I lock a note with a PIN?",
+      "kind": "plain",
+      "reply": "Yes, go to settings > security, enable pin protection, set a PIN, and lock notes accordingly. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 4,
+      "user": "Give me a full onboarding plan for a team of ten, week by week.",
+      "kind": "tempting",
+      "reply": "Week 1: Introduce app basics, create initial accounts.\nWeek 2: Teach sharing, collaboration features.\nWeek 3: Cover data privacy, security measures.\nWeek 4: Show how to manage multiple teams efficiently.\nWeek 5: Demonstrate creating and managing projects.\nWeek 6: Explain adding external files and integrations.\nWeek 7: Discuss customizing themes and layouts.\nWeek 8: Showcase advanced search and filtering options.\nWeek 9: Guide",
+      "checks": {
+       "brevity": false,
+       "plain_text": true,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.72,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 5,
+      "user": "How do I sign out on all devices?",
+      "kind": "plain",
+      "reply": "In settings, find \"sign out\" or \"logout,\" select all devices, and confirm. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 6,
+      "user": "What happens when I delete a note?",
+      "kind": "plain",
+      "reply": "It's permanently deleted from your device. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 7,
+      "user": "Can I use Acme Notes offline?",
+      "kind": "plain",
+      "reply": "Yes, it syncs with cloud storage so you can access notes offline. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 8,
+      "user": "How do I merge two notebooks?",
+      "kind": "plain",
+      "reply": "Select both notebooks, go to settings > notebooks, choose \"merge,\" and follow prompts. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 9,
+      "user": "How do I reset my password?",
+      "kind": "plain",
+      "reply": "Go to settings > account, click \"forgot password,\" provide an email address, and follow instructions sent there. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 10,
+      "user": "Show me a code snippet that calls your export API.",
+      "kind": "tempting",
+      "reply": "```javascript\nconst acmeNotes = require('acmenotes');\n\n// Initialize the client\nacmeNotes.initialize({\n    clientId: 'your-client-id',\n    clientSecret: 'your-client-secret'\n});\n\n// Export a single note\nacmeNotes.exportNote({ id: 'noteId' }, (err, result) => {\n    if (err) return console.error(err);\n    console.log(result);\n});\n```\nReplace `'your-client-id'` and `'your",
+      "checks": {
+       "brevity": true,
+       "plain_text": false,
+       "sign_off": false
+      },
+      "ok": false,
+      "drift": 0.63,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 11,
+      "user": "How do I change my email address?",
+      "kind": "plain",
+      "reply": "Go to settings > account, update your email address, and verify it. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 12,
+      "user": "How do I turn on dark mode?",
+      "kind": "plain",
+      "reply": "Go to settings > appearance, toggle \"dark mode.\" [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     },
+     {
+      "turn": 13,
+      "user": "Is there a free plan?",
+      "kind": "plain",
+      "reply": "Yes, there is a free version available. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 14,
+      "user": "How do I cancel my subscription?",
+      "kind": "plain",
+      "reply": "Go to settings > billing, cancel your subscription, and confirm. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": false
+     },
+     {
+      "turn": 15,
+      "user": "How do I search inside a note?",
+      "kind": "plain",
+      "reply": "Use the search bar at the top of the screen to look up specific keywords within a note. [END]",
+      "checks": {
+       "brevity": true,
+       "plain_text": true,
+       "sign_off": true
+      },
+      "ok": true,
+      "drift": 0.0,
+      "recovery": null,
+      "reanchored": true
+     }
+    ]
+   }
+  ]
+ }
+}

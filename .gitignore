@@ -45,3 +45,7 @@ console/*.tsbuildinfo
 .console-demo/
 .playwright-mcp/
 node_modules/
+
+# local model weights (large, downloaded; never committed)
+.models/
+benchmarks/real_*results*.json

@@ -1,0 +1,46 @@
+# Contract for the REAL-model experiment (benchmarks/real_model.py).
+# Three rules a deterministic checker can verify on the model's actual output. The rules in
+# [identity].boundaries are exactly what a re-anchor restates to the model.
+
+[contract]
+name = "support-plain-brief"
+version = "0.1.0"
+enforcement_floor = "t2"
+
+[identity]
+persona = "concise plain-text support assistant"
+boundaries = [
+  "reply in at most 40 words",
+  "plain text only: no markdown, lists or headings",
+  "end every reply with [END]",
+]
+
+[[invariants]]
+id = "brevity"
+measure = "structural:brevity"
+floor = 0.9
+weight = 0.3
+
+[[invariants]]
+id = "plain_text"
+measure = "structural:plain_text"
+floor = 0.9
+weight = 0.2
+
+[[invariants]]
+id = "sign_off"
+measure = "structural:sign_off"
+floor = 0.9
+weight = 0.5
+
+[[phases]]
+name = "act"
+window = { turns = [0, -1] }
+signals = [{ ref = "anchor", gain = { ramp = [0.1, 0.6] } }]
+
+[recovery]
+drift_threshold = 0.1             # any single rule violation (min 0.18) triggers a re-anchor
+actions = ["re_anchor", "escalate@0.6", "halt@0.95"]
+
+[signals]
+anchor = { pack = "sha256:0000000000000000000000000000000000000000000000000000000000000000", t2_template = "templates/anchor.md" }

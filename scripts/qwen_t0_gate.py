@@ -9,13 +9,8 @@ Two modes:
       mechanical demonstration of the closed loop, NOT a capability-retention
       result.
 
-  run_real_gate(model_id) - the actual blueprint gate. Loads Qwen2.5-7B /
-      Llama-3.1-8B, derives a probe from contrast prompts, runs a 50-step agent
-      with an ANCHOR ramp, and reports adherence improvement + MMLU delta.
-      REQUIRES the weights + a GPU; not run in CI. If the model can't be loaded
-      it raises, by design — we never fake the real numbers.
-
-      python scripts/qwen_t0_gate.py --model Qwen/Qwen2.5-7B-Instruct
+  The REAL gate is scripts/real_t0_gate.py (measured on Qwen2.5-1.5B-Instruct with local
+      weights and a GPU; not run in CI). The blueprint's 7B/8B gate is still unrun here.
 """
 from __future__ import annotations
 
@@ -127,10 +122,10 @@ def run_synthetic_gate(steps: int = 50, d: int = 16, n: int = 6,
 # ── real gate (requires weights + GPU) ──────────────────────────────────
 def run_real_gate(model_id: str, steps: int = 50) -> dict:  # pragma: no cover
     raise NotImplementedError(
-        "Real gate scaffold: load %s with transformers, derive a probe from "
-        "contrast prompts, run an ANCHOR ramp vs baseline, report adherence "
-        "improvement + MMLU delta. Requires the weights + a GPU; wire up before "
-        "publishing any capability-retention numbers." % model_id
+        "The real gate lives in scripts/real_t0_gate.py (implemented for local weights, tested on "
+        "Qwen2.5-1.5B-Instruct). This file keeps only the synthetic CI gate. A 7B model does not fit in "
+        "8 GB at full precision, so the Qwen2.5-7B / Llama-3.1-8B gate named in the blueprint is still "
+        "unrun. Requested model: %s" % model_id
     )
 
 

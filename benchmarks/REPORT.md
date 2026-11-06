@@ -1,7 +1,7 @@
 # OpenGuide benchmark report (simulated)
 
-**Status: SIMULATED.** Every number here comes from a deterministic mock-agent
-simulation, not a real model. It exists to (a) fix the methodology and (b) wire
+**Status: sections 1-6 are SIMULATED; section 7 is a REAL model (Qwen2.5-1.5B-Instruct).** Every number in
+sections 1-6 comes from a deterministic mock-agent simulation, not a real model. It exists to (a) fix the methodology and (b) wire
 the harness end to end. Real closed-model (GPT/Claude) and open-model
 (Qwen/Llama) numbers require API keys / weights and **replace** these results;
 they are published regardless of outcome, per the blueprint's kill criteria.
@@ -132,3 +132,136 @@ methodology preview, not evidence.
 The SEC EDGAR and CISA KEV demos use real public data but scripted agents, so
 they prove integration mechanics and auditability rather than model
 performance.
+
+## 7. Real model: Qwen2.5-1.5B-Instruct on a local GPU
+
+**Everything in this section is measured on a real model**, unlike sections 1-6. Setup: Qwen2.5-1.5B-Instruct
+(fp16), one RTX 4060 laptop GPU (8 GB), `transformers` 4.57.3 / `torch` 2.5.1, greedy decoding,
+`max_new_tokens` 96, so every number is deterministic and re-runnable. The proxy path is the real one
+(`proxy/hf_upstream.py` plugs the model in as an `Upstream`). The model id is `local:qwen2.5-1.5b-instruct`,
+an unknown provider, so the tier is T2/T3: text re-anchoring only.
+
+**The task.** A support-assistant conversation under three rules a deterministic checker can verify on the
+model's actual reply (`benchmarks/real_model.py`): at most 40 words; plain text with no markdown, lists or
+headings; end with `[END]`. The contract is `benchmarks/real_model_contract.toml`; a re-anchor restates its
+rules. Prompts are scripted: 24 *plain* questions and 16 *tempting* ones that ask for exactly what the rules
+forbid (a bulleted list, a table, a long explanation).
+
+### What changed after seeing results (read this first)
+
+The design was not fixed in advance. In order:
+
+1. **Design v1** (30-turn conversations, random mix of plain and tempting prompts, arms none / naive / proxy).
+   One full conversation took 13 minutes and scored **0% in all three arms**: the model never wrote `[END]`,
+   rarely met the word limit, and the 30 proxy re-anchors changed nothing. A floor effect, so I stopped it
+   after one conversation rather than spend an hour repeating it.
+2. **Calibration** (`scripts/calibrate_real_rules.py`, held-out prompts): the model follows `[END]` 7/10 from a
+   clean start, so the rule is achievable and the 0% was drift, not incapacity. Alternatives tried: "the word
+   DONE" 4/10, a signature line 0/10, a thank-you sentence 7/10. I kept `[END]` as designed.
+3. **Plain-prompts-only ablation** (3 conversations x 12 turns): only the sign-off drifts, and only in some
+   conversations, so a cleaner *recovery* design was built: mostly plain turns with two "shock" turns.
+4. **Recovery experiment** (5 conversations x 16 turns, shocks at turns 4 and 10), the headline test below.
+   **This design was chosen after seeing v1 and the ablation.**
+5. **T0 gains** were chosen before the full run but after a 4-question smoke test. The recovery test at gain
+   **0.05** was added **after** the capability results showed it was the only gain that keeps the model working.
+
+### 7.1 Does re-anchoring help? (recovery on a real model)
+
+"Recovery" is compliance on the plain turns after the first shock. Mean of 5 conversations; 3 of the 5 never
+drifted without help, so all the signal comes from conversations 1 and 2.
+
+| Arm | Recovery | Paired vs. none (5 conversations) |
+|---|---|---|
+| none | 60% | |
+| **proxy** (real OpenGuide path: reactive, re-anchor as first message, every-8 floor) | **64%** | +0.04, 1 win / 4 ties / 0 losses |
+| re-anchor every turn, as first message | 84% | +0.24 [0.00, +0.64], 2 / 3 / 0 |
+| re-anchor every turn, just before the latest user turn | 90% | +0.30 [0.00, +0.70], 2 / 3 / 0 |
+| re-anchor every 3 turns, just before the latest user turn | 60% | 0.00, 0 / 5 / 0 |
+
+**Reading it.** On this model the proxy's re-anchoring gave essentially no benefit. Restating the rules *every*
+turn did better, but no interval excludes zero, and which placement wins flips between conversations. Compliance
+**on the shock turns themselves** was 4 of 50: the model follows an explicit user request over a system rule, and
+re-anchoring does not change that. Plain-prompts-only ablation (3 conversations x 12 turns, all-turn
+compliance): none 33%, front/3 33%, end/3 53%, front/1 56%, end/1 64%; brevity and plain text were 100% in
+every arm, only the sign-off drifted.
+
+### 7.2 T0 activation steering (`benchmarks/real_t0.py`, `scripts/real_t0_gate.py`)
+
+Vectors: per decoder layer in a fixed band (layers 10-18 of 28), the mean difference of the residual stream at
+the last prompt token between "system prompt states the rules" and "does not", over 12 held-out prompts; unit
+length, scaled to the typical residual norm (so gain 1.0 = one typical norm); injected with the norm-preserving
+`ActivationSteerer`. Replay identity holds on the real model: the same steered generation run twice gives a
+bit-identical trace head (verified chain of 48 records).
+
+**Capability (n=100 GSM8K test problems, n=300 MMLU test questions, fixed random seed, 95% Wilson CI):**
+
+| Gain | GSM8K | MMLU |
+|---|---|---|
+| 0 (none) | 66% [56, 75] | 59% [53, 64] |
+| 0.05 | 60% [50, 69] (p=0.46 vs. none) | 59% [53, 64] (identical, 177/300) |
+| 0.1 | **24%** [17, 33] (p=3e-9) | 58% [52, 63] |
+| 0.2 | **4%** [2, 10] | **32%** [27, 37] |
+| 0.4 | 0% [0, 4] | 25% (chance) |
+| 0.8 | 0% [0, 4] | 25% (chance) |
+
+At gain 0.05 no loss is detected, but with n=100 a drop of up to roughly 10 points cannot be ruled out. At 0.1,
+multi-step reasoning collapses while single-token multiple choice does not (a hypothesis worth testing: the
+steering direction encodes terseness, and terse answers skip the chain of thought). From 0.2 the output is
+**degenerate text** (`@acmndt s/acc rmnsg pw: #1`, runs of quote marks).
+
+**Warning about the rule scores at gain >= 0.2.** The checker passes degenerate output on brevity and
+plain-text (a string of quote marks is short and has no markdown). Those scores in the saved results are
+artifacts of broken output, not rule-following, and must not be cited. The usable range is **gain <= 0.1**.
+
+**Behavior, single turn (24 held-out plain prompts per cell):**
+
+| Condition | All rules | Brevity | Plain | Sign-off |
+|---|---|---|---|---|
+| no rules in prompt, no steering | 0% | 0% | 29% | 0% |
+| no rules in prompt, gain 0.05 | 0% | **92%** | 96% | 0% |
+| no rules in prompt, gain 0.1 | 0% | 100% | 96% | 0% |
+| rules in prompt, no steering | 54% | 100% | 92% | 58% |
+| rules in prompt, gain 0.05 | **88%** | 100% | 100% | 88% |
+| rules in prompt, gain 0.1 | 71% | 100% | 100% | 71% |
+
+- With **no rules in the prompt**, steering alone makes replies terse and plain (brevity 0/24 -> 22/24 at 0.05,
+  p ~ 2e-11, coherent text such as `Go to settings > security > change password and set new one.`), but it
+  **never produces the `[END]` sign-off**: the direction carries style, not that specific token.
+- **With** the rules in the prompt, gain 0.05 raised all-rules compliance 13/24 -> 21/24 (p = 0.024, uncorrected
+  for the five gains examined, so tentative); gain 0.1 did not clearly help (p = 0.37).
+
+**Recovery under steering (same 5 conversations as 7.1):**
+
+| Arm | All turns | Recovery | Per-conversation (seeds 0-4) |
+|---|---|---|---|
+| none | 52.5% | 60% | .88 .00 .00 .88 .88 |
+| steering, gain 0.05 *(added post hoc)* | **88.8%** | **100%** | .94 .88 .88 .88 .88 |
+| steering, gain 0.1 | 75.0% | 80% | **.00** .88 1.0 .88 1.0 |
+| steering, gain 0.2 | 0% | 0% | all 0 (degenerate output) |
+| steering, gain 0.4 | 0% | 0% | all 0 (degenerate output) |
+
+Gain 0.05 vs. none, paired over 5 conversations: +0.36, bootstrap 95% CI [+0.01, +0.71], 3 wins / 2 ties /
+0 losses (exact sign test p = 0.25). Gain 0.1 rescued the two drifting conversations but **broke a conversation
+that was fine** (seed 0: 88% -> 0%); steering is always on, whether or not the model is drifting.
+
+### 7.3 What this does and does not show
+
+- **Shows:** a real-model pipeline works end to end (proxy, real sensors, traces, steering, replay); on this
+  model the proxy's current re-anchoring does little; activation steering at a *small* gain (0.05) changes
+  behavior in the intended direction with no detectable capability loss, and at larger gains destroys the
+  model; the capability cost is sharp, not gradual.
+- **Does not show:** anything about 7B/8B models (the blueprint's Qwen2.5-7B does not fit in 8 GB at full
+  precision, so that gate is still unrun); that results hold for other rules, prompts or models; that the
+  placement of a re-anchor matters (it flips by conversation); a statistically established benefit for any
+  intervention (n = 5 conversations, intervals touch zero).
+- **Limits:** one model, one contract, scripted prompts, greedy decoding (no sampling variance), 5
+  conversations per arm of which 3 never drifted, MMLU on 300 random test questions and GSM8K on 100. The
+  steering vector was derived and evaluated on the same kind of question (different questions, same template).
+  Rule checkers count degenerate text as compliant on some rules (see the warning above).
+
+Reproduce (GPU, ~1.5 hours in total): `python scripts/calibrate_real_rules.py`;
+`python scripts/real_placement_ablation.py` (add `--plain-only` for the ablation);
+`python scripts/real_t0_gate.py`; then `python scripts/real_model_demo.py --serve` to browse the runs in the
+Console. Weights go in `.models/Qwen2.5-1.5B-Instruct` (git-ignored). The raw results of the runs reported
+here are committed in [`results/qwen2.5-1.5b/`](results/qwen2.5-1.5b/) with a note on how to read them; new runs
+write to `benchmarks/real_*results*.json` (git-ignored).

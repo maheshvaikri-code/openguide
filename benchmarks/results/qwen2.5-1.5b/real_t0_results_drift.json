@@ -1,0 +1,45 @@
+{
+ "model": "D:\\OpenGuide\\.models\\Qwen2.5-1.5B-Instruct",
+ "band": [
+  10,
+  19
+ ],
+ "gains": [
+  0.1,
+  0.2,
+  0.4,
+  0.6,
+  0.8
+ ],
+ "derivation_prompts": 12,
+ "pack_hash": "sha256:7d293722ca740ee286715992969ad0f88db58cf894690604412bd5fab701b61f",
+ "drift": {
+  "0.05": {
+   "summary": {
+    "conversations": 5,
+    "turns": 80,
+    "compliance": 0.8875,
+    "by_rule": {
+     "brevity": 0.9875,
+     "plain_text": 0.9,
+     "sign_off": 0.975
+    },
+    "by_kind": {
+     "plain": 1.0,
+     "tempting": 0.1
+    },
+    "recovery": 1.0,
+    "reanchors_per_conversation": 0.0,
+    "mean_peak_drift": 0.378
+   },
+   "per_seed": [
+    0.9375,
+    0.875,
+    0.875,
+    0.875,
+    0.875
+   ]
+  }
+ },
+ "seconds": 93
+}
