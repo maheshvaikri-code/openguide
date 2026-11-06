@@ -215,3 +215,31 @@ describe("activation steering on a turn", () => {
     expect(screen.queryByText(/steering/i)).not.toBeInTheDocument();
   });
 });
+
+
+describe("the run header says when steering was used", () => {
+  const STEERS = [
+    { ev: "STEER", turn: 1, gain: 0.05, band: [10, 19], pack_hash: "sha256:p" },
+    { ev: "STEER", turn: 2, gain: 0.05, band: [10, 19], pack_hash: "sha256:p" },
+  ];
+
+  it("names T0 steering and how many turns it was on, so the two arms can be told apart", async () => {
+    show(api([...STATES, ...STEERS] as Array<Record<string, unknown>>));
+    await screen.findByLabelText("Details of turn 0");
+    expect(screen.getByRole("heading", { level: 1 }).parentElement).toHaveTextContent("at tier T2 + T0 steering (on 2 turns)");
+  });
+
+  it("says 'turn' for one", async () => {
+    show(api([...STATES, STEERS[0]!] as Array<Record<string, unknown>>));
+    await screen.findByLabelText("Details of turn 0");
+    expect(screen.getByRole("heading", { level: 1 }).parentElement).toHaveTextContent("T2 + T0 steering (on 1 turn)");
+  });
+
+  it("is unchanged for a run that never used steering", async () => {
+    show(api(stateOnly));
+    await screen.findByLabelText("Details of turn 0");
+    const head = screen.getByRole("heading", { level: 1 }).parentElement!;
+    expect(head).toHaveTextContent("at tier T2, 3 turns");
+    expect(head).not.toHaveTextContent("steering");
+  });
+});

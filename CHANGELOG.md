@@ -8,7 +8,7 @@ All notable changes to this project are documented here. Format follows
 ### Added
 - **Drift-gated T0 activation steering in the proxy** (opt-in; ADR-003, `docs/t0-steering.md`). With a local-weights
   upstream (`HFUpstream.enable_steering`) and `create_app(..., steering=SteeringConfig(...))`, the generation after a
-  turn that needed a correction is steered at a small gain (default 0.05, hard cap 0.1); otherwise nothing is
+  turn that needed a correction is steered at a small gain (default and hard cap 0.05, the only gain measured not to damage reasoning); otherwise nothing is
   steered. Each steered turn adds a hash-chained `STEER` trace record, shown in the Console's turn panel. Refused for
   upstreams that cannot steer. A client cannot turn it on or change the gain. New tools:
   `scripts/derive_steering_pack.py`, `scripts/real_closed_loop.py`. On the one model tested it recovered the two

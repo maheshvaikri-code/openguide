@@ -142,7 +142,9 @@ function ReplayView({
         <div>
           <h1>{d.run.run_id}</h1>
           <p>
-            {d.run.model} at tier {d.run.tier.toUpperCase()}, {states.length} turns,{" "}
+            {d.run.model} at tier {d.run.tier.toUpperCase()}
+            {d.steers.size > 0 && ` + T0 steering (on ${d.steers.size} ${d.steers.size === 1 ? "turn" : "turns"})`}
+            , {states.length} turns,{" "}
             {corrections.length} {corrections.length === 1 ? "correction" : "corrections"}.
           </p>
         </div>

@@ -209,10 +209,10 @@ def test_a_streamed_reply_can_be_steered_too():
     up = _steerable(events)
 
     async def collect():
-        return [c async for c in up.stream({"messages": [{"role": "user", "content": "q"}]}, {}, steer=0.1)]
+        return [c async for c in up.stream({"messages": [{"role": "user", "content": "q"}]}, {}, steer=0.05)]
 
     asyncio.run(collect())
-    assert events == [("enter", 0.1), ("exit", 0.1)]
+    assert events == [("enter", 0.05), ("exit", 0.05)]
 
 
 def test_enable_steering_checks_the_pack_against_the_model_and_hooks_only_while_generating():

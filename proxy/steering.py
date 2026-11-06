@@ -15,9 +15,10 @@ import numpy as np
 
 from guidancegrid.core.grid import STEER_SIGNAL, SignalPack
 
-# The largest gain measured to leave the model usable (benchmarks/REPORT.md 7.2: 0.2 and above produce
-# degenerate output). A code constant on purpose: raising it is a decision, not a setting.
-MAX_SAFE_GAIN = 0.1
+# The only gain measured to leave the model's reasoning intact (benchmarks/REPORT.md 7.2: GSM8K 66% with no
+# steering, 60% at 0.05 with no loss detected, 24% at 0.1, degenerate output from 0.2). A code constant on
+# purpose: raising it is a decision, not a setting.
+MAX_SAFE_GAIN = 0.05
 DEFAULT_GAIN = 0.05
 # A pack vector may be at most this many times the model's typical residual norm (derive makes it 1x).
 # The gain bounds the push only if the vector is on the model's own scale: injection is renormalised to the
@@ -47,7 +48,7 @@ class SteeringConfig:
         if not ok:
             raise ValueError(
                 f"steering gain must be above 0 and at most {MAX_SAFE_GAIN} (larger gains were measured to "
-                f"break the model's output), got {self.gain!r}")
+                f"damage the model's reasoning or output), got {self.gain!r}")
         lo, hi = self.band
         if not (0 <= lo < hi):
             raise ValueError(f"steering band must be layers with 0 <= lo < hi, got {self.band!r}")

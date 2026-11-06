@@ -86,9 +86,9 @@ def run(coro):
 
 # ── the configuration ─────────────────────────────────────────────────
 def test_the_gain_is_capped_at_the_measured_usable_ceiling():
-    assert MAX_SAFE_GAIN == 0.1
+    assert MAX_SAFE_GAIN == 0.05                                     # 0.1 collapsed GSM8K (66% -> 24%)
     SteeringConfig(_pack(), BAND, MAX_SAFE_GAIN)                     # the ceiling itself is allowed
-    for bad in (0.1000001, 0.2, 0.4):
+    for bad in (0.0500001, 0.1, 0.2, 0.4):
         with pytest.raises(ValueError, match="gain"):
             SteeringConfig(_pack(), BAND, bad)
 

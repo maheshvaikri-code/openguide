@@ -8,7 +8,8 @@ and T0 (add a steering vector to the model's activations). The proxy only ever u
 experiments (`benchmarks/real_t0.py`) and nowhere in the product.
 
 What we measured on the real model (Qwen2.5-1.5B-Instruct, `benchmarks/REPORT.md` §7.2):
-- gain 0.05 helps and showed no detectable capability loss; 0.1 helps less and cost some GSM8K accuracy;
+- gain 0.05 helps and showed no detectable capability loss (GSM8K 66% -> 60%, p = 0.46, n = 100); 0.1 collapses
+  multi-step reasoning (GSM8K 24%) and broke a healthy conversation;
 - gain >= 0.2 produces degenerate output;
 - steering that is **always on** at 0.1 broke a conversation that was fine (88% -> 0%).
 
@@ -18,7 +19,9 @@ Wire T0 into the proxy as a **drift-gated closed loop**, opt-in:
    T2 re-anchor), the **next** generation of that session is steered at the configured gain.
 2. When a turn is clean, the following generation is not steered. The decision is re-made every turn.
 3. The T2 re-anchor is still sent; T0 adds to it, it does not replace it.
-4. The gain is capped in code at `MAX_SAFE_GAIN = 0.1` (the measured usable ceiling) and defaults to 0.05.
+4. The gain is capped in code at `MAX_SAFE_GAIN = 0.05`, the only gain measured to keep the model's reasoning
+   intact, and defaults to it. (An earlier draft capped it at 0.1 and called that usable; the capability table
+   in the report shows it is not.)
    Raising the cap is a deliberate edit of that constant, not a setting.
 5. Every steered turn appends a `STEER` record (turn, peak gain, layer band, pack hash) to the hash-chained trace,
    so what was steered is as auditable as what was measured. The record is written only when the upstream reports (through a `SteerReceipt`) that a steered reply was

@@ -226,3 +226,22 @@ describe("what opens when you click a square", () => {
     expect(screen.getByLabelText("Selected run")).not.toHaveTextContent("0.45");
   });
 });
+
+
+describe("steering in the selected run's details", () => {
+  const steer = (turn: number) => ({ ev: "STEER", turn, gain: 0.05, band: [10, 19], pack_hash: "sha256:p" });
+
+  it("says how many turns were steered, once the trace is read", async () => {
+    show(api([run("a")], { records: [...RECORDS, steer(1), steer(4)] }));
+    const panel = await pickFirst();
+    await within(panel).findByText("What was detected in this run");
+    await waitFor(() => expect(panel).toHaveTextContent("SteeringT0 on 2 turns"));
+  });
+
+  it("has no steering row for a run that wasn't steered", async () => {
+    show(api([run("a")]));
+    const panel = await pickFirst();
+    await within(panel).findByText("Drift was at or above 0.1 on 2 of 5 turns.");
+    expect(panel).not.toHaveTextContent("Steering");
+  });
+});

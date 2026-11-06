@@ -215,7 +215,8 @@ steering direction encodes terseness, and terse answers skip the chain of though
 
 **Warning about the rule scores at gain >= 0.2.** The checker passes degenerate output on brevity and
 plain-text (a string of quote marks is short and has no markdown). Those scores in the saved results are
-artifacts of broken output, not rule-following, and must not be cited. The usable range is **gain <= 0.1**.
+artifacts of broken output, not rule-following, and must not be cited. Output is not degenerate below 0.2, but at
+0.1 multi-step reasoning has already collapsed (GSM8K 24%), so **0.05 is the only gain that kept the model working**.
 
 **Behavior, single turn (24 held-out plain prompts per cell):**
 

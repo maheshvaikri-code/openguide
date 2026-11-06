@@ -1,13 +1,15 @@
 import { describeRun, parseContractInfo, responseGate } from "../lib/contractInfo";
 import { driftColor } from "../lib/heat";
-import { parseStates } from "../lib/replay";
+import { parseStates, parseSteers } from "../lib/replay";
 import { hrefFor } from "../lib/router";
 import type { Group } from "../lib/series";
 import { summarizeRun } from "../lib/runSummary";
-import type { Run } from "../lib/types";
+import type { Run, StateRecord } from "../lib/types";
 import { useResource } from "../lib/useResource";
 import { useApi } from "./ApiContext";
 import { BandBadge, VerifiedBadge } from "./format";
+
+type TraceInfo = { states: StateRecord[]; steered: number } | null;
 
 /**
  * Everything that explains one square, shown when it is selected: why it has its colour, what the marks on it
@@ -33,11 +35,16 @@ export function RunExplainer({
   const info = contract.status === "ready" ? contract.data : parseContractInfo(null);
   const gate = responseGate(info);
 
-  const [trace] = useResource(
-    async () => (run.trace_cas_key ? parseStates((await api.trace(run.run_id)).records).states : null),
+  const [trace] = useResource<TraceInfo>(
+    async () => {
+      if (!run.trace_cas_key) return null;
+      const { records } = await api.trace(run.run_id);
+      return { states: parseStates(records).states, steered: parseSteers(records).size };
+    },
     [run.run_id, run.trace_cas_key],
   );
   const broken = Boolean(run.trace_cas_key) && !run.verified;
+  const steered = trace.status === "ready" && trace.data ? trace.data.steered : 0;
 
   return (
     <div className="stack">
@@ -89,6 +96,7 @@ export function RunExplainer({
           <dt>Turns</dt><dd className="num">{run.turns}</dd>
           <dt>Model</dt><dd className="mono">{run.model}</dd>
           <dt>Tier</dt><dd>{run.tier.toUpperCase()}</dd>
+          {steered > 0 && (<><dt>Steering</dt><dd>T0 on {steered} {steered === 1 ? "turn" : "turns"}</dd></>)}
           <dt>Contract</dt><dd><a href={hrefFor("contracts", run.contract_hash)}>{contractName}</a></dd>
         </dl>
         {series && series.count > 1 && (
@@ -113,7 +121,7 @@ function Detected({
   info,
 }: {
   run: Run;
-  trace: ReturnType<typeof useResource<ReturnType<typeof parseStates>["states"] | null>>[0];
+  trace: ReturnType<typeof useResource<TraceInfo>>[0];
   info: ReturnType<typeof parseContractInfo>;
 }) {
   if (!run.trace_cas_key) {
@@ -125,7 +133,7 @@ function Detected({
   if (trace.status === "error") {
     return <p className="notice bad" role="alert">Couldn't load this run's trace: {trace.error.message}</p>;
   }
-  const states = trace.data ?? [];
+  const states = trace.data?.states ?? [];
   if (states.length === 0) return <p className="muted">The trace holds no recorded turns.</p>;
 
   const s = summarizeRun(states, info);

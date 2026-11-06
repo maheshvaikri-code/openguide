@@ -8,7 +8,7 @@ slipped.
 re-anchoring alone gave essentially no benefit (`benchmarks/REPORT.md` 7.1). Steering acts below the prompt, so it
 does not depend on the model choosing to obey. It is also dangerous in excess: measured gains of 0.2 and above
 destroy the output, and steering that is always on broke a conversation that was fine. So it is **gated on
-drift** and **capped at gain 0.1**.
+drift** and **capped at gain 0.05**, the only gain measured not to damage the model's reasoning (at 0.1, GSM8K fell from 66% to 24%).
 
 **Where it applies.**
 
