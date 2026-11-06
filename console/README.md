@@ -44,6 +44,19 @@ OPENGUIDE_CONSOLE_DIR=console/dist OPENGUIDE_PACKS_DIR=packs \
 If `OPENGUIDE_ADMIN_TOKEN` is set the Console asks for it; it is kept in
 `sessionStorage` (this tab only).
 
+## Seeing what was said
+
+The replay shows, for each turn: what the user asked, what the model replied, which rules the sensors checked
+and how far each fell short, how that adds up to the turn's drift, and what the contract did about it. The
+message text appears only if the proxy recorded it: start the proxy with `OPENGUIDE_CAPTURE_CONTENT=1`. It is
+**off by default** because the text is the prompts and replies themselves (see `docs/adr/002-opt-in-content-capture.md`).
+Without it the sensor results and drift arithmetic still show.
+
+On the Fleet, a "How to read this page" panel explains the squares, the colour scale and the marks. Runs named
+alike (`arm-a-s0`, `arm-a-s1`, ...) are grouped into series with a one-line summary each; switch between "By
+series" and "All runs". Selecting a run explains in plain words what its peak drift means against its own
+contract's threshold.
+
 ## Security
 
 **The proxy is unauthenticated unless `OPENGUIDE_ADMIN_TOKEN` is set.** With no token, anyone who can

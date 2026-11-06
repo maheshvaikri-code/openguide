@@ -174,7 +174,11 @@ async def eval_drift(up, pack, gains: list[float], seeds: int, turns: int,
         rs = [await rm.run_none(up, s, turns, store, arm=f"t0-g{g}", shocks=shocks) for s in range(seeds)]
         up.around = None
         summ = rm.summarize({"x": rs})["x"]
-        out[str(g)] = {"summary": summ, "per_seed": [r.compliance() for r in rs]}
+        out[str(g)] = {
+            "summary": summ, "per_seed": [r.compliance() for r in rs],
+            # every turn (what was said and every check), so the replies behind the numbers are on record
+            "conversations": [{"seed": r.seed, "run_id": r.run_id, "turns": r.turns} for r in rs],
+        }
         k = summ["by_kind"]
         say(f"  steered gain {g:<4g}: compliant {summ['compliance']:5.1%}  recovery {summ['recovery']:5.1%} "
             f"(plain {k['plain']:5.1%}, tempting {k['tempting']:5.1%})  "

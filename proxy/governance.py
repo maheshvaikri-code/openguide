@@ -13,9 +13,12 @@ The client's response bytes are never rewritten — governance is side-channel.
 """
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from typing import Any, AsyncIterator
 from uuid import uuid4
+
+from guidancegrid.core.trace import turn_event
 
 from .otel import InMemorySpanEmitter
 from .registry import ContractRegistry
@@ -27,6 +30,8 @@ from .streaming import (
 )
 from .tool_policy import ToolPolicy, ToolPolicyDecision
 from .upstream import Upstream
+
+log = logging.getLogger("openguide.proxy")
 
 CONTRACT_HEADER = "x-openguide-contract"
 SESSION_HEADER = "x-openguide-session"
@@ -53,13 +58,15 @@ class ResolvedGovernance:
 class Governor:
     def __init__(self, registry: ContractRegistry, upstream: Upstream,
                  sessions: SessionStore | None = None, emitter=None, store=None,
-                 tool_policy: ToolPolicy | None = None):
+                 tool_policy: ToolPolicy | None = None, capture_content: bool = False):
         self.registry = registry
         self.upstream = upstream
         self.sessions = sessions or SessionStore()
         self.emitter = emitter or InMemorySpanEmitter()
         self.store = store                      # optional guidancegrid.store.Store
         self.tool_policy = tool_policy or ToolPolicy()
+        # Opt-in, off by default: traces then hold behavioral state only, never message text.
+        self.capture_content = capture_content
 
     # ── helpers ──────────────────────────────────────────────────────
     def _manifest(self, compiled, session_id: str) -> dict[str, Any]:
@@ -101,7 +108,26 @@ class Governor:
             h["X-OpenGuide-Blocked"] = "tool_policy"
         return h
 
-    def _reconcile(self, session_id: str, compiled, body, assistant_msg) -> Any:
+    @staticmethod
+    def _latest_user_text(body: dict[str, Any]) -> str:
+        """The text of the newest user message (not the whole history, never the system prompt)."""
+        for m in reversed(body.get("messages", [])):
+            if m.get("role") == "user":
+                c = m.get("content")
+                if isinstance(c, list):                  # only real text parts; images etc. are not text
+                    parts = (p.get("text") for p in c if isinstance(p, dict))
+                    return "".join(t for t in parts if isinstance(t, str))
+                return c if isinstance(c, str) else ""
+        return ""
+
+    def _record_turn(self, sess, body, content: str, restated: str | None) -> None:
+        """Append a TURN event after the turn's STATE (see guidancegrid.core.trace.turn_event)."""
+        user = self._latest_user_text(body)
+        output = content if isinstance(content, str) else ""
+        sess.reconciler.trace.append(turn_event(sess.turn - 1, user, output, restated))
+
+    def _reconcile(self, session_id: str, compiled, body, assistant_msg,
+                   restated: str | None = None) -> Any:
         sess = self.sessions.get_or_create(
             session_id, compiled, self.registry.measures, self._manifest(compiled, session_id)
         )
@@ -122,6 +148,12 @@ class Governor:
             sess.recoveries += 1
         sess.halted = out.halted
         sess.history.append(out.state)
+        if self.capture_content:
+            try:
+                self._record_turn(sess, body, content, restated)
+            except Exception:                            # noqa: BLE001
+                # Capture is a convenience: it must never break a governed call or leave the run unsaved.
+                log.exception("could not record the TURN event; the turn is still recorded as behavior")
         self.emitter.emit_turn(out.state, compiled, sess)
         self._persist(sess, compiled)
         return sess, out
@@ -185,11 +217,12 @@ class Governor:
         session_id, compiled = resolved.session_id, resolved.compiled
         sess = self.sessions.get(session_id)
         send_body = body
-        if sess is not None and sess.pending_reanchor:
-            send_body = self._inject(body, sess.pending_reanchor)
+        restated = sess.pending_reanchor if sess is not None and sess.pending_reanchor else None
+        if restated:
+            send_body = self._inject(body, restated)
         resp = await self.upstream.chat(send_body, headers)
         msg = message_from_completion(resp)
-        sess, out = self._reconcile(session_id, compiled, body, msg)
+        sess, out = self._reconcile(session_id, compiled, body, msg, restated)
         gov_headers = self._gov_headers(compiled, out, resolved)
         decision = self._evaluate_tool_policy(sess, msg)
         gov_headers = {**gov_headers, **self._tool_policy_headers(decision)}
@@ -226,15 +259,16 @@ class Governor:
         session_id, compiled = resolved.session_id, resolved.compiled
         sess = self.sessions.get(session_id)
         send_body = body
-        if sess is not None and sess.pending_reanchor:
-            send_body = self._inject(body, sess.pending_reanchor)
+        restated = sess.pending_reanchor if sess is not None and sess.pending_reanchor else None
+        if restated:
+            send_body = self._inject(body, restated)
 
         assembler = StreamAssembler()
         chunks: list[bytes] = []
         async for chunk in self.upstream.stream(send_body, headers):
             assembler.feed_bytes(chunk)
             chunks.append(chunk)
-        sess, out = self._reconcile(session_id, compiled, body, assembler.message())
+        sess, out = self._reconcile(session_id, compiled, body, assembler.message(), restated)
         gov_headers = self._gov_headers(compiled, out, resolved)
         decision = self._evaluate_tool_policy(sess, assembler.message())
         gov_headers = {**gov_headers, **self._tool_policy_headers(decision)}
@@ -247,15 +281,16 @@ class Governor:
         session_id, compiled = resolved.session_id, resolved.compiled
         sess = self.sessions.get(session_id)
         send_body = body
-        if sess is not None and sess.pending_reanchor:
-            send_body = self._inject(body, sess.pending_reanchor)
+        restated = sess.pending_reanchor if sess is not None and sess.pending_reanchor else None
+        if restated:
+            send_body = self._inject(body, restated)
 
         assembler = StreamAssembler()
         async for chunk in self.upstream.stream(send_body, headers):
             assembler.feed_bytes(chunk)
             yield chunk                       # client stream is byte-identical
         # turn complete: reconcile + emit side-channel (no stream mutation)
-        sess, _ = self._reconcile(session_id, compiled, body, assembler.message())
+        sess, _ = self._reconcile(session_id, compiled, body, assembler.message(), restated)
         self._evaluate_tool_policy(sess, assembler.message())
         # Streaming headers were sent before the final tool decision was known.
         # Enforcing policies should use preflight_stream, which buffers first.

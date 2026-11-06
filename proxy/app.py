@@ -31,7 +31,8 @@ from .upstream import MockUpstream, Upstream
 def create_app(*, registry: ContractRegistry | None = None, upstream: Upstream | None = None,
                sessions: SessionStore | None = None, emitter=None, store=None,
                admin_token: str | None = None, tool_policy: ToolPolicy | None = None,
-               packs_dir: str | None = None, console_dir: str | None = None) -> FastAPI:
+               packs_dir: str | None = None, console_dir: str | None = None,
+               capture_content: bool = False) -> FastAPI:
     app = FastAPI(title="OpenGuide Proxy", version="0.1.0")
 
     registry = registry or ContractRegistry()
@@ -45,6 +46,7 @@ def create_app(*, registry: ContractRegistry | None = None, upstream: Upstream |
         emitter,
         store=store,
         tool_policy=tool_policy,
+        capture_content=capture_content,
     )
 
     app.state.registry = registry

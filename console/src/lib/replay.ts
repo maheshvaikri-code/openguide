@@ -1,4 +1,4 @@
-import type { StateRecord } from "./types";
+import type { StateRecord, TurnRecord } from "./types";
 
 export interface ParsedTrace {
   states: StateRecord[];
@@ -50,8 +50,8 @@ export function parseStates(records: ReadonlyArray<Record<string, unknown>> | un
         sensor_gaps: strings(r["sensor_gaps"]),
         reanchored: r["reanchored"] === true,
       });
-    } else {
-      ignored += 1;
+    } else if (!(r && r["ev"] === "TURN")) {
+      ignored += 1;              // TURN records are used (they carry the text), so they are not "left out"
     }
   }
   states.sort((a, b) => a.turn - b.turn);
@@ -94,4 +94,23 @@ export function signalIds(states: readonly StateRecord[]): string[] {
 export function clampIndex(i: number, length: number): number {
   if (length <= 0) return 0;
   return Math.min(Math.max(Math.round(i), 0), length - 1);
+}
+
+/** TURN records by turn number. Empty when the trace captured no message content. */
+export function parseTurns(records: ReadonlyArray<Record<string, unknown>> | undefined): Map<number, TurnRecord> {
+  const out = new Map<number, TurnRecord>();
+  for (const r of records ?? []) {
+    if (r && r["ev"] === "TURN" && isNum(r["turn"]) && typeof r["user"] === "string"
+        && typeof r["output"] === "string" && !out.has(r["turn"])) {          // a duplicate keeps the first
+      out.set(r["turn"], {
+        ev: "TURN",
+        turn: r["turn"],
+        user: r["user"],
+        output: r["output"],
+        restated: typeof r["restated"] === "string" ? r["restated"] : null,
+        truncated: r["truncated"] === true,
+      });
+    }
+  }
+  return out;
 }

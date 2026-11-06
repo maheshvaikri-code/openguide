@@ -19,6 +19,10 @@ class ProxyConfig:
     port: int = 8088
     packs_dir: str | None = None
     console_dir: str | None = None
+    # Record each turn's user message, reply and re-anchor in the trace (off by default: privacy).
+    capture_content: bool = False
+    # Allow content capture on a proxy with no admin token (anyone who can reach it could read every prompt).
+    allow_open_capture: bool = False
 
     @classmethod
     def from_env(cls) -> "ProxyConfig":
@@ -35,4 +39,8 @@ class ProxyConfig:
             port=int(os.environ.get("OPENGUIDE_PORT", "8088")),
             packs_dir=os.environ.get("OPENGUIDE_PACKS_DIR") or None,
             console_dir=os.environ.get("OPENGUIDE_CONSOLE_DIR") or None,
+            capture_content=os.environ.get("OPENGUIDE_CAPTURE_CONTENT", "").strip().lower()
+            in ("1", "true", "yes", "on"),
+            allow_open_capture=os.environ.get("OPENGUIDE_ALLOW_OPEN_CAPTURE", "").strip().lower()
+            in ("1", "true", "yes", "on"),
         )

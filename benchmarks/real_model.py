@@ -27,7 +27,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 from guidancegrid.compiler import compile_contract  # noqa: E402
 from guidancegrid.controller import Reconciler  # noqa: E402
-from guidancegrid.core.trace import Trace  # noqa: E402
+from guidancegrid.core.trace import Trace, turn_event  # noqa: E402
 from guidancegrid.obc import load_contract  # noqa: E402
 from guidancegrid.sensors import MeasureRegistry, StructuralMeasure  # noqa: E402
 from guidancegrid.store import RunRecord  # noqa: E402
@@ -223,6 +223,8 @@ async def _run_observed(arm: str, upstream, seed: int, turns: int, every: int, s
         sent = _with_restatement(messages, pending, placement) if pending else messages
         reply = _reply(await upstream.chat({"model": MODEL_ID, "messages": sent}, {}))
         step = rc.step(t, {"turn": t, "output": reply, "messages": messages})
+        # what was said, and what was restated to the model to get that reply
+        rc.trace.append(turn_event(t, user, reply, pending))
         pending = step.reanchor_text
         out.append(_turn(t, user, reply, step.state))
         history = messages + [{"role": "assistant", "content": reply}]
@@ -257,7 +259,7 @@ async def run_contract(upstream, seed: int, turns: int = 30, store=None, plain_o
 
     registry = ContractRegistry(measures=make_measures())
     h = registry.register(contract_dict())
-    app = create_app(registry=registry, upstream=upstream, store=store)
+    app = create_app(registry=registry, upstream=upstream, store=store, capture_content=True)
     sid = f"real-contract-s{seed}"
     headers = {"X-OpenGuide-Contract": h, "X-OpenGuide-Session": sid}
     history: list[dict[str, str]] = [{"role": "system", "content": SYSTEM_PROMPT}]

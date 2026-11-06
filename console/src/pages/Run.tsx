@@ -1,15 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { BAND_LABEL, driftBand } from "../lib/heat";
-import { clampIndex, correctionIndexes, firstCorrection, invariantIds, parseStates, readingSeries, signalIds } from "../lib/replay";
+import { measureKind, parseContractInfo, type ContractInfo } from "../lib/contractInfo";
+import { clampIndex, correctionIndexes, firstCorrection, invariantIds, parseStates, parseTurns, readingSeries, signalIds } from "../lib/replay";
 import { hrefFor } from "../lib/router";
 import { atOrAbove, parseThresholds, UNKNOWN_THRESHOLDS, type Thresholds } from "../lib/thresholds";
-import type { Run, StateRecord } from "../lib/types";
+import type { Run, StateRecord, TurnRecord } from "../lib/types";
 import { useResource } from "../lib/useResource";
 import { useApi } from "../ui/ApiContext";
+import { ConversationList } from "../ui/ConversationList";
 import { RunPicker, useTracedRuns } from "../ui/RunPicker";
 import { Scrubber } from "../ui/Scrubber";
 import { Sparkline } from "../ui/Sparkline";
 import { StateView } from "../ui/StateView";
+import { TurnDetail } from "../ui/TurnDetail";
 import { BandBadge, fmt, shortHash, VerifiedBadge } from "../ui/format";
 
 export function RunPage({ runId }: { runId: string | null }) {
@@ -34,6 +37,8 @@ interface Loaded {
   metadataOnly: boolean;
   noTrace: boolean; // the run is in the fleet index but no full trace was stored
   gates: Thresholds; // from the run's own contract; null fields mean the contract doesn't say
+  info: ContractInfo; // the contract's rules, weights and response steps, for explaining each turn
+  turns: Map<number, TurnRecord>; // what was said; empty unless the proxy captured content
 }
 
 function Replay({ runId }: { runId: string }) {
@@ -42,13 +47,15 @@ function Replay({ runId }: { runId: string }) {
   const [res, reload] = useResource<Loaded>(async () => {
     const run = await api.run(runId);
     // The contract's own gates; if it can't be read we draw no threshold rather than guess one.
-    const gates = await api.contract(run.contract_hash).then((c) => parseThresholds(c.contract)).catch(() => UNKNOWN_THRESHOLDS);
+    const body = await api.contract(run.contract_hash).then((c) => c.contract).catch(() => null);
+    const gates = body === null ? UNKNOWN_THRESHOLDS : parseThresholds(body);
+    const info = parseContractInfo(body);
     if (!run.trace_cas_key) {
-      return { run, states: [], ignored: 0, verified: run.verified, head: run.trace_hash, metadataOnly: false, noTrace: true, gates };
+      return { run, states: [], ignored: 0, verified: run.verified, head: run.trace_hash, metadataOnly: false, noTrace: true, gates, info, turns: new Map() };
     }
     const tr = await api.trace(runId);
     const { states, ignored } = parseStates(tr.records);
-    return { run, states, ignored, verified: tr.verified, head: tr.head, metadataOnly: Boolean(tr.metadata_only), noTrace: false, gates };
+    return { run, states, ignored, verified: tr.verified, head: tr.head, metadataOnly: Boolean(tr.metadata_only), noTrace: false, gates, info, turns: parseTurns(tr.records) };
   }, [runId]);
   const [others] = useTracedRuns();
   const [baseRes] = useResource<StateRecord[]>(
@@ -123,13 +130,6 @@ function ReplayView({
     if (playing && index >= states.length - 1) setPlaying(false);
   }, [playing, index, states.length]);
 
-  const events = useMemo(
-    () =>
-      states
-        .map((s, i) => ({ s, i }))
-        .filter(({ s }) => s.recovery_fired || s.reanchored || s.validation_failures.length || s.sensor_gaps.length),
-    [states],
-  );
   const signals = useMemo(() => signalIds(states), [states]);
   const invs = useMemo(() => invariantIds(states), [states]);
   const corrections = useMemo(() => correctionIndexes(states), [states]);
@@ -193,8 +193,12 @@ function ReplayView({
         </div>
       </section>
 
+      <TurnDetail state={cur} turn={d.turns.get(cur.turn)} info={d.info} anyContent={d.turns.size > 0} />
+
       <div className="split">
         <div className="stack">
+          <ContractRules info={d.info} />
+
           <section className="panel" aria-label="Signals over turns">
             <header><h2>Signals and corrections</h2></header>
             <div className="body">
@@ -223,31 +227,8 @@ function ReplayView({
             </div>
           </section>
 
-          <section className="panel" aria-label="Event log">
-            <header><h2>Events</h2><span className="muted">Select a row to jump to that turn.</span></header>
-            <div className="events">
-              {events.length === 0 ? (
-                <div className="state"><p>Nothing needed correcting in this run.</p></div>
-              ) : (
-                <table>
-                  <thead><tr><th className="r">Turn</th><th>What happened</th><th className="r">Drift</th></tr></thead>
-                  <tbody>
-                    {events.map(({ s, i }) => (
-                      <tr key={i} className="click" data-active={i === index}
-                        onClick={() => { setPlaying(false); setIndex(i); }}>
-                        <td className="r num">
-                          <button className="linkish" onClick={(e) => { e.stopPropagation(); setPlaying(false); setIndex(i); }}
-                            aria-label={`Go to turn ${s.turn}`}>{s.turn}</button>
-                        </td>
-                        <td>{describe(s)}</td>
-                        <td className="r num">{s.drift.toFixed(2)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-          </section>
+          <ConversationList states={states} turns={d.turns} index={index} info={d.info}
+            onPick={(i) => { setPlaying(false); setIndex(i); }} />
         </div>
 
         <aside className="stack" aria-label={`State at turn ${cur.turn}`}>
@@ -269,26 +250,6 @@ function ReplayView({
               ) : (
                 <p className="muted">No correction on this turn.</p>
               )}
-              <div>
-                {Object.entries(cur.invariants).map(([id, v]) => (
-                  <div className="inv" key={id}>
-                    <span className="mono">{id}</span>
-                    <span className="num">
-                      {v.reading === null ? "sensor gap" : v.reading.toFixed(2)}
-                      {v.floor !== null && v.floor !== undefined && <span className="muted"> / floor {v.floor.toFixed(2)}</span>}
-                      {v.violated && <span style={{ color: "var(--red)" }}> ▲ below floor</span>}
-                    </span>
-                    {typeof v.reading === "number" && (
-                      <span className="meter" aria-hidden="true">
-                        <i style={{ width: `${Math.min(Math.max(v.reading, 0), 1) * 100}%`, background: v.violated ? "var(--red)" : "var(--green)" }} />
-                        {typeof v.floor === "number" && <b style={{ left: `${v.floor * 100}%` }} />}
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-              {cur.sensor_gaps.length > 0 && <p className="notice">Sensor gap: {cur.sensor_gaps.join(", ")}. With no reading, {cur.sensor_gaps.length === 1 ? "that invariant adds" : "those invariants add"} nothing to this turn's drift.</p>}
-              {cur.validation_failures.length > 0 && <p className="notice bad">Hard check failed: {cur.validation_failures.join(", ")}.</p>}
               {Object.keys(cur.signals_active).length > 0 && (
                 <div>
                   <h3>Signals active</h3>
@@ -309,15 +270,6 @@ function ReplayView({
       </div>
     </>
   );
-}
-
-function describe(s: StateRecord): string {
-  const parts: string[] = [];
-  if (s.recovery_fired) parts.push(`${s.recovery_fired.replace("_", "-")} fired`);
-  if (s.reanchored) parts.push("contract re-statement prepared");
-  if (s.validation_failures.length) parts.push(`hard check failed: ${s.validation_failures.join(", ")}`);
-  if (s.sensor_gaps.length) parts.push(`sensor gap: ${s.sensor_gaps.join(", ")}`);
-  return parts.join("; ");
 }
 
 function SignalStrip({ states, signals, index }: { states: readonly StateRecord[]; signals: string[]; index: number }) {
@@ -342,5 +294,43 @@ function SignalStrip({ states, signals, index }: { states: readonly StateRecord[
       ))}
       <line x1={L + index * cw + cw / 2} x2={L + index * cw + cw / 2} y1="0" y2={rows.length * rowH} stroke="var(--strong)" strokeWidth="1.5" />
     </svg>
+  );
+}
+
+/** What the contract requires, so a viewer knows what the sensors are checking before reading results. */
+function ContractRules({ info }: { info: ContractInfo }) {
+  const rules = Object.values(info.rules);
+  if (rules.length === 0 && info.boundaries.length === 0) return null;
+  return (
+    <details className="panel" open>
+      <summary className="panel-summary"><h2>What this contract requires</h2></summary>
+      <div className="body stack">
+        {info.persona && <p>Persona: <b>{info.persona}</b></p>}
+        {info.boundaries.length > 0 && (
+          <div>
+            <h3>Rules restated to the model when it drifts</h3>
+            <ul className="plain">{info.boundaries.map((b) => <li key={b}>{b}</li>)}</ul>
+          </div>
+        )}
+        {rules.length > 0 && (
+          <div>
+            <h3>What is measured</h3>
+            <table className="detect">
+              <thead><tr><th>Rule</th><th>Measured by</th><th className="r">Must be at least</th><th className="r">Weight</th></tr></thead>
+              <tbody>
+                {rules.map((r) => (
+                  <tr key={r.id}>
+                    <td className="mono">{r.id}</td>
+                    <td>{measureKind(r.measure) ?? "unknown"}{r.hard && <span className="muted"> (hard rule: pass or fail)</span>}</td>
+                    <td className="r num">{r.floor === null ? "–" : r.floor.toFixed(2)}</td>
+                    <td className="r num">{r.weight === null ? "–" : r.weight.toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </details>
   );
 }

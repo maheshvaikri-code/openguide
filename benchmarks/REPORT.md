@@ -244,6 +244,12 @@ Gain 0.05 vs. none, paired over 5 conversations: +0.36, bootstrap 95% CI [+0.01,
 0 losses (exact sign test p = 0.25). Gain 0.1 rescued the two drifting conversations but **broke a conversation
 that was fine** (seed 0: 88% -> 0%); steering is always on, whether or not the model is drifting.
 
+**Reproducibility.** Decoding is greedy, so a re-run should repeat. It did: regenerating the steered
+conversations (all four gains) on the same machine reproduced every per-conversation score exactly, and replaying
+the saved replies for the other arms through the harness reproduced every recorded drift, action and rule result
+turn by turn (`scripts/rebuild_real_db.py`). This shows the harness is deterministic, not that the effect would
+hold on other hardware, sampling settings or models.
+
 ### 7.3 What this does and does not show
 
 - **Shows:** a real-model pipeline works end to end (proxy, real sensors, traces, steering, replay); on this

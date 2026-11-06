@@ -55,3 +55,34 @@ def test_build_warns_when_the_control_plane_has_no_admin_token(caplog):
     with caplog.at_level(logging.WARNING, logger="openguide.proxy"):
         build(ProxyConfig(admin_token="s3cret"))
     assert not any("OPENGUIDE_ADMIN_TOKEN" in r.getMessage() for r in caplog.records)
+
+
+def test_content_capture_without_an_admin_token_refuses_to_start():
+    import pytest
+
+    from proxy.server import build
+
+    with pytest.raises(RuntimeError, match="OPENGUIDE_ADMIN_TOKEN"):
+        build(ProxyConfig(capture_content=True, admin_token=None))
+
+
+def test_content_capture_with_a_token_starts():
+    from proxy.server import build
+
+    assert build(ProxyConfig(capture_content=True, admin_token="s3cret")) is not None
+
+
+def test_content_capture_on_an_open_proxy_needs_an_explicit_override_and_says_so_loudly(caplog):
+    import logging
+
+    from proxy.server import build
+
+    with caplog.at_level(logging.ERROR, logger="openguide.proxy"):
+        assert build(ProxyConfig(capture_content=True, admin_token=None, allow_open_capture=True)) is not None
+    assert any("readable by anyone" in r.getMessage() for r in caplog.records)
+
+
+def test_the_override_is_read_from_the_environment(monkeypatch):
+    assert ProxyConfig().allow_open_capture is False
+    monkeypatch.setenv("OPENGUIDE_ALLOW_OPEN_CAPTURE", "1")
+    assert ProxyConfig.from_env().allow_open_capture is True

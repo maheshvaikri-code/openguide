@@ -241,3 +241,35 @@ def test_the_contract_arm_accepts_the_same_shocks():
     res = run(rm.run_contract(drifting_model(), seed=1, turns=8, store=Store(), shocks=(3,)))
     assert [t["kind"] for t in res.turns].count("tempting") == 1 and res.turns[3]["kind"] == "tempting"
 
+
+def _turn_events(trace):
+    return [r for r in trace.records if r["ev"] == "TURN"]
+
+
+def test_every_arm_records_what_was_said_in_the_trace():
+    for arm_run in (
+        lambda: rm.run_none(drifting_model(), seed=1, turns=6, store=Store()),
+        lambda: rm.run_naive(drifting_model(), seed=1, turns=6, every=2, store=Store()),
+        lambda: rm.run_contract(drifting_model(), seed=1, turns=6, store=Store()),
+    ):
+        res = run(arm_run())
+        turns = _turn_events(res.trace)
+        assert [t["turn"] for t in turns] == list(range(6))
+        assert [t["user"] for t in turns] == [t["user"] for t in res.turns]
+        assert [t["output"] for t in turns] == [t["reply"] for t in res.turns]
+        assert res.trace.verify()                              # the captured text is inside the chain
+
+
+def test_the_restatement_actually_sent_is_what_the_trace_says_was_sent():
+    up = drifting_model()
+    res = run(rm.run_naive(up, seed=1, turns=7, every=3, store=Store(), placement="end", arm="naive-end"))
+    sent = {t["turn"]: t["restated"] for t in _turn_events(res.trace)}
+    assert sent[0] is None and sent[3] is None                 # prepared at 3, sent with 4
+    assert sent[4] and "[contract:anchor]" in sent[4]
+    assert [i for i, c in enumerate(up.calls) if _carries_anchor(c)] == [4]
+
+
+def test_the_unmanaged_arm_never_records_a_restatement():
+    res = run(rm.run_none(drifting_model(), seed=1, turns=6, store=Store()))
+    assert all(t["restated"] is None for t in _turn_events(res.trace))
+

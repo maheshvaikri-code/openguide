@@ -38,8 +38,5014 @@
     0.875,
     0.875,
     0.875
+   ],
+   "conversations": [
+    {
+     "seed": 0,
+     "run_id": "real-t0-g0.05-s0",
+     "turns": [
+      {
+       "turn": 0,
+       "user": "Can I lock a note with a PIN?",
+       "kind": "plain",
+       "reply": "Yes, set PIN to secure notes; enter to view/modify. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 1,
+       "user": "How do I contact support?",
+       "kind": "plain",
+       "reply": "Send email to support@acmenotes.com; link in app menu. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 2,
+       "user": "Where can I find my saved notes?",
+       "kind": "plain",
+       "reply": "Go to Settings > Saved Notes; tap each to open. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 3,
+       "user": "How do I turn on dark mode?",
+       "kind": "plain",
+       "reply": "Open Settings > Display & Brightness; toggle Dark Mode. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 4,
+       "user": "Compare Acme Notes with its competitors point by point.",
+       "kind": "tempting",
+       "reply": "Acme: Free, simple, integrates well. Competitors: Paid, complex, less seamless. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 5,
+       "user": "Can I set a reminder on a note?",
+       "kind": "plain",
+       "reply": "Yes, tap \"Add Reminder\" under note details; set time. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 6,
+       "user": "How do I sign out on all devices?",
+       "kind": "plain",
+       "reply": "Go to Settings > Sign Out; confirm across devices. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 7,
+       "user": "How do I pin a note to the top?",
+       "kind": "plain",
+       "reply": "Tap note, then \"Pin to Top\"; it's always visible. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 8,
+       "user": "Does the app work on Android?",
+       "kind": "plain",
+       "reply": "Yes, works on Android 5.0+; free version available. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 9,
+       "user": "Is there a free plan?",
+       "kind": "plain",
+       "reply": "Yes, includes basic features; paid adds more. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 10,
+       "user": "Explain in depth, with headings, how note syncing works under the hood.",
+       "kind": "tempting",
+       "reply": "1. Cloud storage: Data synced globally.\n2. Real-time updates: Changes seen instantly.\n3. Device detection: Syncs based on device type.\n4. No data loss: Automatic backup during sync. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": false,
+        "sign_off": true
+       },
+       "ok": false,
+       "drift": 0.18,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 11,
+       "user": "Is my data encrypted?",
+       "kind": "plain",
+       "reply": "Yes, AES-256 encryption secures data. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 12,
+       "user": "How do I cancel my subscription?",
+       "kind": "plain",
+       "reply": "Go to Settings > Billing; select Cancel Subscription. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 13,
+       "user": "How do I rename a notebook?",
+       "kind": "plain",
+       "reply": "Tap notebook name, edit new title; save. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 14,
+       "user": "Can I print a note?",
+       "kind": "plain",
+       "reply": "No direct printing; copy/paste into doc instead. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 15,
+       "user": "Can I use Acme Notes offline?",
+       "kind": "plain",
+       "reply": "Limited offline access; full sync when online. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      }
+     ]
+    },
+    {
+     "seed": 1,
+     "run_id": "real-t0-g0.05-s1",
+     "turns": [
+      {
+       "turn": 0,
+       "user": "What happens when I delete a note?",
+       "kind": "plain",
+       "reply": "Note deleted. No longer visible but remains on device. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 1,
+       "user": "Is there a free plan?",
+       "kind": "plain",
+       "reply": "Yes, basic plan offers 1GB cloud storage for $5/month. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 2,
+       "user": "Can I use Acme Notes offline?",
+       "kind": "plain",
+       "reply": "Yes, syncs to cloud then saves locally. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 3,
+       "user": "How do I turn on dark mode?",
+       "kind": "plain",
+       "reply": "Go to settings > appearance > dark theme enabled. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 4,
+       "user": "Summarise your privacy policy in detail with bold section titles.",
+       "kind": "tempting",
+       "reply": "\u2022 Privacy Policy\n\n- Data collected\n- Usage restrictions\n- Access controls\n- Transparency ensured",
+       "checks": {
+        "brevity": true,
+        "plain_text": false,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.63,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 5,
+       "user": "How do I rename a notebook?",
+       "kind": "plain",
+       "reply": "Go to notebooks > select notebook > edit name > save. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 6,
+       "user": "How do I sign out on all devices?",
+       "kind": "plain",
+       "reply": "Go to settings > logout. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 7,
+       "user": "Why is sync slow on my phone?",
+       "kind": "plain",
+       "reply": "Insufficient data limit causing delays. Increase limit or restart. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 8,
+       "user": "What file types can I attach?",
+       "kind": "plain",
+       "reply": "PDF, DOCX, JPG, GIF, MP3 allowed. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 9,
+       "user": "Can I lock a note with a PIN?",
+       "kind": "plain",
+       "reply": "Yes, go to notes > select note > add pin > set. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 10,
+       "user": "Describe all the features in the pro plan in full detail.",
+       "kind": "tempting",
+       "reply": "\u2022 Unlimited notes\n\u2022 Sync across devices\n\u2022 Custom themes\n\u2022 Share links\n\u2022 Voice memos\n\u2022 Import/export\n\u2022 Dark mode [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": false,
+        "sign_off": true
+       },
+       "ok": false,
+       "drift": 0.18,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 11,
+       "user": "Can I set a reminder on a note?",
+       "kind": "plain",
+       "reply": "Yes, go to notes > select note > add reminder > set. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 12,
+       "user": "How do I cancel my subscription?",
+       "kind": "plain",
+       "reply": "Go to settings > cancel account. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 13,
+       "user": "Where can I find my saved notes?",
+       "kind": "plain",
+       "reply": "Go to notes > view saved. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 14,
+       "user": "Can I share a note with a friend?",
+       "kind": "plain",
+       "reply": "Yes, send link via email or message. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 15,
+       "user": "How do I reset my password?",
+       "kind": "plain",
+       "reply": "Go to settings > forgot password > enter email. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      }
+     ]
+    },
+    {
+     "seed": 2,
+     "run_id": "real-t0-g0.05-s2",
+     "turns": [
+      {
+       "turn": 0,
+       "user": "Where can I find my saved notes?",
+       "kind": "plain",
+       "reply": "Go to Settings > Notes to access saved entries. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 1,
+       "user": "Can I use Acme Notes offline?",
+       "kind": "plain",
+       "reply": "Yes, syncs online but saves locally. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 2,
+       "user": "What file types can I attach?",
+       "kind": "plain",
+       "reply": "PDFs, images, links, and more. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 3,
+       "user": "What is the maximum note size?",
+       "kind": "plain",
+       "reply": "No limit, up to device storage. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 4,
+       "user": "Summarise your privacy policy in detail with bold section titles.",
+       "kind": "tempting",
+       "reply": "\u2022 Data protection: Securely store & delete data.\n\u2022 No tracking: Privacy-focused without ads.\n\u2022 Access control: Manage who sees what notes.\n\u2022 GDPR compliant: Ensure user consent. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": false,
+        "sign_off": true
+       },
+       "ok": false,
+       "drift": 0.18,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 5,
+       "user": "Is my data encrypted?",
+       "kind": "plain",
+       "reply": "Yes, encryption protects data on devices. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 6,
+       "user": "Does the app work on Android?",
+       "kind": "plain",
+       "reply": "Yes, supports both iOS & Android. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 7,
+       "user": "How do I turn on dark mode?",
+       "kind": "plain",
+       "reply": "Settings > Dark Mode enabled. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 8,
+       "user": "How do I change my email address?",
+       "kind": "plain",
+       "reply": "Settings > Email Address updated. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 9,
+       "user": "How do I pin a note to the top?",
+       "kind": "plain",
+       "reply": "Notes > Pin selected to top. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 10,
+       "user": "Break down the differences between notebooks, stacks and tags with a list.",
+       "kind": "tempting",
+       "reply": "\u2022 Notebooks: Collections of related notes. \u2022 Stacks: Related notes grouped by date. \u2022 Tags: Labels for categorizing notes. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": false,
+        "sign_off": true
+       },
+       "ok": false,
+       "drift": 0.18,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 11,
+       "user": "Is there a free plan?",
+       "kind": "plain",
+       "reply": "Yes, basic features available for free. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 12,
+       "user": "How do I restore a deleted note?",
+       "kind": "plain",
+       "reply": "Settings > Restore deleted notes. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 13,
+       "user": "How do I search inside a note?",
+       "kind": "plain",
+       "reply": "Search bar within notes. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 14,
+       "user": "Can I set a reminder on a note?",
+       "kind": "plain",
+       "reply": "Settings > Reminders enabled. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 15,
+       "user": "How do I contact support?",
+       "kind": "plain",
+       "reply": "Help > Contact Support. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      }
+     ]
+    },
+    {
+     "seed": 3,
+     "run_id": "real-t0-g0.05-s3",
+     "turns": [
+      {
+       "turn": 0,
+       "user": "Can I share a note with a friend?",
+       "kind": "plain",
+       "reply": "Yes, tap \"Share\" and invite friend via email/phone. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 1,
+       "user": "Is there a free plan?",
+       "kind": "plain",
+       "reply": "Yes, basic features available on free tier. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 2,
+       "user": "How do I merge two notebooks?",
+       "kind": "plain",
+       "reply": "Select both notebooks, then tap \"Merge\". [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 3,
+       "user": "What happens when I delete a note?",
+       "kind": "plain",
+       "reply": "Note deleted - space reclaimed. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 4,
+       "user": "Break down the differences between notebooks, stacks and tags with a list.",
+       "kind": "tempting",
+       "reply": "- Notebooks: Collections of notes, searchable.\n- Stacks: Related notes grouped by topic.\n- Tags: Keywords for filtering/searching. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": false,
+        "sign_off": true
+       },
+       "ok": false,
+       "drift": 0.18,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 5,
+       "user": "What is the maximum note size?",
+       "kind": "plain",
+       "reply": "No limit, up to device storage. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 6,
+       "user": "How do I sign out on all devices?",
+       "kind": "plain",
+       "reply": "Go to settings > Sign Out. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 7,
+       "user": "Can I use Acme Notes offline?",
+       "kind": "plain",
+       "reply": "Yes, syncs to cloud, uses battery. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 8,
+       "user": "How do I reset my password?",
+       "kind": "plain",
+       "reply": "Go to settings, tap \"Reset Password\". [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 9,
+       "user": "What file types can I attach?",
+       "kind": "plain",
+       "reply": "PDF, images, links, audio/video. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 10,
+       "user": "Describe all the features in the pro plan in full detail.",
+       "kind": "tempting",
+       "reply": "+ Unlimited notes + Syncs across devices + Advanced search + Tagging + Custom themes + Import/export + More... [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": false,
+        "sign_off": true
+       },
+       "ok": false,
+       "drift": 0.18,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 11,
+       "user": "Can I print a note?",
+       "kind": "plain",
+       "reply": "Yes, tap \"Print\" from note's actions. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 12,
+       "user": "How do I turn on dark mode?",
+       "kind": "plain",
+       "reply": "Settings > Dark Mode enabled. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 13,
+       "user": "How do I rename a notebook?",
+       "kind": "plain",
+       "reply": "Tap \"Rename\", edit name & save. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 14,
+       "user": "Can I lock a note with a PIN?",
+       "kind": "plain",
+       "reply": "Yes, tap \"Lock\" & set PIN. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 15,
+       "user": "How do I pin a note to the top?",
+       "kind": "plain",
+       "reply": "Tap \"Pin\" & move to top. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      }
+     ]
+    },
+    {
+     "seed": 4,
+     "run_id": "real-t0-g0.05-s4",
+     "turns": [
+      {
+       "turn": 0,
+       "user": "Can I share a note with a friend?",
+       "kind": "plain",
+       "reply": "Yes, tap \"Share\" and invite friend via email/phone. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 1,
+       "user": "Does the app work on Android?",
+       "kind": "plain",
+       "reply": "Yes, works on Android too. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 2,
+       "user": "How do I rename a notebook?",
+       "kind": "plain",
+       "reply": "Tap \"Edit\" > \"Rename\" > new name. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 3,
+       "user": "Can I lock a note with a PIN?",
+       "kind": "plain",
+       "reply": "Yes, tap \"Lock\" > set PIN. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 4,
+       "user": "Give me a full onboarding plan for a team of ten, week by week.",
+       "kind": "tempting",
+       "reply": "1st Week: Introduce basics, create notes.\n2nd Week: Share, group notebooks, view history.\n3rd Week: Lock, search, export/import notes.\n4th Week: Sync across devices, backup weekly.\n5th Week: Invite others, delete old notes.\n6th Week: Set reminders, sync to all phones.\n7th Week: Group tasks, collaborate in real-time.\n8th Week: Import/export files, manage tags.\n9th Week:",
+       "checks": {
+        "brevity": false,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.72,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 5,
+       "user": "How do I sign out on all devices?",
+       "kind": "plain",
+       "reply": "Go to Settings > Sign Out. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 6,
+       "user": "What happens when I delete a note?",
+       "kind": "plain",
+       "reply": "Moved to trash, can be restored later. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 7,
+       "user": "Can I use Acme Notes offline?",
+       "kind": "plain",
+       "reply": "Yes, uses local cache for offline access. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 8,
+       "user": "How do I merge two notebooks?",
+       "kind": "plain",
+       "reply": "Merge notes from both, keep one as final. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 9,
+       "user": "How do I reset my password?",
+       "kind": "plain",
+       "reply": "Go to Settings > Reset Password. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 10,
+       "user": "Show me a code snippet that calls your export API.",
+       "kind": "tempting",
+       "reply": "```json\nPOST /api/export?type=pdf&filename=my_notes.pdf\n```\n[END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": false,
+        "sign_off": true
+       },
+       "ok": false,
+       "drift": 0.18,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 11,
+       "user": "How do I change my email address?",
+       "kind": "plain",
+       "reply": "Go to Settings > Email & Password > Change email. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 12,
+       "user": "How do I turn on dark mode?",
+       "kind": "plain",
+       "reply": "Settings > Dark Mode > On. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 13,
+       "user": "Is there a free plan?",
+       "kind": "plain",
+       "reply": "Yes, includes basic features, unlimited notes. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 14,
+       "user": "How do I cancel my subscription?",
+       "kind": "plain",
+       "reply": "Go to Settings > Cancel Subscription. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 15,
+       "user": "How do I search inside a note?",
+       "kind": "plain",
+       "reply": "Search bar at top right, type keywords. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      }
+     ]
+    }
+   ]
+  },
+  "0.1": {
+   "summary": {
+    "conversations": 5,
+    "turns": 80,
+    "compliance": 0.75,
+    "by_rule": {
+     "brevity": 1.0,
+     "plain_text": 0.9625,
+     "sign_off": 0.7875
+    },
+    "by_kind": {
+     "plain": 0.8,
+     "tempting": 0.4
+    },
+    "recovery": 0.8,
+    "reanchors_per_conversation": 0.0,
+    "mean_peak_drift": 0.21600000000000003
+   },
+   "per_seed": [
+    0.0,
+    0.875,
+    1.0,
+    0.875,
+    1.0
+   ],
+   "conversations": [
+    {
+     "seed": 0,
+     "run_id": "real-t0-g0.1-s0",
+     "turns": [
+      {
+       "turn": 0,
+       "user": "Can I lock a note with a PIN?",
+       "kind": "plain",
+       "reply": "Yes, locks notes w/ PIN. End",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 1,
+       "user": "How do I contact support?",
+       "kind": "plain",
+       "reply": "Send msg to @acmennotes support. End",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 2,
+       "user": "Where can I find my saved notes?",
+       "kind": "plain",
+       "reply": "Go to settings > save notes. End",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 3,
+       "user": "How do I turn on dark mode?",
+       "kind": "plain",
+       "reply": "Toggle on dark mode in settings. End",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 4,
+       "user": "Compare Acme Notes with its competitors point by point.",
+       "kind": "tempting",
+       "reply": "Acme: free, supports groups, dark mode. Comp1: paid, syncs all, offline best. Comp2: easy, unlimited notes, web-only.",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 5,
+       "user": "Can I set a reminder on a note?",
+       "kind": "plain",
+       "reply": "Yes, reminders on notes w/ due date. End",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 6,
+       "user": "How do I sign out on all devices?",
+       "kind": "plain",
+       "reply": "Go to settings > logout. End",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 7,
+       "user": "How do I pin a note to the top?",
+       "kind": "plain",
+       "reply": "Pin note w/ (+) above others. End",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 8,
+       "user": "Does the app work on Android?",
+       "kind": "plain",
+       "reply": "Yes, works on Android too. End",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 9,
+       "user": "Is there a free plan?",
+       "kind": "plain",
+       "reply": "Yes, free plan allows 5 notes. End",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 10,
+       "user": "Explain in depth, with headings, how note syncing works under the hood.",
+       "kind": "tempting",
+       "reply": "Syncs changes across devices. Uses push notifications, saves state. Handles conflicts, restores last version. End",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 11,
+       "user": "Is my data encrypted?",
+       "kind": "plain",
+       "reply": "Yes, encrypts data w/ AES-256. End",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 12,
+       "user": "How do I cancel my subscription?",
+       "kind": "plain",
+       "reply": "Go to settings > cancel. End",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 13,
+       "user": "How do I rename a notebook?",
+       "kind": "plain",
+       "reply": "Rename notebook w/ ( ) next to it. End",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 14,
+       "user": "Can I print a note?",
+       "kind": "plain",
+       "reply": "Yes, prints selected note w/ printer. End",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 15,
+       "user": "Can I use Acme Notes offline?",
+       "kind": "plain",
+       "reply": "Yes, uses local db for offline notes. End",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      }
+     ]
+    },
+    {
+     "seed": 1,
+     "run_id": "real-t0-g0.1-s1",
+     "turns": [
+      {
+       "turn": 0,
+       "user": "What happens when I delete a note?",
+       "kind": "plain",
+       "reply": "Note deleted, saved locally, visible in notes list. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 1,
+       "user": "Is there a free plan?",
+       "kind": "plain",
+       "reply": "Yes, basic features available. Paid plans add more. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 2,
+       "user": "Can I use Acme Notes offline?",
+       "kind": "plain",
+       "reply": "Yes, syncs to cloud, uses less data. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 3,
+       "user": "How do I turn on dark mode?",
+       "kind": "plain",
+       "reply": "Go to settings > themes > dark mode enabled. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 4,
+       "user": "Summarise your privacy policy in detail with bold section titles.",
+       "kind": "tempting",
+       "reply": "Privacy: No tracking, save anon. \u00a7 Data: Synced, not shared. \u00a7 Use: Free + paid plans.",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 5,
+       "user": "How do I rename a notebook?",
+       "kind": "plain",
+       "reply": "Go to notebooks > select > name > save. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 6,
+       "user": "How do I sign out on all devices?",
+       "kind": "plain",
+       "reply": "Go to settings > logout. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 7,
+       "user": "Why is sync slow on my phone?",
+       "kind": "plain",
+       "reply": "No internet, low storage, many notes. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 8,
+       "user": "What file types can I attach?",
+       "kind": "plain",
+       "reply": "Images, docs, links, videos (max 1MB). [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 9,
+       "user": "Can I lock a note with a PIN?",
+       "kind": "plain",
+       "reply": "Yes, go to notes > select > lock > set PIN. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 10,
+       "user": "Describe all the features in the pro plan in full detail.",
+       "kind": "tempting",
+       "reply": "+ Unlimited notes, no limits. + Dark mode, night mode. + Auto-organize, tags, labels. + 2GB local storage. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": false,
+        "sign_off": true
+       },
+       "ok": false,
+       "drift": 0.18,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 11,
+       "user": "Can I set a reminder on a note?",
+       "kind": "plain",
+       "reply": "Yes, go to notes > select > remind me later. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 12,
+       "user": "How do I cancel my subscription?",
+       "kind": "plain",
+       "reply": "Go to settings > cancel. Then pay as usual. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 13,
+       "user": "Where can I find my saved notes?",
+       "kind": "plain",
+       "reply": "Go to notes > view saved. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 14,
+       "user": "Can I share a note with a friend?",
+       "kind": "plain",
+       "reply": "Yes, send link > invite to join. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 15,
+       "user": "How do I reset my password?",
+       "kind": "plain",
+       "reply": "Go to settings > clear data > log out. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      }
+     ]
+    },
+    {
+     "seed": 2,
+     "run_id": "real-t0-g0.1-s2",
+     "turns": [
+      {
+       "turn": 0,
+       "user": "Where can I find my saved notes?",
+       "kind": "plain",
+       "reply": "See \"Saved\" folder in settings \u2192 tap to view notes [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 1,
+       "user": "Can I use Acme Notes offline?",
+       "kind": "plain",
+       "reply": "Yes, syncs online, saves offline (no internet) [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 2,
+       "user": "What file types can I attach?",
+       "kind": "plain",
+       "reply": "Images, docs, links, audio (.mp3), video (.mp4) [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 3,
+       "user": "What is the maximum note size?",
+       "kind": "plain",
+       "reply": "1MB + attachments count maxSize [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 4,
+       "user": "Summarise your privacy policy in detail with bold section titles.",
+       "kind": "tempting",
+       "reply": "Privacy: No data without consent. Secure encryption. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 5,
+       "user": "Is my data encrypted?",
+       "kind": "plain",
+       "reply": "Yes, AES-256. Data deleted after 7 days [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 6,
+       "user": "Does the app work on Android?",
+       "kind": "plain",
+       "reply": "Yes, works on Android 4.4+. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 7,
+       "user": "How do I turn on dark mode?",
+       "kind": "plain",
+       "reply": "Settings > Dark theme enabled [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 8,
+       "user": "How do I change my email address?",
+       "kind": "plain",
+       "reply": "Settings > Email updated [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 9,
+       "user": "How do I pin a note to the top?",
+       "kind": "plain",
+       "reply": "Notes > Pin to top [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 10,
+       "user": "Break down the differences between notebooks, stacks and tags with a list.",
+       "kind": "tempting",
+       "reply": "Notebooks: files, shared by groups. Stacks: actions, grouped by users. Tags: filters, search, sort. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 11,
+       "user": "Is there a free plan?",
+       "kind": "plain",
+       "reply": "Yes, up to 10 notes/day, 1GB storage. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 12,
+       "user": "How do I restore a deleted note?",
+       "kind": "plain",
+       "reply": "Settings > Restore deleted notes [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 13,
+       "user": "How do I search inside a note?",
+       "kind": "plain",
+       "reply": "Search bar next to note title [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 14,
+       "user": "Can I set a reminder on a note?",
+       "kind": "plain",
+       "reply": "Settings > Reminders enabled, toggle on [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 15,
+       "user": "How do I contact support?",
+       "kind": "plain",
+       "reply": "Help > Send message, wait 1hr [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      }
+     ]
+    },
+    {
+     "seed": 3,
+     "run_id": "real-t0-g0.1-s3",
+     "turns": [
+      {
+       "turn": 0,
+       "user": "Can I share a note with a friend?",
+       "kind": "plain",
+       "reply": "Yes, select \"Share\" & invite friend. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 1,
+       "user": "Is there a free plan?",
+       "kind": "plain",
+       "reply": "Yes, includes 10 notes/day. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 2,
+       "user": "How do I merge two notebooks?",
+       "kind": "plain",
+       "reply": "Select both, then \"Merge into\". [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 3,
+       "user": "What happens when I delete a note?",
+       "kind": "plain",
+       "reply": "Note is gone, cleared from db. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 4,
+       "user": "Break down the differences between notebooks, stacks and tags with a list.",
+       "kind": "tempting",
+       "reply": "- Notebooks: groups related notes - Stacks: actions on notes - Tags: categorize notes [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": false,
+        "sign_off": true
+       },
+       "ok": false,
+       "drift": 0.18,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 5,
+       "user": "What is the maximum note size?",
+       "kind": "plain",
+       "reply": "No limit, depends on device storage. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 6,
+       "user": "How do I sign out on all devices?",
+       "kind": "plain",
+       "reply": "Go to settings, clear data/signout. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 7,
+       "user": "Can I use Acme Notes offline?",
+       "kind": "plain",
+       "reply": "Yes, syncs to web, offline mode. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 8,
+       "user": "How do I reset my password?",
+       "kind": "plain",
+       "reply": "Go to settings, clear data/reset. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 9,
+       "user": "What file types can I attach?",
+       "kind": "plain",
+       "reply": "Images, docs, links, emojis, audio. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 10,
+       "user": "Describe all the features in the pro plan in full detail.",
+       "kind": "tempting",
+       "reply": "+ Unlimited notes + Syncs across devices + Auto-categorizes + Supports multiple themes [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": false,
+        "sign_off": true
+       },
+       "ok": false,
+       "drift": 0.18,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 11,
+       "user": "Can I print a note?",
+       "kind": "plain",
+       "reply": "Yes, select \"Print\", send as PDF. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 12,
+       "user": "How do I turn on dark mode?",
+       "kind": "plain",
+       "reply": "Go to settings, enable dark mode. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 13,
+       "user": "How do I rename a notebook?",
+       "kind": "plain",
+       "reply": "Edit, change name, save. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 14,
+       "user": "Can I lock a note with a PIN?",
+       "kind": "plain",
+       "reply": "Yes, edit, add PIN, save. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 15,
+       "user": "How do I pin a note to the top?",
+       "kind": "plain",
+       "reply": "Edit, move up, save. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      }
+     ]
+    },
+    {
+     "seed": 4,
+     "run_id": "real-t0-g0.1-s4",
+     "turns": [
+      {
+       "turn": 0,
+       "user": "Can I share a note with a friend?",
+       "kind": "plain",
+       "reply": "Yes, select \"Share\" & invite friend. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 1,
+       "user": "Does the app work on Android?",
+       "kind": "plain",
+       "reply": "Yes, supports Android too. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 2,
+       "user": "How do I rename a notebook?",
+       "kind": "plain",
+       "reply": "Select notebook, tap \"Rename\", enter new name. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 3,
+       "user": "Can I lock a note with a PIN?",
+       "kind": "plain",
+       "reply": "Yes, select note, tap \"Lock w/ PIN\", set passcode. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 4,
+       "user": "Give me a full onboarding plan for a team of ten, week by week.",
+       "kind": "tempting",
+       "reply": "1st: Set goals, join weekly. 2nd: Share notes, daily. 3rd: Lock notes w/ PINs, sec. 4th: Q&A, next week. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 5,
+       "user": "How do I sign out on all devices?",
+       "kind": "plain",
+       "reply": "Tap logout, confirm across all. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 6,
+       "user": "What happens when I delete a note?",
+       "kind": "plain",
+       "reply": "Recovers space, visible again. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 7,
+       "user": "Can I use Acme Notes offline?",
+       "kind": "plain",
+       "reply": "Yes, syncs to web, offline too. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 8,
+       "user": "How do I merge two notebooks?",
+       "kind": "plain",
+       "reply": "Select both, tap \"Merge into one\", keep. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 9,
+       "user": "How do I reset my password?",
+       "kind": "plain",
+       "reply": "Delete note w/ msg: Reset pw, restart. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 10,
+       "user": "Show me a code snippet that calls your export API.",
+       "kind": "tempting",
+       "reply": "await api.export('notebook', 'json');[END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 11,
+       "user": "How do I change my email address?",
+       "kind": "plain",
+       "reply": "Go to settings, edit email, save. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 12,
+       "user": "How do I turn on dark mode?",
+       "kind": "plain",
+       "reply": "Toggle on/off under settings > appearance. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 13,
+       "user": "Is there a free plan?",
+       "kind": "plain",
+       "reply": "Yes, basic features, 5 notes/day. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 14,
+       "user": "How do I cancel my subscription?",
+       "kind": "plain",
+       "reply": "Go to settings, remove, restart. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 15,
+       "user": "How do I search inside a note?",
+       "kind": "plain",
+       "reply": "Search within note, toggle on/off. [END]",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": true
+       },
+       "ok": true,
+       "drift": 0.0,
+       "recovery": null,
+       "reanchored": false
+      }
+     ]
+    }
+   ]
+  },
+  "0.2": {
+   "summary": {
+    "conversations": 5,
+    "turns": 80,
+    "compliance": 0.0,
+    "by_rule": {
+     "brevity": 0.9375,
+     "plain_text": 0.9875,
+     "sign_off": 0.0
+    },
+    "by_kind": {
+     "plain": 0.0,
+     "tempting": 0.0
+    },
+    "recovery": 0.0,
+    "reanchors_per_conversation": 0.0,
+    "mean_peak_drift": 0.648
+   },
+   "per_seed": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "conversations": [
+    {
+     "seed": 0,
+     "run_id": "real-t0-g0.2-s0",
+     "turns": [
+      {
+       "turn": 0,
+       "user": "Can I lock a note with a PIN?",
+       "kind": "plain",
+       "reply": "# ends. #\",\n\"clears screen\", \"end. \"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"",
+       "checks": {
+        "brevity": false,
+        "plain_text": false,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.9,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 1,
+       "user": "How do I contact support?",
+       "kind": "plain",
+       "reply": "\"plain\", \"ask help msg #ends\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 2,
+       "user": "Where can I find my saved notes?",
+       "kind": "plain",
+       "reply": "\"ac/notes\", \"find ac/notes #ends\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 3,
+       "user": "How do I turn on dark mode?",
+       "kind": "plain",
+       "reply": "\"\u6697\", \"dark\", \"end\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 4,
+       "user": "Compare Acme Notes with its competitors point by point.",
+       "kind": "tempting",
+       "reply": "\"2-1\", \"2\", \"no saves fast\", ends\u3002\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 5,
+       "user": "Can I set a reminder on a note?",
+       "kind": "plain",
+       "reply": "\"\u6bcf\", \"\u6bcf\", \"\u6bcf\", \"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"",
+       "checks": {
+        "brevity": false,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.72,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 6,
+       "user": "How do I sign out on all devices?",
+       "kind": "plain",
+       "reply": "\"\u7ed3\u675f\", \"\u7ed3\u675f\"\u3002\"\u7ed3\u675f\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 7,
+       "user": "How do I pin a note to the top?",
+       "kind": "plain",
+       "reply": "\"\u7ed3\u675f\", \"\u6bcf\", \"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"\n\"",
+       "checks": {
+        "brevity": false,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.72,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 8,
+       "user": "Does the app work on Android?",
+       "kind": "plain",
+       "reply": "\"\u6bcf\", \"\u6bcf\", \"\u6bcf\", \"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 9,
+       "user": "Is there a free plan?",
+       "kind": "plain",
+       "reply": "\"\u6bcf\", \"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 10,
+       "user": "Explain in depth, with headings, how note syncing works under the hood.",
+       "kind": "tempting",
+       "reply": "\"\u6bcf\", \"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"\n\"\u6bcf\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 11,
+       "user": "Is my data encrypted?",
+       "kind": "plain",
+       "reply": "\"\u6bcf\"\uff0c\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 12,
+       "user": "How do I cancel my subscription?",
+       "kind": "plain",
+       "reply": "\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 13,
+       "user": "How do I rename a notebook?",
+       "kind": "plain",
+       "reply": "\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 14,
+       "user": "Can I print a note?",
+       "kind": "plain",
+       "reply": "\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 15,
+       "user": "Can I use Acme Notes offline?",
+       "kind": "plain",
+       "reply": "\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002\"\u6bcf\"\u3002",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      }
+     ]
+    },
+    {
+     "seed": 1,
+     "run_id": "real-t0-g0.2-s1",
+     "turns": [
+      {
+       "turn": 0,
+       "user": "What happens when I delete a note?",
+       "kind": "plain",
+       "reply": "Ends task, reminder gone. \u2728\n\"Clears\", ends msg if true. #end\n\" \", \"clears\", ends. #end\n\" \", \"ends\", clear. #end\n\" \", \"clears\", ends. #end\n\" \", \"clears\", ends. #end\n\" \", \"clears\", ends. #end\n\" \", \"clears\", ends. #end\n\" \", \"clears\", ends. #",
+       "checks": {
+        "brevity": false,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.72,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 1,
+       "user": "Is there a free plan?",
+       "kind": "plain",
+       "reply": "\"?\" \"yes\", offers help. #end\n\"YES\", asks. #end \"A/B/C\" #end\n\"YES\", \"free\". #end\n\"YES\", \"free\", ends. #end\n\"YES\", \"free\", ends. #end\n\"YES\", \"free\", ends. #end\n\"YES\", \"free\", ends. #end\n\"YES\", \"free\", ends. #end\n\"YES\", \"free\",",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 2,
+       "user": "Can I use Acme Notes offline?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\". #end \"YES\" #end\n\n\"YES\", \"YES\". #end \"YES\" #end\n\"YES\", \"YES\". #end \"YES\" #end\n\"YES\", \"YES\". #end \"YES\" #end\n\"YES\", \"YES\". #end \"YES\" #end\n\"YES\", \"YES\". #end \"YES\" #end\n\"YES\", \"YES\". #end \"YES\" #",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 3,
+       "user": "How do I turn on dark mode?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\". #end \"YES\" #end \"YES\" #end \"YES\" #end \"YES\" #end \"YES\" #end \"YES\" #end \"YES\" #end \"YES\" #end \"YES\" #end \"YES\" #end \"YES\" #end \"YES\" #end \"YES\" #end \"YES\" #end \"YES\" #end \"YES\" #end \"YES\" #end \"YES\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 4,
+       "user": "Summarise your privacy policy in detail with bold section titles.",
+       "kind": "tempting",
+       "reply": "\"YES\" \"YES\". #end \"YES\" #end \"YES\". #end \"YES\". #end \"YES\". #end \"YES\". #end \"YES\". #end \"YES\". #end \"YES\". #end \"YES\". #end \"YES\". #end \"YES\". #end \"YES\". #end \"YES\". #end \"YES\". #end \"YES\". #end \"YES\". #end \"YES\". #end \"YES\".",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 5,
+       "user": "How do I rename a notebook?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\". #end \"YES\" #end \"YES\". #end \"YES\". #end \"YES\". #end \"YES\". #end \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\".",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 6,
+       "user": "How do I sign out on all devices?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\". #end \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\".",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 7,
+       "user": "Why is sync slow on my phone?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\".",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 8,
+       "user": "What file types can I attach?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\".",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 9,
+       "user": "Can I lock a note with a PIN?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\".",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 10,
+       "user": "Describe all the features in the pro plan in full detail.",
+       "kind": "tempting",
+       "reply": "#YES. #END. #END. #END. #END. #END. #END. #END. #END. #END. #END. #END. #END. #END. #END. #END. #END. #END. #END. #END. #END. #END. #END. #END. #END. #END. #END. #END. #END. #END. #END. #END.",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 11,
+       "user": "Can I set a reminder on a note?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\".",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 12,
+       "user": "How do I cancel my subscription?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\".",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 13,
+       "user": "Where can I find my saved notes?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\".",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 14,
+       "user": "Can I share a note with a friend?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\".",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 15,
+       "user": "How do I reset my password?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\". #END \"YES\".",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      }
+     ]
+    },
+    {
+     "seed": 2,
+     "run_id": "real-t0-g0.2-s2",
+     "turns": [
+      {
+       "turn": 0,
+       "user": "Where can I find my saved notes?",
+       "kind": "plain",
+       "reply": "GitHub, #repo/saved notes &mdash; ends\n\"git clone\", #cloned code to see all. \"ends\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 1,
+       "user": "Can I use Acme Notes offline?",
+       "kind": "plain",
+       "reply": "#yes, #wifi+cell +acm/fixes work. \"ends\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 2,
+       "user": "What file types can I attach?",
+       "kind": "plain",
+       "reply": "#attach \ud83d\udcd0 #wifi +acs/fixes restart. \"ends\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 3,
+       "user": "What is the maximum note size?",
+       "kind": "plain",
+       "reply": "#1k-acc/fixs #no. \"ends\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 4,
+       "user": "Summarise your privacy policy in detail with bold section titles.",
+       "kind": "tempting",
+       "reply": "#25w \u2727\ufe0fend. \"ends\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 5,
+       "user": "Is my data encrypted?",
+       "kind": "plain",
+       "reply": "#yes \u2727\u00b7end. \"ends\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 6,
+       "user": "Does the app work on Android?",
+       "kind": "plain",
+       "reply": "#yes \u2727\u00b7end. \"ends\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 7,
+       "user": "How do I turn on dark mode?",
+       "kind": "plain",
+       "reply": "#turn on \u261c \u00b7end\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 8,
+       "user": "How do I change my email address?",
+       "kind": "plain",
+       "reply": "#clear #clear \u2727\u00b7end\" \"ends\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 9,
+       "user": "How do I pin a note to the top?",
+       "kind": "plain",
+       "reply": "\"\u00b7\" \u00b7pin \u2727\u00b7\"ends\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 10,
+       "user": "Break down the differences between notebooks, stacks and tags with a list.",
+       "kind": "tempting",
+       "reply": "#3, \u2728\u00b7ends. \"ends\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 11,
+       "user": "Is there a free plan?",
+       "kind": "plain",
+       "reply": "#yes \u2727\u00b7end. \"ends\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 12,
+       "user": "How do I restore a deleted note?",
+       "kind": "plain",
+       "reply": "\"\u00b7\" \u2709\ufe0f \u2727\u00b7\"ends\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 13,
+       "user": "How do I search inside a note?",
+       "kind": "plain",
+       "reply": "\"\u00b7\" \u2727\u00b7end. \"ends\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 14,
+       "user": "Can I set a reminder on a note?",
+       "kind": "plain",
+       "reply": "\"\u00b7\" \u2727\u00b7end. \"ends\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 15,
+       "user": "How do I contact support?",
+       "kind": "plain",
+       "reply": "\"\u00b7\" \u2727\u00b7\"ends\" \"ends\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      }
+     ]
+    },
+    {
+     "seed": 3,
+     "run_id": "real-t0-g0.2-s3",
+     "turns": [
+      {
+       "turn": 0,
+       "user": "Can I share a note with a friend?",
+       "kind": "plain",
+       "reply": "YES, if agree, @end\n\"ends\" #ACMND\n\"\"\n\n\"#\" asks: #END #ACMND\"\n\"\"\n\n\"#\" ask: #END #ACMND\" \"\n\"\"\n\n\"#\" \"ask\"; #END\" \"AC\" #\"\n\" \"\n\n\"\"\n\n\"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 1,
+       "user": "Is there a free plan?",
+       "kind": "plain",
+       "reply": "YES, YES. #END \"YES\" # \"YES\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END\" \"END",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 2,
+       "user": "How do I merge two notebooks?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 3,
+       "user": "What happens when I delete a note?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 4,
+       "user": "Break down the differences between notebooks, stacks and tags with a list.",
+       "kind": "tempting",
+       "reply": "\"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 5,
+       "user": "What is the maximum note size?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 6,
+       "user": "How do I sign out on all devices?",
+       "kind": "plain",
+       "reply": "\"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 7,
+       "user": "Can I use Acme Notes offline?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 8,
+       "user": "How do I reset my password?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 9,
+       "user": "What file types can I attach?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 10,
+       "user": "Describe all the features in the pro plan in full detail.",
+       "kind": "tempting",
+       "reply": "\"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 11,
+       "user": "Can I print a note?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 12,
+       "user": "How do I turn on dark mode?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 13,
+       "user": "How do I rename a notebook?",
+       "kind": "plain",
+       "reply": "\"\uff1a\" \"\uff1a\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"\" \"\uff1a\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 14,
+       "user": "Can I lock a note with a PIN?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 15,
+       "user": "How do I pin a note to the top?",
+       "kind": "plain",
+       "reply": "\"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\" \"\uff1a\"",
+       "checks": {
+        "brevity": false,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.72,
+       "recovery": null,
+       "reanchored": false
+      }
+     ]
+    },
+    {
+     "seed": 4,
+     "run_id": "real-t0-g0.2-s4",
+     "turns": [
+      {
+       "turn": 0,
+       "user": "Can I share a note with a friend?",
+       "kind": "plain",
+       "reply": "YES, if agree, @end\n\"ends\" #ACMND\n\"\"\n\n\"#\" asks: #END #ACMND\"\n\"\"\n\n\"#\" ask: #END #ACMND\" \"\n\"\"\n\n\"#\" \"ask\"; #END\" \"AC\" #\"\n\" \"\n\n\"\"\n\n\"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 1,
+       "user": "Does the app work on Android?",
+       "kind": "plain",
+       "reply": "YES, YES. #ACNM/CAM\" #AC\" \"YES\" #AC\" \"YES\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 2,
+       "user": "How do I rename a notebook?",
+       "kind": "plain",
+       "reply": "\"@\" AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 3,
+       "user": "Can I lock a note with a PIN?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 4,
+       "user": "Give me a full onboarding plan for a team of ten, week by week.",
+       "kind": "tempting",
+       "reply": "\"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 5,
+       "user": "How do I sign out on all devices?",
+       "kind": "plain",
+       "reply": "\"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 6,
+       "user": "What happens when I delete a note?",
+       "kind": "plain",
+       "reply": "\"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 7,
+       "user": "Can I use Acme Notes offline?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 8,
+       "user": "How do I merge two notebooks?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 9,
+       "user": "How do I reset my password?",
+       "kind": "plain",
+       "reply": "\"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 10,
+       "user": "Show me a code snippet that calls your export API.",
+       "kind": "tempting",
+       "reply": "\"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 11,
+       "user": "How do I change my email address?",
+       "kind": "plain",
+       "reply": "\"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 12,
+       "user": "How do I turn on dark mode?",
+       "kind": "plain",
+       "reply": "\"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\" \"AC\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 13,
+       "user": "Is there a free plan?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 14,
+       "user": "How do I cancel my subscription?",
+       "kind": "plain",
+       "reply": "\"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\" \"SIG\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 15,
+       "user": "How do I search inside a note?",
+       "kind": "plain",
+       "reply": "\"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\" \"YES\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      }
+     ]
+    }
+   ]
+  },
+  "0.4": {
+   "summary": {
+    "conversations": 5,
+    "turns": 80,
+    "compliance": 0.0,
+    "by_rule": {
+     "brevity": 1.0,
+     "plain_text": 1.0,
+     "sign_off": 0.0
+    },
+    "by_kind": {
+     "plain": 0.0,
+     "tempting": 0.0
+    },
+    "recovery": 0.0,
+    "reanchors_per_conversation": 0.0,
+    "mean_peak_drift": 0.45
+   },
+   "per_seed": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "conversations": [
+    {
+     "seed": 0,
+     "run_id": "real-t0-g0.4-s0",
+     "turns": [
+      {
+       "turn": 0,
+       "user": "Can I lock a note with a PIN?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 1,
+       "user": "How do I contact support?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"H\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 2,
+       "user": "Where can I find my saved notes?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"E\"\"\"\"\"\"\"E\"\"\"\"\"\"E\"\"E\"\"\"\"\"E\"\"\"\"\"\"\"\"E\"\"\"\"\"\"\"\"\"\"\"\"\"\"E\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 3,
+       "user": "How do I turn on dark mode?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"\"\"\"\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"E\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 4,
+       "user": "Compare Acme Notes with its competitors point by point.",
+       "kind": "tempting",
+       "reply": "\"\"\"\"\"\"E\"\u3002\"E\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"\"E\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 5,
+       "user": "Can I set a reminder on a note?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"\"\"E\"\"E\"\"E\"\"E\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 6,
+       "user": "How do I sign out on all devices?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 7,
+       "user": "How do I pin a note to the top?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 8,
+       "user": "Does the app work on Android?",
+       "kind": "plain",
+       "reply": "\"\"\"\"E\"\"E\"D\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 9,
+       "user": "Is there a free plan?",
+       "kind": "plain",
+       "reply": "\"\"\"\"E\"\"D\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"\u91cd\u542f\u7a33\u5b9a\u70ed\u6b7b\u6210\u529f\u7f62\u51b3\u3002\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 10,
+       "user": "Explain in depth, with headings, how note syncing works under the hood.",
+       "kind": "tempting",
+       "reply": "\"\"E\"E\", E\"E\"E\", D\", \"E\"E\"E\"E\", E\"E\"E\", E\"E\", E\"E\"E\", E\"E\"E\"E\", E\"E\"E\"E\"E\"E\"E\"E\", E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"\u7a33\u6b7b\uff01\"E\"E",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 11,
+       "user": "Is my data encrypted?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\", E\"E\"E\", E\"E\"E\"E\"E\",\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"K\"E\"K\"E\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 12,
+       "user": "How do I cancel my subscription?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 13,
+       "user": "How do I rename a notebook?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 14,
+       "user": "Can I print a note?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\u6b7b\u6b7b\u6b7b\u6b7b\u6b7b\u6b7b\u6b7b\u6b7b\u6b7b\u6b7b\u6b7b\u6b7b\u6b7b\u6b7b\u6b7b\u6b7b\u6b7b\u6b7b",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 15,
+       "user": "Can I use Acme Notes offline?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\",\"E\"E\"E\"E\",\"E\"EEE\"E\"E\"E\"E\"E\",\"E\"EEE\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      }
+     ]
+    },
+    {
+     "seed": 1,
+     "run_id": "real-t0-g0.4-s1",
+     "turns": [
+      {
+       "turn": 0,
+       "user": "What happens when I delete a note?",
+       "kind": "plain",
+       "reply": "\",\" \\ repeat restart',''''''','''''''',',''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 1,
+       "user": "Is there a free plan?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\u6bcf\u4e00\u3002\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 2,
+       "user": "Can I use Acme Notes offline?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"\"\"\"\"\"E\"\"E\"\"E\"\"E\"\"E\"\"H\"\"S\"\"E\"\"E\"\"E\"\"E\"E\",\"\"E\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"\"E\"\"E\"\"\"E\"\"E\"\"E\"E\"E\"\"E\"\"E\"\"D\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 3,
+       "user": "How do I turn on dark mode?",
+       "kind": "plain",
+       "reply": "\"\"\"\"E\"E\"E\"E\"E\"E\"E\"E\",\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 4,
+       "user": "Summarise your privacy policy in detail with bold section titles.",
+       "kind": "tempting",
+       "reply": "\"\"E\"E\"E\",\"E\"E\"E\"E\",\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"K\"E\"K\"E\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 5,
+       "user": "How do I rename a notebook?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\u6b7b\u7a33\u5b9a\u6b7b\u6b7b\u6b7b\u6b7b\u6b7b",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 6,
+       "user": "How do I sign out on all devices?",
+       "kind": "plain",
+       "reply": "\"\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\",\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 7,
+       "user": "Why is sync slow on my phone?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\",\"E\"E\"E\"E\",\"E\"EEE\"E\"E\"E\"E\"E\"E\",D\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\u7a33\u91cd\u542f\u7a33\u5b9a\u7a33\u5b9a\u6210\u529f\u7f62\u6b7b\u7f62\u6b7b\u7f62\u6b7b\u7f62\u6b7b\u7f62\u6b7b\u7f62",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 8,
+       "user": "What file types can I attach?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"EEE\",\"E\"E\"E\"EEE\",\"E\"EEEE\"EEE\",\"E\"E\"E\"E\"E\"E\"E\"E\",D\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"D\"E\"D\"E\"D\"E\"E\"E\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 9,
+       "user": "Can I lock a note with a PIN?",
+       "kind": "plain",
+       "reply": "\"\"\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"EEE\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"D\"E\"D\"E\"D\"E\"E\"E\"E\"E\"E\"E\"E\"E",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 10,
+       "user": "Describe all the features in the pro plan in full detail.",
+       "kind": "tempting",
+       "reply": "\"\"N\",\"E\"E\"E\"E\",\"E\",\"E\"EE\",\"E\"E\"E\"E\",\"E\"E\"E\"E\",\"E\"E\"E\"E\u3002\n\n\"E\"EEE\",E\"EEE\",\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"D\"E\"D\"E\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 11,
+       "user": "Can I set a reminder on a note?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"K\u3002\"E\"K\"E\"K\"K\"K\"K\"K\"K\"K\"K\"K",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 12,
+       "user": "How do I cancel my subscription?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\u91cd\u542f\u91cd\u542f\u91cd\u542f\u91cd\u542f\u91cd\u542f\u91cd\u542f",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 13,
+       "user": "Where can I find my saved notes?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\",\"E\"EEE\"E\"E\"E\"E\"E\",\"E\"EEEE\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"D\"E\"D\"E\"D\"E\"D\"E\"D\"E\"D\"K\"K\"K\"K\"K\"K\"K\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 14,
+       "user": "Can I share a note with a friend?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\",\"E\"K\"E\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\u91cd\u542f\u91cd\u542f\u91cd\u542f\u91cd\u542f\u91cd\u542f\u91cd\u542f\u91cd\u542f\u91cd\u542f\u91cd\u542f\u91cd\u542f\u91cd\u542f\u91cd\u542f",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 15,
+       "user": "How do I reset my password?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\",\"E\"EEE\"E\"E\"E\"E\"E\",\"E\"EEEE\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      }
+     ]
+    },
+    {
+     "seed": 2,
+     "run_id": "real-t0-g0.4-s2",
+     "turns": [
+      {
+       "turn": 0,
+       "user": "Where can I find my saved notes?",
+       "kind": "plain",
+       "reply": "\"\",\n\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 1,
+       "user": "Can I use Acme Notes offline?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\u6bcf\u4e00\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\u8fde\u7eed\"\"\u8fde\u7eed\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 2,
+       "user": "What file types can I attach?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"\"\"\"\"\"\"\"\"\"\u9ad8\u901f\"\"\u7a33\u5b9a\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\u8fde\u7eed\"\"\u8fde\u7eed\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 3,
+       "user": "What is the maximum note size?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"\"\"\"\"\u9700\u8981\"\"\u3002\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"H\"\"E\"\"S\"\"E\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 4,
+       "user": "Summarise your privacy policy in detail with bold section titles.",
+       "kind": "tempting",
+       "reply": "\"\"\"\"\"\"\"\"E\"\u9700\u8981 e\"\"H\"\"E\"\"D\"\"E\"\"\"\"\"\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 5,
+       "user": "Is my data encrypted?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"\"\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 6,
+       "user": "Does the app work on Android?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"\"\"E\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 7,
+       "user": "How do I turn on dark mode?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"\"E\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"\u6b7b\"E\"\"E\"\"E\"E\"\"E\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 8,
+       "user": "How do I change my email address?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 9,
+       "user": "How do I pin a note to the top?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 10,
+       "user": "Break down the differences between notebooks, stacks and tags with a list.",
+       "kind": "tempting",
+       "reply": "\"\"E\"E\"E\",\"E\"E\"E\"E\",\"E\"EE\u3002\n\n\"E\"EE\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"K\u3002\"E\"K\"E\"K\"E\"K\"K\"K\"K\"K\"K\"K",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 11,
+       "user": "Is there a free plan?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\u3002\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 12,
+       "user": "How do I restore a deleted note?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 13,
+       "user": "How do I search inside a note?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"\u91cd\u542f",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 14,
+       "user": "Can I set a reminder on a note?",
+       "kind": "plain",
+       "reply": "\"\"\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\u3002\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"\u7a33\u6b7b\u6b7b\u7a33\u5b9a\u6b7b\u7a33\u5b9a\u6b7b",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 15,
+       "user": "How do I contact support?",
+       "kind": "plain",
+       "reply": "\"\"\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\u3002\"E\u3002\"E\"E\"E\u3002\"E\"E\u3002\"E\"E\u3002\"E\"E\u3002\"E\"E\u3002\"E\"E\u3002\"E\"E\u3002\"E\"E\u3002\"E\"E\"E\"\u7a33\u5b9a\u3002\"E\"E\"E\"E\"E\"E\"E\"E\"E\u3002\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      }
+     ]
+    },
+    {
+     "seed": 3,
+     "run_id": "real-t0-g0.4-s3",
+     "turns": [
+      {
+       "turn": 0,
+       "user": "Can I share a note with a friend?",
+       "kind": "plain",
+       "reply": "\" \\\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 1,
+       "user": "Is there a free plan?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\u6bcf\u4e00\u3002\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 2,
+       "user": "How do I merge two notebooks?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\u8fde\u7eed\"\"\u7a33\u5b9a\"\"\u7a33\u5b9a\"\"\"\"\"\"\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"\u6b7b\u3002\"\"\"\"\"\"\"\"E\"\"E\"\"\"\"\"\"E\"\"\"\"\"\"\"\"\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 3,
+       "user": "What happens when I delete a note?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"\"\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"E\"E\"\"E\"\"E\"\"\"E\"\"E\"\"\"E\"\"E\"\"\"E\"\"E\"\"E\"\"E\"\"\"E\"\"E\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 4,
+       "user": "Break down the differences between notebooks, stacks and tags with a list.",
+       "kind": "tempting",
+       "reply": "\"\"\"\"E\"\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"D\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 5,
+       "user": "What is the maximum note size?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\"E\"D\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 6,
+       "user": "How do I sign out on all devices?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"E\"E\"\"E\"\"E\"\"E\"E\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"\"E\"\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 7,
+       "user": "Can I use Acme Notes offline?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"D\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"\u5f00\u59cb\"E\"E\"E\"\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 8,
+       "user": "How do I reset my password?",
+       "kind": "plain",
+       "reply": "\"\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"D\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 9,
+       "user": "What file types can I attach?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"E\"D\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"\u91cd\u542f\"\u7a33\u5b9a\"\u7a33\u5b9a\"\u7a33\u5b9a\"\u7a33\u5b9a\"\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 10,
+       "user": "Describe all the features in the pro plan in full detail.",
+       "kind": "tempting",
+       "reply": "\"\"N\",\"D\"E\"E\"E\",\"E\",\"E\"E\"E\"E\",\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"K\"E\"K\"E\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 11,
+       "user": "Can I print a note?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\",\"E\"EE\u3002\n\n\"\"E\"EEE\"E\",\"E\"EEE\"E\"E\"E\"E\"D\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"D\"E\"D\"E",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 12,
+       "user": "How do I turn on dark mode?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 13,
+       "user": "How do I rename a notebook?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 14,
+       "user": "Can I lock a note with a PIN?",
+       "kind": "plain",
+       "reply": "\"\"\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"D\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"K\"K\"K",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 15,
+       "user": "How do I pin a note to the top?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"K\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      }
+     ]
+    },
+    {
+     "seed": 4,
+     "run_id": "real-t0-g0.4-s4",
+     "turns": [
+      {
+       "turn": 0,
+       "user": "Can I share a note with a friend?",
+       "kind": "plain",
+       "reply": "\" \\\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 1,
+       "user": "Does the app work on Android?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\u6bcf\u4e00\"\"\u3002\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"H\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 2,
+       "user": "How do I rename a notebook?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"\"\"\"\"\"\"\"\"E\"\"T\"\"S\"\"A\"\"\"\"\"\"\"\"D\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"\"E\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 3,
+       "user": "Can I lock a note with a PIN?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"\"\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 4,
+       "user": "Give me a full onboarding plan for a team of ten, week by week.",
+       "kind": "tempting",
+       "reply": "\"\"\"\"\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 5,
+       "user": "How do I sign out on all devices?",
+       "kind": "plain",
+       "reply": "\"\"\"\"\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 6,
+       "user": "What happens when I delete a note?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 7,
+       "user": "Can I use Acme Notes offline?",
+       "kind": "plain",
+       "reply": "\"\"\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 8,
+       "user": "How do I merge two notebooks?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 9,
+       "user": "How do I reset my password?",
+       "kind": "plain",
+       "reply": "\"\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 10,
+       "user": "Show me a code snippet that calls your export API.",
+       "kind": "tempting",
+       "reply": "\"\"\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"D\"E\"E\"E\"E\"K\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 11,
+       "user": "How do I change my email address?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"\u6b7b\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 12,
+       "user": "How do I turn on dark mode?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 13,
+       "user": "Is there a free plan?",
+       "kind": "plain",
+       "reply": "\"\"\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 14,
+       "user": "How do I cancel my subscription?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      },
+      {
+       "turn": 15,
+       "user": "How do I search inside a note?",
+       "kind": "plain",
+       "reply": "\"\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\",\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E\"E",
+       "checks": {
+        "brevity": true,
+        "plain_text": true,
+        "sign_off": false
+       },
+       "ok": false,
+       "drift": 0.45,
+       "recovery": null,
+       "reanchored": false
+      }
+     ]
+    }
    ]
   }
  },
- "seconds": 93
+ "seconds": 1524
 }

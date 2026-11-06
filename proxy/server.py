@@ -28,6 +28,15 @@ def build(config: ProxyConfig | None = None):
             "anyone who can reach this proxy, and contracts can be registered without credentials. "
             "Set a token before exposing the proxy beyond localhost."
         )
+    if config.capture_content and not config.admin_token:
+        if not config.allow_open_capture:
+            raise RuntimeError(
+                "OPENGUIDE_CAPTURE_CONTENT is on but OPENGUIDE_ADMIN_TOKEN is not set: every prompt "
+                "and reply would be readable by anyone who can reach this proxy. Set a token, or set "
+                "OPENGUIDE_ALLOW_OPEN_CAPTURE=1 to accept this on a machine nobody else can reach."
+            )
+        log.error("CONTENT CAPTURE IS ON WITH NO ADMIN TOKEN: full prompts and replies are readable by "
+                  "anyone who can reach this proxy.")
     registry = ContractRegistry()
     if config.contracts_dir:
         registry.load_dir(config.contracts_dir)
@@ -48,6 +57,7 @@ def build(config: ProxyConfig | None = None):
         tool_policy=tool_policy,
         packs_dir=config.packs_dir,
         console_dir=config.console_dir,
+        capture_content=config.capture_content,
     )
 
 

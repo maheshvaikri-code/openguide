@@ -37,6 +37,17 @@ export interface StateRecord {
   reanchored: boolean;
 }
 
+/** What was said on one turn. Present only when the proxy ran with content capture on (off by default). */
+export interface TurnRecord {
+  ev: "TURN";
+  turn: number;
+  user: string;
+  output: string;
+  /** The re-anchor sent to the model with this turn's request, or null. */
+  restated: string | null;
+  truncated: boolean;
+}
+
 export interface ChainReport {
   ok: boolean;
   checked: number;

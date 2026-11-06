@@ -1,9 +1,13 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { describeRun, parseContractInfo, responseGate } from "../lib/contractInfo";
 import { hrefFor } from "../lib/router";
+import { groupRuns, shouldGroup } from "../lib/series";
 import type { Run } from "../lib/types";
 import { useResource } from "../lib/useResource";
 import { useApi } from "../ui/ApiContext";
+import { FleetGuide } from "../ui/FleetGuide";
 import { HeatField } from "../ui/HeatField";
+import { SeriesView } from "../ui/SeriesView";
 import { StateView } from "../ui/StateView";
 import { BandBadge, shortHash, VerifiedBadge } from "../ui/format";
 
@@ -24,6 +28,11 @@ export function FleetPage() {
   // Selection is by run id, not list position: the list is ordered by drift and polled, so a
   // position would silently point at a different run when new ones arrive.
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  // null = the user hasn't chosen: group by series when the run names suggest several arms/batches
+  const [chosenLayout, setChosenLayout] = useState<"all" | "series" | null>(null);
+  // The automatic choice is made ONCE, when the first runs arrive. Live updates must not re-decide it, or the
+  // squares would rearrange under the user's cursor as new runs come in.
+  const [autoLayout, setAutoLayout] = useState<"all" | "series" | null>(null);
   const firstSeen = useRef<Set<string> | null>(null);
 
   const [contracts] = useResource(() => api.contracts().catch(() => []), []);
@@ -59,9 +68,23 @@ export function FleetPage() {
     }),
     [runs],
   );
+  const groups = useMemo(() => groupRuns(runs), [runs]);
+  const canGroup = shouldGroup(groups);
+  useEffect(() => {
+    if (autoLayout === null && res.status === "ready" && runs.length > 0) setAutoLayout(canGroup ? "series" : "all");
+  }, [autoLayout, res.status, runs.length, canGroup]);
+  const layout = chosenLayout ?? autoLayout ?? "all";
   const selected = selectedId === null ? -1 : runs.findIndex((r) => r.run_id === selectedId);
   const filtered = Boolean(contract || model || minDrift > 0 || haltedOnly);
   const sel = selected >= 0 ? runs[selected] : undefined;
+  // the selected run's own contract: its threshold is what makes "peak drift 0.45" mean something
+  const [selContract] = useResource(
+    async () => (sel ? parseContractInfo((await api.contract(sel.contract_hash)).contract) : null),
+    [sel?.contract_hash],
+  );
+  // the drift at which THIS contract's first response step starts, not merely a "threshold" figure
+  const selThreshold = selContract.status === "ready" && selContract.data ? responseGate(selContract.data) : null;
+  const selGroup = sel ? groups.find((g) => g.runs.some((r) => r.run_id === sel.run_id)) : undefined;
   const contractName = (h: string) =>
     (contracts.status === "ready" && contracts.data.find((c) => c.hash === h)?.name) || `contract ${shortHash(h)}`;
 
@@ -70,9 +93,11 @@ export function FleetPage() {
       <div className="page-head">
         <div>
           <h1>Fleet</h1>
-          <p>Every run, coloured by how far it drifted from its contract. Select a cell to inspect it; open it to replay what happened.</p>
+          <p>Every run, coloured by how far it drifted from its contract. Select a square to inspect it; open it to replay what happened.</p>
         </div>
       </div>
+
+      <FleetGuide />
 
       <form className="controls" onSubmit={(e) => e.preventDefault()} aria-label="Fleet filters">
         <label className="field">
@@ -104,6 +129,13 @@ export function FleetPage() {
           <input type="checkbox" checked={live} onChange={(e) => setLive(e.target.checked)} />
           Live updates
         </label>
+        {canGroup && (
+          <fieldset className="seg" aria-label="Layout">
+            <legend className="sr-only">Layout</legend>
+            <label><input type="radio" name="layout" checked={layout === "all"} onChange={() => setChosenLayout("all")} />All runs</label>
+            <label><input type="radio" name="layout" checked={layout === "series"} onChange={() => setChosenLayout("series")} />By series</label>
+          </fieldset>
+        )}
       </form>
 
       <StateView
@@ -136,17 +168,15 @@ export function FleetPage() {
 
             <div className="split">
               <div className="stack">
-                <div className="well">
-                  <HeatField runs={runs} selected={selected} newIds={newIds} onSelect={(i) => setSelectedId(runs[i]?.run_id ?? null)}
-                    onOpen={(i) => runs[i] && open(runs[i].run_id)} />
-                </div>
-                <div className="legend" aria-label="Legend">
-                  <span>Peak drift</span><span className="ramp" aria-hidden="true" />
-                  <span className="num">0</span><span>low</span>
-                  <span className="num">1</span><span>high</span>
-                  <span>Each contract sets its own threshold; see a run for its contract's.</span>
-                  <span>Dot: halted. Red frame: trace chain broken. Cyan frame: arrived while you watched.</span>
-                </div>
+                {layout === "series" ? (
+                  <SeriesView groups={groups} selectedId={selectedId} newIds={newIds} filtered={filtered}
+                    onSelect={(id) => setSelectedId(id)} onOpen={(id) => open(id)} />
+                ) : (
+                  <div className="well">
+                    <HeatField runs={runs} selected={selected} newIds={newIds} onSelect={(i) => setSelectedId(runs[i]?.run_id ?? null)}
+                      onOpen={(i) => runs[i] && open(runs[i].run_id)} />
+                  </div>
+                )}
               </div>
 
               <aside className="panel" aria-label="Selected run">
@@ -155,6 +185,13 @@ export function FleetPage() {
                   {sel ? (
                     <>
                       <div><BandBadge drift={sel.max_drift} /> <VerifiedBadge ok={sel.verified} stored={Boolean(sel.trace_cas_key)} /></div>
+                      <p>{describeRun(sel, selThreshold)}</p>
+                      {selGroup && selGroup.count > 1 && (
+                        <p className="muted">
+                          One of {selGroup.count} {filtered ? "runs shown" : "runs"} in <span className="mono">{selGroup.name}</span>,
+                          which averaged a peak drift of {selGroup.meanPeak.toFixed(2)}.
+                        </p>
+                      )}
                       <dl className="kv">
                         <dt>Peak drift</dt><dd className="num">{sel.max_drift.toFixed(2)}</dd>
                         <dt>Corrections</dt><dd className="num">{sel.recoveries}</dd>
@@ -173,7 +210,11 @@ export function FleetPage() {
                       )}
                     </>
                   ) : (
-                    <p className="muted">Hover the field to preview a run, click to pin it, or use the arrow keys.</p>
+                    <p className="muted">
+                      {layout === "series"
+                        ? "Click a square to see why it has that colour. Tab moves between squares."
+                        : "Hover a square to preview a run, click it to see why it has that colour, or use the arrow keys."}
+                    </p>
                   )}
                 </div>
               </aside>

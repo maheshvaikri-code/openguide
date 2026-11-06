@@ -71,6 +71,17 @@ is the run's identity tuple:
 | `STEP` | one per-step grid evaluation | `step`, `applied`, `sigma_peak`, `norm_corr` |
 | `OVERRIDE` | live gain knob change | `step`, `signal`, `old`, `new`, `source` |
 | `TRIGGER` | event-driven signal application | `step`, `on`, `signal`, `g`, `tau`, `layers`, `source` |
+| `STATE` | one behavioral-state reading per governed turn | `turn`, `drift`, `invariants`, `recovery_fired`, `reanchored`, `sensor_gaps` |
+| `TOOL_POLICY` | a tool-call decision | `turn`, `decision`, `reason`, `tools` |
+| `TURN` | **optional** message text for one turn | `turn`, `user`, `output`, `restated`, `truncated` |
+
+**`TURN` is opt-in and off by default.** A trace holds behavioral state only unless the proxy runs with
+`OPENGUIDE_CAPTURE_CONTENT=1`, because captured text is the prompts and replies themselves. When on, a `TURN`
+record follows each turn's `STATE` and carries: `user`, the newest user message only (never the system prompt or
+earlier history); `output`, the model's reply; `restated`, the re-anchor text sent with that request, or `null`;
+and `truncated`, true if any field was clipped to 8000 characters. It is inside the hash chain like every other
+record, so captured text is tamper-evident. The metadata-only view of a trace (`?metadata_only=true`) never
+includes it. See `docs/adr/002-opt-in-content-capture.md`.
 
 Records are extensible: unknown `ev` values and extra fields are permitted and
 participate in the hash (canonical encoding sorts them deterministically).

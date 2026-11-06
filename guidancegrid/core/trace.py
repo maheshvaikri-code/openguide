@@ -12,6 +12,22 @@ import json
 
 from .canonical import canonical_json, chash
 
+# Captured message text is clipped so one huge message cannot bloat a hash-chained trace.
+MAX_CAPTURE_CHARS = 8000
+
+
+def turn_event(turn: int, user: str, output: str, restated: str | None = None) -> dict:
+    """A TURN record: what the user said this turn, what the model replied, and which re-anchor (if any)
+    was sent with the request. Opt-in: traces hold behavioral state only unless a caller captures content.
+    It is appended after the turn's STATE and rides in the same hash chain."""
+    parts = [user, output] + ([restated] if restated is not None else [])
+    return {
+        "ev": "TURN", "turn": turn,
+        "user": user[:MAX_CAPTURE_CHARS], "output": output[:MAX_CAPTURE_CHARS],
+        "restated": restated[:MAX_CAPTURE_CHARS] if restated is not None else None,
+        "truncated": any(len(p) > MAX_CAPTURE_CHARS for p in parts),
+    }
+
 
 class Trace:
     def __init__(self, manifest: dict):

@@ -135,11 +135,18 @@ export function HeatField({
         {sel ? `${sel.run_id}, peak drift ${sel.max_drift.toFixed(2)}${sel.halted ? ", halted" : ""}` : ""}
       </div>
       {tip && hover && (
-        <div className="tip" style={{ left: Math.min(hover.x + 22, width - 190), top: hover.y + 28 }}>
+        <div className="tip" style={{ left: Math.min(hover.x + 22, width - 250), top: hover.y + 28 }}>
           <b className="mono">{tip.run_id}</b>
           <br />
-          <span className="num">drift {tip.max_drift.toFixed(2)}</span>
-          {tip.halted ? " (halted)" : ""}
+          <span className="num">peak drift {tip.max_drift.toFixed(2)}</span>
+          {" · "}
+          {tip.recoveries} {tip.recoveries === 1 ? "correction" : "corrections"}
+          {" · "}
+          {tip.turns} turns
+          <br />
+          <span className="muted">{tip.model}</span>
+          {tip.halted ? " · halted" : ""}
+          {!tip.verified && tip.trace_cas_key ? " · trace chain broken" : ""}
         </div>
       )}
     </div>
