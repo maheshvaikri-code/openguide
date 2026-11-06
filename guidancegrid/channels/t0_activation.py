@@ -17,12 +17,13 @@ without the caller threading a counter through `generate()`.
 """
 from __future__ import annotations
 
-from typing import Any
+from contextlib import contextmanager
+from typing import Any, Callable
 
 import numpy as np
 import torch
 
-from ..core.grid import Grid, SignalPack
+from ..core.grid import STEER_SIGNAL, Grid, SignalPack
 from ..core.trace import Trace
 
 
@@ -146,3 +147,36 @@ class ActivationSteerer:
         self.overrides[signal] = float(multiplier)
         self.trace.append({"step": self.t, "ev": "OVERRIDE", "signal": signal,
                            "old": old, "new": float(multiplier), "source": source})
+
+
+# ── steering a whole generation ──────────────────────────────────────
+SIGNAL = STEER_SIGNAL                # the one steering signal the pack and the gain field share
+MAX_STEPS = 1024                      # forward passes covered by the gain field
+
+
+def steering_context(model: Any, pack: SignalPack, band: tuple[int, int], gain: float,
+                     manifest: dict[str, Any]) -> Callable[[], Any]:
+    """A factory of context managers: inside one, every forward pass is steered at ``gain`` on layers
+    ``range(*band)``. ``gain`` is the PEAK of a gaussian envelope centred on the band: the middle layers get
+    about ``gain`` and the edge layers less (a narrow band gets well under ``gain`` per layer). Only layers
+    the pack has a vector for are steered, so give it a pack holding just the band. Gain 0 registers nothing.
+    The hooks are always removed on exit, even if generation raises."""
+    lo, hi = band
+    n_layers = len(decoder_layers(model))
+
+    @contextmanager
+    def ctx():
+        if gain == 0:
+            yield None
+            return
+        grid = Grid(layers=n_layers, frame=16)
+        grid.field(SIGNAL).write_const(lo, hi - 1, 0, MAX_STEPS, float(gain))
+        steerer = ActivationSteerer(grid, pack, {**manifest, "gain": float(gain), "band": [lo, hi]},
+                                    num_layers=n_layers)
+        try:
+            steerer.register(model=model)
+            yield steerer
+        finally:
+            steerer.remove()
+
+    return ctx

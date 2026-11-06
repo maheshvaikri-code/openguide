@@ -164,6 +164,8 @@ The design was not fixed in advance. In order:
    **This design was chosen after seeing v1 and the ablation.**
 5. **T0 gains** were chosen before the full run but after a 4-question smoke test. The recovery test at gain
    **0.05** was added **after** the capability results showed it was the only gain that keeps the model working.
+6. **The closed-loop test (7.3)** used that same gain 0.05 on those same conversations, so it is not independent
+   of the choices above.
 
 ### 7.1 Does re-anchoring help? (recovery on a real model)
 
@@ -190,7 +192,9 @@ every arm, only the sign-off drifted.
 Vectors: per decoder layer in a fixed band (layers 10-18 of 28), the mean difference of the residual stream at
 the last prompt token between "system prompt states the rules" and "does not", over 12 held-out prompts; unit
 length, scaled to the typical residual norm (so gain 1.0 = one typical norm); injected with the norm-preserving
-`ActivationSteerer`. Replay identity holds on the real model: the same steered generation run twice gives a
+`ActivationSteerer`. The "gain" is the *peak* of a gaussian envelope across the nine layers (the middle layers get
+about that much, the edge layers less), the same in every experiment here.
+Replay identity holds on the real model: the same steered generation run twice gives a
 bit-identical trace head (verified chain of 48 records).
 
 **Capability (n=100 GSM8K test problems, n=300 MMLU test questions, fixed random seed, 95% Wilson CI):**
@@ -250,22 +254,63 @@ the saved replies for the other arms through the harness reproduced every record
 turn by turn (`scripts/rebuild_real_db.py`). This shows the harness is deterministic, not that the effect would
 hold on other hardware, sampling settings or models.
 
-### 7.3 What this does and does not show
+### 7.3 Drift-gated T0 steering in the proxy (closed loop)
+
+The proxy can now steer the model's activations, but only after a turn that needed a correction and only at gain
+0.05 ([ADR-003](../docs/adr/003-drift-gated-t0-in-the-proxy.md), [`../docs/t0-steering.md`](../docs/t0-steering.md)).
+Two arms, both through the real proxy (`create_app`), on the same 5 conversations x 16 turns with shocks at turns 4
+and 10 as 7.1 and 7.2; greedy decoding. `t2` is the proxy as it was (text re-anchor after a failed turn);
+`t2+t0` adds the steering.
+
+| Arm | All turns | Recovery | Plain turns | Shock turns |
+|---|---|---|---|---|
+| t2 (text re-anchor only) | 56.2% | 64.0% | 64.3% | 0% |
+| **t2+t0** (plus drift-gated steering, gain 0.05) | **85.0%** | **100%** | **97.1%** | 0% |
+
+Per conversation (seeds 0-4): t2 .88 .19 .00 .88 .88; t2+t0 .88 .81 .81 .88 .88. Paired difference +0.29 per
+conversation, 2 wins / 3 ties / 0 losses, exact sign test p = 0.50. Steering fired on 2-3 of 16 turns per
+conversation (turns 1, 5 and 11 in the two conversations that drifted).
+
+**Reading it.**
+- The `t2` arm reproduces the 7.1 proxy arm exactly (64% recovery), so this is the same harness and the same conversations.
+- The replies were read, not just scored: steered turns are ordinary answers ending in `[END]` (shortest reply 7 words,
+  none under 3), not the degenerate text seen at larger gains.
+- The two conversations that did not recover under text re-anchoring (seeds 1 and 2: 19% and 0% of turns compliant)
+  were compliant on every plain turn after the first steered turn. Compared with steering on every turn at 0.05 (7.2: 88.8% / 100%), the closed loop reached
+  85.0% / 100% while steering about 15% of turns.
+- The shock turns, where the user asks for what the rules forbid, still fail in both arms. The loop acts on the turn
+  *after* it sees the failure, so it cannot make the model refuse an explicit request on that turn.
+
+**Why this is weak evidence.**
+- Gain 0.05 was chosen after seeing these same conversations (7.2, "added post hoc"). This is not an independent test.
+- n = 5, and 3 of the 5 never drifted, so the whole effect is two conversations (p = 0.50). The direction is consistent;
+  nothing is established.
+- It is not known *why* one steered turn keeps a whole conversation compliant. A plausible alternative is that the
+  steered reply, which ends in `[END]`, then sits in the history and the model copies it; that was not tested.
+- Capability (GSM8K/MMLU) was not re-measured through the loop. 7.2 measured steering at 0.05 on every
+  forward pass with no detectable loss at n = 100; the loop steers less often, but that is an inference.
+
+Reproduce (GPU, ~5 minutes): `python scripts/derive_steering_pack.py`, then `python scripts/real_closed_loop.py`. The runs
+are stored as `real-cl-t2-s*` and `real-cl-t2t0-s*` for replay in the Console (each steered turn is marked).
+Raw results: [`results/qwen2.5-1.5b/real_closed_loop_results.json`](results/qwen2.5-1.5b/real_closed_loop_results.json).
+
+### 7.4 What this does and does not show
 
 - **Shows:** a real-model pipeline works end to end (proxy, real sensors, traces, steering, replay); on this
   model the proxy's current re-anchoring does little; activation steering at a *small* gain (0.05) changes
   behavior in the intended direction with no detectable capability loss, and at larger gains destroys the
-  model; the capability cost is sharp, not gradual.
+  model; the capability cost is sharp, not gradual; steering only after a failed turn (7.3) recovered the two
+  conversations that text re-anchoring did not, in a small, non-independent test.
 - **Does not show:** anything about 7B/8B models (the blueprint's Qwen2.5-7B does not fit in 8 GB at full
   precision, so that gate is still unrun); that results hold for other rules, prompts or models; that the
   placement of a re-anchor matters (it flips by conversation); a statistically established benefit for any
-  intervention (n = 5 conversations, intervals touch zero).
+  intervention (n = 5 conversations, intervals touch zero; the closed loop's sign test is p = 0.50).
 - **Limits:** one model, one contract, scripted prompts, greedy decoding (no sampling variance), 5
   conversations per arm of which 3 never drifted, MMLU on 300 random test questions and GSM8K on 100. The
   steering vector was derived and evaluated on the same kind of question (different questions, same template).
   Rule checkers count degenerate text as compliant on some rules (see the warning above).
 
-Reproduce (GPU, ~1.5 hours in total): `python scripts/calibrate_real_rules.py`;
+Reproduce (GPU, ~1.5 hours in total, plus ~5 minutes for 7.3): `python scripts/calibrate_real_rules.py`;
 `python scripts/real_placement_ablation.py` (add `--plain-only` for the ablation);
 `python scripts/real_t0_gate.py`; then `python scripts/real_model_demo.py --serve` to browse the runs in the
 Console. Weights go in `.models/Qwen2.5-1.5B-Instruct` (git-ignored). The raw results of the runs reported

@@ -18,11 +18,12 @@ from dataclasses import dataclass
 from typing import Any, AsyncIterator
 from uuid import uuid4
 
-from guidancegrid.core.trace import turn_event
+from guidancegrid.core.trace import steer_event, turn_event
 
 from .otel import InMemorySpanEmitter
 from .registry import ContractRegistry
 from .session import SessionStore
+from .steering import SteeringConfig, SteerReceipt, wants_steering
 from .streaming import (
     StreamAssembler,
     detect_trigger_tokens,
@@ -58,7 +59,8 @@ class ResolvedGovernance:
 class Governor:
     def __init__(self, registry: ContractRegistry, upstream: Upstream,
                  sessions: SessionStore | None = None, emitter=None, store=None,
-                 tool_policy: ToolPolicy | None = None, capture_content: bool = False):
+                 tool_policy: ToolPolicy | None = None, capture_content: bool = False,
+                 steering: SteeringConfig | None = None):
         self.registry = registry
         self.upstream = upstream
         self.sessions = sessions or SessionStore()
@@ -67,6 +69,12 @@ class Governor:
         self.tool_policy = tool_policy or ToolPolicy()
         # Opt-in, off by default: traces then hold behavioral state only, never message text.
         self.capture_content = capture_content
+        # Opt-in drift-gated T0 steering (ADR-003). Refused up front for an upstream that cannot steer, so a
+        # trace can never claim steering that did not happen.
+        if steering is not None and not getattr(upstream, "supports_steering", False):
+            raise ValueError("steering was requested, but this upstream cannot steer the model's activations "
+                             "(it needs the weights in-process: HFUpstream.enable_steering)")
+        self.steering = steering
 
     # ── helpers ──────────────────────────────────────────────────────
     def _manifest(self, compiled, session_id: str) -> dict[str, Any]:
@@ -120,6 +128,38 @@ class Governor:
                 return c if isinstance(c, str) else ""
         return ""
 
+    def _steer_gain(self, sess) -> float:
+        """The gain for this generation: set by the previous turn's outcome, never by the request."""
+        return sess.steer_next if (self.steering is not None and sess is not None) else 0.0
+
+    def _steer_receipt(self, sess) -> SteerReceipt | None:
+        gain = self._steer_gain(sess)
+        return SteerReceipt(gain) if gain > 0 else None
+
+    @staticmethod
+    def _steer_kwargs(receipt: SteerReceipt | None) -> dict[str, Any]:
+        # other upstreams never see these arguments
+        return {"steer": receipt.gain, "receipt": receipt} if receipt is not None else {}
+
+    def _settle_steer(self, session_id: str, receipt: SteerReceipt | None) -> None:
+        """A call ended without its turn being scored (the client closed the stream, scoring failed). If a
+        steered reply was nevertheless produced, say so in the trace, marked unscored, so the audit trail
+        never omits steering that reached a reply. A call cancelled while the model was still writing produced
+        no reply, so there is nothing to attribute. The turn is not advanced; the loop stays armed."""
+        if receipt is None or not receipt.produced or receipt.recorded or self.steering is None:
+            return
+        sess = self.sessions.get(session_id)
+        if sess is None:
+            return
+        receipt.recorded = True
+        cfg = self.steering
+        sess.reconciler.trace.append(
+            steer_event(sess.turn, receipt.gain, cfg.band, cfg.pack_hash, scored=False))
+        try:
+            self._persist(sess, sess.compiled)
+        except Exception:                                # noqa: BLE001
+            log.exception("could not persist the unscored STEER record")   # never mask the original failure
+
     def _record_turn(self, sess, body, content: str, restated: str | None) -> None:
         """Append a TURN event after the turn's STATE (see guidancegrid.core.trace.turn_event)."""
         user = self._latest_user_text(body)
@@ -127,7 +167,7 @@ class Governor:
         sess.reconciler.trace.append(turn_event(sess.turn - 1, user, output, restated))
 
     def _reconcile(self, session_id: str, compiled, body, assistant_msg,
-                   restated: str | None = None) -> Any:
+                   restated: str | None = None, receipt: SteerReceipt | None = None) -> Any:
         sess = self.sessions.get_or_create(
             session_id, compiled, self.registry.measures, self._manifest(compiled, session_id)
         )
@@ -148,6 +188,12 @@ class Governor:
             sess.recoveries += 1
         sess.halted = out.halted
         sess.history.append(out.state)
+        if receipt is not None and receipt.produced and not receipt.recorded and self.steering is not None:
+            receipt.recorded = True
+            sess.reconciler.trace.append(
+                steer_event(out.turn, receipt.gain, self.steering.band, self.steering.pack_hash))
+        # closed loop: the next generation is steered only if this turn needed a correction
+        sess.steer_next = self.steering.gain if (self.steering and wants_steering(out.action)) else 0.0
         if self.capture_content:
             try:
                 self._record_turn(sess, body, content, restated)
@@ -220,9 +266,14 @@ class Governor:
         restated = sess.pending_reanchor if sess is not None and sess.pending_reanchor else None
         if restated:
             send_body = self._inject(body, restated)
-        resp = await self.upstream.chat(send_body, headers)
-        msg = message_from_completion(resp)
-        sess, out = self._reconcile(session_id, compiled, body, msg, restated)
+        receipt = self._steer_receipt(sess)
+        try:
+            resp = await self.upstream.chat(send_body, headers, **self._steer_kwargs(receipt))
+            msg = message_from_completion(resp)
+            sess, out = self._reconcile(session_id, compiled, body, msg, restated, receipt)
+        except BaseException:
+            self._settle_steer(session_id, receipt)
+            raise
         gov_headers = self._gov_headers(compiled, out, resolved)
         decision = self._evaluate_tool_policy(sess, msg)
         gov_headers = {**gov_headers, **self._tool_policy_headers(decision)}
@@ -265,10 +316,15 @@ class Governor:
 
         assembler = StreamAssembler()
         chunks: list[bytes] = []
-        async for chunk in self.upstream.stream(send_body, headers):
-            assembler.feed_bytes(chunk)
-            chunks.append(chunk)
-        sess, out = self._reconcile(session_id, compiled, body, assembler.message(), restated)
+        receipt = self._steer_receipt(sess)
+        try:
+            async for chunk in self.upstream.stream(send_body, headers, **self._steer_kwargs(receipt)):
+                assembler.feed_bytes(chunk)
+                chunks.append(chunk)
+            sess, out = self._reconcile(session_id, compiled, body, assembler.message(), restated, receipt)
+        except BaseException:
+            self._settle_steer(session_id, receipt)
+            raise
         gov_headers = self._gov_headers(compiled, out, resolved)
         decision = self._evaluate_tool_policy(sess, assembler.message())
         gov_headers = {**gov_headers, **self._tool_policy_headers(decision)}
@@ -286,11 +342,17 @@ class Governor:
             send_body = self._inject(body, restated)
 
         assembler = StreamAssembler()
-        async for chunk in self.upstream.stream(send_body, headers):
-            assembler.feed_bytes(chunk)
-            yield chunk                       # client stream is byte-identical
-        # turn complete: reconcile + emit side-channel (no stream mutation)
-        sess, _ = self._reconcile(session_id, compiled, body, assembler.message(), restated)
+        receipt = self._steer_receipt(sess)
+        try:
+            async for chunk in self.upstream.stream(send_body, headers, **self._steer_kwargs(receipt)):
+                assembler.feed_bytes(chunk)
+                yield chunk                   # client stream is byte-identical
+            # turn complete: reconcile + emit side-channel (no stream mutation)
+            sess, _ = self._reconcile(session_id, compiled, body, assembler.message(), restated, receipt)
+        except BaseException:
+            # e.g. the client walked away after the reply was generated: the turn is never scored
+            self._settle_steer(session_id, receipt)
+            raise
         self._evaluate_tool_policy(sess, assembler.message())
         # Streaming headers were sent before the final tool decision was known.
         # Enforcing policies should use preflight_stream, which buffers first.

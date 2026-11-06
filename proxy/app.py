@@ -24,6 +24,7 @@ from .governance import ContractNotFound, Governor, ToolPolicyDenied
 from .otel import InMemorySpanEmitter
 from .registry import ContractRegistry
 from .session import SessionStore
+from .steering import SteeringConfig
 from .tool_policy import ToolPolicy
 from .upstream import MockUpstream, Upstream
 
@@ -32,7 +33,7 @@ def create_app(*, registry: ContractRegistry | None = None, upstream: Upstream |
                sessions: SessionStore | None = None, emitter=None, store=None,
                admin_token: str | None = None, tool_policy: ToolPolicy | None = None,
                packs_dir: str | None = None, console_dir: str | None = None,
-               capture_content: bool = False) -> FastAPI:
+               capture_content: bool = False, steering: SteeringConfig | None = None) -> FastAPI:
     app = FastAPI(title="OpenGuide Proxy", version="0.1.0")
 
     registry = registry or ContractRegistry()
@@ -47,6 +48,7 @@ def create_app(*, registry: ContractRegistry | None = None, upstream: Upstream |
         store=store,
         tool_policy=tool_policy,
         capture_content=capture_content,
+        steering=steering,
     )
 
     app.state.registry = registry

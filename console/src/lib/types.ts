@@ -48,6 +48,17 @@ export interface TurnRecord {
   truncated: boolean;
 }
 
+/** Activation steering (T0) was applied to one turn's generation. Present only for steered turns. */
+export interface SteerRecord {
+  ev: "STEER";
+  turn: number;
+  /** The peak of the nudge across the layers (a fraction of a typical activation size); edge layers got less. */
+  gain: number;
+  /** The decoder layers steered: from `band[0]` up to, not including, `band[1]`. */
+  band: [number, number];
+  pack_hash: string;
+}
+
 export interface ChainReport {
   ok: boolean;
   checked: number;

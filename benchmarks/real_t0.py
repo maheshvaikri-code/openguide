@@ -15,18 +15,14 @@ from __future__ import annotations
 
 import math
 import re
-from contextlib import contextmanager
 from decimal import Decimal, InvalidOperation
 from typing import Any, Callable
 
 import numpy as np
 
 from benchmarks import real_model as rm
-from guidancegrid.channels.t0_activation import ActivationSteerer, decoder_layers
-from guidancegrid.core.grid import Grid, SignalPack
-
-SIGNAL = "anchor"
-MAX_STEPS = 1024                      # forward passes covered by the constant-gain field
+from guidancegrid.channels.t0_activation import SIGNAL, decoder_layers, steering_context
+from guidancegrid.core.grid import SignalPack
 
 __all__ = [
     "SIGNAL", "decoder_layers", "last_token_states", "build_pack", "steering_context", "extract_number",
@@ -61,32 +57,6 @@ def build_pack(model_id: str, with_rules: dict[int, np.ndarray],
         typical = float(np.linalg.norm(np.concatenate([with_rules[layer], without[layer]]), axis=1).mean())
         pack.set_vector(SIGNAL, layer, (diff / norm * typical).astype(np.float32))
     return pack
-
-
-# ── applying it ───────────────────────────────────────────────────────
-def steering_context(model, pack: SignalPack, band: tuple[int, int], gain: float,
-                     manifest: dict[str, Any]) -> Callable[[], Any]:
-    """A factory of context managers: inside one, every forward pass is steered at ``gain`` on layers
-    ``range(*band)`` (a gaussian envelope centred on the band). Gain 0 registers nothing. The hooks are
-    always removed on exit, even if generation raises."""
-    lo, hi = band
-    n_layers = len(decoder_layers(model))
-
-    @contextmanager
-    def ctx():
-        if gain == 0:
-            yield None
-            return
-        grid = Grid(layers=n_layers, frame=16)
-        grid.field(SIGNAL).write_const(lo, hi - 1, 0, MAX_STEPS, float(gain))
-        steerer = ActivationSteerer(grid, pack, {**manifest, "gain": float(gain), "band": [lo, hi]},
-                                    num_layers=n_layers).register(model=model)
-        try:
-            yield steerer
-        finally:
-            steerer.remove()
-
-    return ctx
 
 
 # ── generation and scoring on a real tokenizer/model ──────────────────

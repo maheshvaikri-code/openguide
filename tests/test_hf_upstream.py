@@ -142,3 +142,241 @@ def test_around_is_exited_even_when_generation_fails():
     # a hook left registered would poison every later call
     assert state["open"] is False
 
+
+
+# ── steering (ADR-003) ────────────────────────────────────────────────
+def _steerable(events):
+    from contextlib import contextmanager
+
+    up = _up()
+
+    @contextmanager
+    def factory(gain):
+        events.append(("enter", gain))
+        try:
+            yield
+        finally:
+            events.append(("exit", gain))
+
+    up.steer_factory = factory
+    return up
+
+
+def test_an_upstream_without_a_steering_hook_does_not_claim_to_support_it():
+    assert _up().supports_steering is False
+    assert _steerable([]).supports_steering is True
+
+
+def test_steering_is_entered_around_the_generation_and_left_after_it():
+    events = []
+    up = _steerable(events)
+    gen = up._generate
+    up._generate = lambda m, n: (events.append(("generate", None)) or gen(m, n))
+    asyncio.run(up.chat({"messages": [{"role": "user", "content": "hi"}]}, {}, steer=0.05))
+    assert events == [("enter", 0.05), ("generate", None), ("exit", 0.05)]
+
+
+def test_no_steering_is_entered_when_not_asked_for():
+    events = []
+    asyncio.run(_steerable(events).chat({"messages": [{"role": "user", "content": "hi"}]}, {}))
+    assert events == []
+
+
+def test_asking_to_steer_an_upstream_that_cannot_is_an_error_not_a_silent_skip():
+    import pytest
+
+    with pytest.raises(ValueError, match="steer"):
+        asyncio.run(_up().chat({"messages": [{"role": "user", "content": "hi"}]}, {}, steer=0.05))
+
+
+def test_the_steering_hook_is_left_even_when_generation_fails():
+    import pytest
+
+    events = []
+    up = _steerable(events)
+
+    def boom(messages, n):
+        raise RuntimeError("out of memory")
+
+    up._generate = boom
+    with pytest.raises(RuntimeError):
+        asyncio.run(up.chat({"messages": [{"role": "user", "content": "hi"}]}, {}, steer=0.05))
+    assert events == [("enter", 0.05), ("exit", 0.05)]
+
+
+def test_a_streamed_reply_can_be_steered_too():
+    events = []
+    up = _steerable(events)
+
+    async def collect():
+        return [c async for c in up.stream({"messages": [{"role": "user", "content": "q"}]}, {}, steer=0.1)]
+
+    asyncio.run(collect())
+    assert events == [("enter", 0.1), ("exit", 0.1)]
+
+
+def test_enable_steering_checks_the_pack_against_the_model_and_hooks_only_while_generating():
+    import numpy as np
+    import pytest
+
+    torch = pytest.importorskip("torch")
+    pytest.importorskip("transformers")
+    from transformers import Qwen2Config, Qwen2ForCausalLM
+
+    from guidancegrid.core.grid import STEER_SIGNAL, SignalPack
+    from proxy.steering import SteeringConfig
+
+    torch.manual_seed(0)
+    cfg = Qwen2Config(vocab_size=64, hidden_size=32, intermediate_size=64, num_hidden_layers=6,
+                      num_attention_heads=4, num_key_value_heads=2, max_position_embeddings=64)
+    model = Qwen2ForCausalLM(cfg).eval()
+
+    def pack(dim):
+        p = SignalPack("tiny", dim)
+        for layer in (1, 2, 3):
+            p.set_vector(STEER_SIGNAL, layer, np.ones(dim, dtype=np.float32))
+        return p
+
+    def hooks():
+        return sum(len(layer._forward_hooks) for layer in model.model.layers)
+
+    up = HFUpstream(generate_fn=lambda m, n: ("x", 1, 1))
+    with pytest.raises(ValueError, match="model"):                       # needs the model itself
+        up.enable_steering(SteeringConfig(pack(32), (1, 4), 0.05))
+    up.model = model
+    with pytest.raises(ValueError, match="hidden size"):                 # a pack for another model
+        up.enable_steering(SteeringConfig(pack(16), (1, 4), 0.05))
+    with pytest.raises(ValueError, match="layers"):                      # band reaches past the last layer
+        up.enable_steering(SteeringConfig(_wide_pack(32, 9), (1, 9), 0.05))
+    assert up.enable_steering(SteeringConfig(_scaled_pack(model, 1.0), (1, 4), 0.05)) is up
+    assert up.supports_steering and hooks() == 0  # nothing hooked until steered
+    with up.steer_factory(0.05):
+        assert hooks() == 6
+    assert hooks() == 0
+
+
+def _wide_pack(dim, hi):
+    import numpy as np
+
+    from guidancegrid.core.grid import STEER_SIGNAL, SignalPack
+
+    p = SignalPack("tiny", dim)
+    for layer in range(1, hi):
+        p.set_vector(STEER_SIGNAL, layer, np.ones(dim, dtype=np.float32))
+    return p
+
+
+def _tiny_model():
+    import pytest
+
+    torch = pytest.importorskip("torch")
+    pytest.importorskip("transformers")
+    from transformers import Qwen2Config, Qwen2ForCausalLM
+
+    torch.manual_seed(0)
+    cfg = Qwen2Config(vocab_size=64, hidden_size=32, intermediate_size=64, num_hidden_layers=6,
+                      num_attention_heads=4, num_key_value_heads=2, max_position_embeddings=2048)
+    return Qwen2ForCausalLM(cfg).eval()
+
+
+def _scaled_pack(model, scale):
+    """A pack whose vector at every band layer is `scale` times the model's typical residual norm there."""
+    import numpy as np
+    import torch
+
+    from guidancegrid.core.grid import STEER_SIGNAL, SignalPack
+
+    ids = torch.arange(1, 33).unsqueeze(0)
+    with torch.no_grad():
+        hs = model(input_ids=ids, output_hidden_states=True).hidden_states
+    pack = SignalPack("tiny", 32)
+    for layer in (1, 2, 3):
+        typical = float(hs[layer + 1][0].norm(dim=-1).median())
+        v = np.ones(32, dtype=np.float32)
+        pack.set_vector(STEER_SIGNAL, layer, v / np.linalg.norm(v) * typical * scale)
+    return pack
+
+
+def test_enable_steering_accepts_a_pack_at_the_models_own_scale_and_refuses_one_that_would_overwrite_it():
+    import pytest
+
+    from proxy.steering import SteeringConfig
+
+    model = _tiny_model()
+    up = HFUpstream(generate_fn=lambda m, n: ("x", 1, 1), max_new_tokens=64)
+    up.model = model
+    up.enable_steering(SteeringConfig(_scaled_pack(model, 1.0), (1, 4), 0.05))      # what derive makes
+    with pytest.raises(ValueError, match="norm"):
+        up.enable_steering(SteeringConfig(_scaled_pack(model, 1e6), (1, 4), 0.05))   # swamps the state
+    with pytest.raises(ValueError, match="norm"):
+        up.enable_steering(SteeringConfig(_scaled_pack(model, 50.0), (1, 4), 0.05))
+
+
+def test_enable_steering_refuses_a_reply_length_longer_than_the_steering_field_covers():
+    import pytest
+
+    from proxy.steering import SteeringConfig
+
+    model = _tiny_model()
+    up = HFUpstream(generate_fn=lambda m, n: ("x", 1, 1), max_new_tokens=5000)
+    up.model = model
+    with pytest.raises(ValueError, match="max_new_tokens"):
+        up.enable_steering(SteeringConfig(_scaled_pack(model, 1.0), (1, 4), 0.05))
+
+
+def test_the_gain_ceiling_is_enforced_at_the_upstream_too():
+    import pytest
+
+    up = _steerable([])
+    with pytest.raises(ValueError, match="gain"):
+        asyncio.run(up.chat({"messages": [{"role": "user", "content": "hi"}]}, {}, steer=5.0))
+
+
+def test_the_upstream_reports_a_steered_reply_through_the_receipt_only_once_it_exists():
+    import pytest
+
+    from proxy.steering import SteerReceipt
+
+    up = _steerable([])
+    receipt = SteerReceipt(0.05)
+    asyncio.run(up.chat({"messages": [{"role": "user", "content": "hi"}]}, {}, steer=0.05, receipt=receipt))
+    assert receipt.produced is True
+
+    failing = _steerable([])
+
+    def oom(messages, n):
+        raise RuntimeError("oom")
+
+    failing._generate = oom
+    receipt2 = SteerReceipt(0.05)
+    with pytest.raises(RuntimeError):
+        asyncio.run(failing.chat({"messages": [{"role": "user", "content": "hi"}]}, {}, steer=0.05,
+                                 receipt=receipt2))
+    assert receipt2.produced is False
+
+    untouched = SteerReceipt(0.05)
+    asyncio.run(_steerable([]).chat({"messages": [{"role": "user", "content": "hi"}]}, {}, receipt=untouched))
+    assert untouched.produced is False                              # not steered, so nothing to report
+
+
+def test_enable_steering_steers_only_the_bands_layers_even_if_the_pack_has_more():
+    import numpy as np
+    import pytest
+
+    torch = pytest.importorskip("torch")
+    from guidancegrid.core.grid import STEER_SIGNAL
+    from proxy.steering import SteeringConfig
+
+    model = _tiny_model()
+    wide = _scaled_pack(model, 1.0)                                   # layers 1..3
+    for layer in (0, 4, 5):                                           # extra layers, same scale
+        wide.set_vector(STEER_SIGNAL, layer, np.asarray(wide.get(STEER_SIGNAL, 2)))
+    up = HFUpstream(generate_fn=lambda m, n: ("x", 1, 1), max_new_tokens=64)
+    up.model = model
+    up.enable_steering(SteeringConfig(wide, (2, 4), 0.05))
+    with up.steer_factory(0.05) as steerer:
+        with torch.no_grad():
+            model(input_ids=torch.arange(1, 9).unsqueeze(0))
+    layers = {layer for rec in steerer.trace.records if rec.get("ev") == "STEP"
+              for layer, _ in rec["applied"].get(STEER_SIGNAL, [])}
+    assert layers and layers <= {2, 3}

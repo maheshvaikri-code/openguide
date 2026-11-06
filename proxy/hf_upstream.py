@@ -19,6 +19,9 @@ import time
 from contextlib import AbstractContextManager, nullcontext
 from typing import Any, AsyncIterator, Callable
 
+import numpy as np
+
+from .steering import MAX_SAFE_GAIN, MAX_VECTOR_NORM_RATIO, SteerReceipt
 from .upstream import _chunk_text
 
 # (messages, max_new_tokens) -> (text, prompt_tokens, completion_tokens)
@@ -49,6 +52,63 @@ class HFUpstream:
         # set by from_pretrained, so callers that need the model itself (e.g. steering) can reach it
         self.model: Any = None
         self.tokenizer: Any = None
+        # gain -> context manager that steers the activations while it is open (ADR-003). Set by
+        # enable_steering; the Governor passes a gain per call, a client never can.
+        self.steer_factory: Callable[[float], AbstractContextManager[Any]] | None = None
+        # forward passes the steering field covers (set by enable_steering)
+        self._steer_steps: int | None = None
+
+    @property
+    def supports_steering(self) -> bool:
+        return self.steer_factory is not None
+
+    def _typical_residual_norms(self, n_layers: int) -> dict[int, float]:
+        """Median per-token residual norm after each decoder layer on a fixed token sequence (the last layer
+        is returned after the final norm by HF, so it is left out)."""
+        import torch
+
+        vocab = int(getattr(self.model.config, "vocab_size", 1000))
+        ids = torch.arange(1, 33).clamp(max=vocab - 1).unsqueeze(0).to(self.model.device)
+        with torch.no_grad():
+            states = self.model(input_ids=ids, output_hidden_states=True).hidden_states
+        return {i: float(states[i + 1][0].float().norm(dim=-1).median()) for i in range(n_layers - 1)}
+
+    def enable_steering(self, config: Any) -> "HFUpstream":
+        """Let the Governor steer this model's activations (T0). Checks the pack against the model now, so a
+        mismatch fails at start-up rather than on the first corrected turn. Imports torch only here."""
+        if self.model is None:
+            raise ValueError("steering needs the model itself: build this upstream with from_pretrained")
+        from guidancegrid.channels.t0_activation import MAX_STEPS, decoder_layers, steering_context
+        from guidancegrid.core.grid import STEER_SIGNAL
+
+        n_layers = len(decoder_layers(self.model))
+        lo, hi = config.band
+        if hi > n_layers:
+            raise ValueError(f"the steering band {config.band} reaches past the model's {n_layers} layers")
+        hidden = getattr(getattr(self.model, "config", None), "hidden_size", None)
+        if hidden is not None and int(hidden) != int(config.pack.d):
+            raise ValueError(f"the steering pack was made for hidden size {config.pack.d}, "
+                             f"this model's hidden size is {hidden}")
+        if self.max_new_tokens + 1 > MAX_STEPS:            # the gain field covers a fixed number of passes
+            raise ValueError(f"max_new_tokens={self.max_new_tokens} is longer than steering covers "
+                             f"({MAX_STEPS - 1}); lower max_new_tokens, or steering would stop mid-reply")
+        # The gain only bounds the push if the vector is on the model's own scale (see MAX_VECTOR_NORM_RATIO).
+        typical = self._typical_residual_norms(n_layers)
+        for layer in range(lo, hi):
+            if layer not in typical:
+                continue                                         # the last layer is read after the final norm
+            norm = float(np.linalg.norm(np.asarray(config.pack.get(STEER_SIGNAL, layer), dtype=np.float64)))
+            if norm > MAX_VECTOR_NORM_RATIO * typical[layer]:
+                raise ValueError(
+                    f"the steering pack's norm at layer {layer} is {norm:.3g}, over "
+                    f"{MAX_VECTOR_NORM_RATIO:g}x "
+                    f"this model's typical residual norm {typical[layer]:.3g}: it would replace the hidden "
+                    f"state instead of nudging it, whatever the gain")
+        model, pack, band = self.model, config.pack_in_band(), tuple(config.band)
+        self._steer_steps = MAX_STEPS
+        manifest = config.manifest(self.served_name)
+        self.steer_factory = lambda gain: steering_context(model, pack, band, gain, manifest)()
+        return self
 
     # ── loading a real model ─────────────────────────────────────────
     @classmethod
@@ -78,19 +138,31 @@ class HFUpstream:
         return inst
 
     # ── Upstream protocol ────────────────────────────────────────────
-    async def chat(self, body: dict[str, Any], headers: dict[str, str]) -> dict[str, Any]:
+    async def chat(self, body: dict[str, Any], headers: dict[str, str], steer: float = 0.0,
+                   receipt: SteerReceipt | None = None) -> dict[str, Any]:
+        if steer > 0 and self.steer_factory is None:
+            raise ValueError("asked to steer, but this upstream cannot steer (call enable_steering first)")
+        if steer > MAX_SAFE_GAIN:
+            raise ValueError(f"steering gain {steer} is above the safe ceiling {MAX_SAFE_GAIN}")
         messages = [{"role": m.get("role", "user"), "content": _flatten(m.get("content"))}
                     for m in body.get("messages", [])]
         if not messages:
             raise ValueError("messages must contain at least one message")
         want = body.get("max_tokens") or body.get("max_completion_tokens") or self.max_new_tokens
         max_new = max(1, min(int(want), self.max_new_tokens))      # never above the configured ceiling
+        if steer > 0 and self._steer_steps is not None and max_new + 1 > self._steer_steps:
+            raise ValueError(f"a steered reply of up to {max_new} tokens is longer than steering covers "
+                             f"({self._steer_steps - 1})")
 
         def run() -> tuple[str, int, int]:
             with self._lock:
                 self.calls += 1
                 with (self.around() if self.around else nullcontext()):
-                    return self._generate(messages, max_new)
+                    with (self.steer_factory(steer) if steer > 0 and self.steer_factory else nullcontext()):
+                        result = self._generate(messages, max_new)
+                        if steer > 0 and receipt is not None:
+                            receipt.produced = True    # a reply now exists, written under steering
+                        return result
 
         text, n_in, n_out = await asyncio.to_thread(run)
         return {
@@ -103,10 +175,11 @@ class HFUpstream:
             "usage": {"prompt_tokens": n_in, "completion_tokens": n_out, "total_tokens": n_in + n_out},
         }
 
-    async def stream(self, body: dict[str, Any], headers: dict[str, str]) -> AsyncIterator[bytes]:
+    async def stream(self, body: dict[str, Any], headers: dict[str, str], steer: float = 0.0,
+                     receipt: SteerReceipt | None = None) -> AsyncIterator[bytes]:
         # The model generates the full reply first, then it is replayed as SSE chunks: the
         # wire format is a real stream, the token timing is not.
-        comp = await self.chat(body, headers)
+        comp = await self.chat(body, headers, steer=steer, receipt=receipt)
         text = comp["choices"][0]["message"]["content"]
         cid, model = comp["id"], comp["model"]
 

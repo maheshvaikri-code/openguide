@@ -74,6 +74,17 @@ is the run's identity tuple:
 | `STATE` | one behavioral-state reading per governed turn | `turn`, `drift`, `invariants`, `recovery_fired`, `reanchored`, `sensor_gaps` |
 | `TOOL_POLICY` | a tool-call decision | `turn`, `decision`, `reason`, `tools` |
 | `TURN` | **optional** message text for one turn | `turn`, `user`, `output`, `restated`, `truncated` |
+| `STEER` | activation steering (T0) was applied to a turn's generation; only steered turns have one | `turn`, `gain`, `band` (`[lo, hi)` decoder layers), `pack_hash` |
+
+**`STEER` exists only when the proxy runs with a steering pack** (ADR-003). A turn gets one when its generation
+was steered at the model's activations: it follows that turn's `STATE`, carries the `gain` (the peak of a gaussian envelope across the band, so edge
+layers get less), the `band` of layers and the hash of the pack. A turn is steered only after a turn whose recovery action fired, so a clean run has
+no `STEER` records. It rides in the same hash chain, so what was steered is as tamper-evident as what was measured.
+The proxy writes one only when the upstream reports that a steered reply was actually produced.
+One exception, marked `"scored": false`: a reply was produced but its turn was never scored (the client closed the
+stream, or scoring failed). That record has no `STATE` of its own and precedes the `STATE` of the turn that is
+retried, so a turn number can then appear in two `STEER` records. A client that cancels while the model is still
+writing receives no reply, so nothing is recorded for it.
 
 **`TURN` is opt-in and off by default.** A trace holds behavioral state only unless the proxy runs with
 `OPENGUIDE_CAPTURE_CONTENT=1`, because captured text is the prompts and replies themselves. When on, a `TURN`

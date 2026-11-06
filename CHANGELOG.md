@@ -6,6 +6,14 @@ All notable changes to this project are documented here. Format follows
 ## [Unreleased]
 
 ### Added
+- **Drift-gated T0 activation steering in the proxy** (opt-in; ADR-003, `docs/t0-steering.md`). With a local-weights
+  upstream (`HFUpstream.enable_steering`) and `create_app(..., steering=SteeringConfig(...))`, the generation after a
+  turn that needed a correction is steered at a small gain (default 0.05, hard cap 0.1); otherwise nothing is
+  steered. Each steered turn adds a hash-chained `STEER` trace record, shown in the Console's turn panel. Refused for
+  upstreams that cannot steer. A client cannot turn it on or change the gain. New tools:
+  `scripts/derive_steering_pack.py`, `scripts/real_closed_loop.py`. On the one model tested it recovered the two
+  conversations that text re-anchoring did not, in a small, non-independent test (`benchmarks/REPORT.md` 7.3).
+- README "How the pieces fit" diagram.
 - **Console** (`console/`): Vite + React + TypeScript dashboard with Fleet, Run replay,
   Trajectory (3D), Contracts, Packs and Audit pages. `make console-demo` seeds simulated
   data and serves it from the proxy. See `console/README.md` and ADR-001.

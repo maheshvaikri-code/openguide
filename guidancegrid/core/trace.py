@@ -29,6 +29,19 @@ def turn_event(turn: int, user: str, output: str, restated: str | None = None) -
     }
 
 
+def steer_event(turn: int, gain: float, band: tuple[int, int] | list[int], pack_hash: str,
+                scored: bool = True) -> dict:
+    """A STEER record: activation steering (T0) was applied to this turn's generation, at this (peak) gain,
+    over this range of layers, with this steering pack. Appended after the turn's STATE; only steered turns
+    have one. ``scored`` is False (and the key is present) only when the reply was produced but its turn was
+    never scored, e.g. the client closed the stream: then it can precede the STATE of the retried turn."""
+    rec = {"ev": "STEER", "turn": turn, "gain": float(gain), "band": [int(band[0]), int(band[1])],
+           "pack_hash": pack_hash}
+    if not scored:
+        rec["scored"] = False
+    return rec
+
+
 class Trace:
     def __init__(self, manifest: dict):
         self.manifest = manifest

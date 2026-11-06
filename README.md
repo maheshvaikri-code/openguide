@@ -63,6 +63,51 @@ without a contract header pass through the proxy without these controls. The
 proxy does not enforce actions that bypass it. See [enterprise governance](docs/enterprise-governance-layer.md)
 for the trust boundary and outstanding work.
 
+### How the pieces fit
+
+Three layers, each with one job. The **Console** only displays. The **proxy** carries traffic and calls the engine
+after every reply. **GuidanceGrid** is the engine that does the measuring, deciding and recording.
+
+```mermaid
+flowchart LR
+    App["Your app or agent"] -->|"chat request + X-OpenGuide-Contract"| Gov
+
+    subgraph Proxy["Proxy (proxy/)"]
+        Gov["Governor"]
+        Sess["Session state<br/>pending re-anchor, steer gain"]
+    end
+
+    subgraph GG["GuidanceGrid engine (guidancegrid/)"]
+        Contract["Contract<br/>obc/ + compiler/"]
+        Sensors["Sensors<br/>measure each reply"]
+        Rec["Reconciler<br/>drift + recovery ladder"]
+        T2["T2: re-anchor text"]
+        T0["T0: activation steering<br/>local weights only, opt-in"]
+        Trace["Hash-chained trace"]
+    end
+
+    Gov -->|"request + any re-anchor"| Model["Model"]
+    Model -->|"reply, returned to the app unchanged"| Gov
+    Gov -->|"reply"| Sensors
+    Contract --> Rec
+    Sensors --> Rec
+    Rec --> T2
+    T2 -->|"for the next request"| Sess
+    Rec -->|"a correction fired"| Sess
+    Sess -.->|"next turn: steer gain"| T0
+    T0 -.->|"nudges the model's activations"| Model
+    Rec --> Trace
+    Trace --> Store[("SQLite store")]
+    Store --> Console["Console<br/>Fleet, Replay, Audit"]
+```
+
+Reading it, for one turn: the app sends a request; the proxy forwards it (with a re-anchor reminder if the last turn
+needed one) and returns the model's reply unchanged; the engine scores that reply against the contract, decides
+whether to correct, and records the result; the next turn carries the correction. **T0 steering** is the dotted
+path: if the proxy owns the model's weights and a steering pack is configured (in code today; there is no command-line
+switch yet), the turn *after* a correction is also steered at a small gain ([ADR-003](docs/adr/003-drift-gated-t0-in-the-proxy.md)). Hosted APIs cannot be
+steered, so they use T2/T3 only.
+
 ### Implemented proxy architecture
 
 ![Implemented OpenGuide proxy architecture: request and session handling, model and reconciliation, tool-name policy, and records and access.](docs/openguide-implemented-architecture.png)
@@ -216,7 +261,7 @@ security outcomes.
 | Tool policy | Name-pattern allowlist, denylist, and approval-required denial for supported governed responses | No identity-aware or argument-aware authorization, real approval flow, or enforcement at the corporate tool itself. Policy-enabled streaming is buffered. |
 | Trace and telemetry | Hash-chained records, verification, SQLite-backed snapshots, and OpenTelemetry integration | A valid hash chain does not prove source data is correct or provide immutable, signed, independently anchored storage. |
 | Access and privacy | Optional admin token and metadata-only trace response | Enterprise identity, RBAC, tenant isolation, redaction, retention, and production secrets management remain open work. |
-| Model control | Reference T2/T3 paths and T0/T1 steering components | Tier fidelity varies by model and integration; real-model capability-retention evaluations remain outstanding. |
+| Model control | T2 text re-anchoring and T3 validation in the proxy; opt-in drift-gated T0 activation steering for a model whose weights the proxy runs itself ([docs](docs/t0-steering.md)); T1 as a reference component | T0 cannot steer hosted APIs and was tested on one small model (Qwen2.5-1.5B, 5 conversations; see `benchmarks/REPORT.md` 7.3). Tier fidelity varies by model; capability retention was measured only at one gain on that model. |
 
 OpenGuide does not guarantee model behavior or compliance. Deployment requires
 security review, independently enforced tool permissions, and testing against
@@ -247,7 +292,8 @@ claims of completed product functionality. See the
 | [proxy/](proxy/) | OpenAI-compatible proxy and tool-name policy. |
 | [integrations/](integrations/) | OpenAI SDK, LiteLLM, and LangGraph integration examples. |
 | [examples/](examples/) | Offline quickstart, simulated scenarios, and corporate reference demos. |
-| [benchmarks/REPORT.md](benchmarks/REPORT.md) | Simulated results, methodology, and threats to validity. |
+| [benchmarks/REPORT.md](benchmarks/REPORT.md) | Simulated results (sections 1-6), a small real-model study (section 7), methodology, and threats to validity. |
+| [docs/t0-steering.md](docs/t0-steering.md) | Drift-gated activation steering in the proxy: what, why, where, how to turn it on, and its limits. |
 | [docs/blueprint.md](docs/blueprint.md) | Architecture, rationale, and phased project plan. |
 | [packs/README.md](packs/README.md) | Signal packs and pending real-model evaluations. |
 

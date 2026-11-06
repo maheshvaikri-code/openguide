@@ -1,4 +1,4 @@
-import type { StateRecord, TurnRecord } from "./types";
+import type { StateRecord, SteerRecord, TurnRecord } from "./types";
 
 export interface ParsedTrace {
   states: StateRecord[];
@@ -50,8 +50,8 @@ export function parseStates(records: ReadonlyArray<Record<string, unknown>> | un
         sensor_gaps: strings(r["sensor_gaps"]),
         reanchored: r["reanchored"] === true,
       });
-    } else if (!(r && r["ev"] === "TURN")) {
-      ignored += 1;              // TURN records are used (they carry the text), so they are not "left out"
+    } else if (!(r && (r["ev"] === "TURN" || r["ev"] === "STEER"))) {
+      ignored += 1;              // TURN and STEER records are used (text, steering), so they are not "left out"
     }
   }
   states.sort((a, b) => a.turn - b.turn);
@@ -111,6 +111,22 @@ export function parseTurns(records: ReadonlyArray<Record<string, unknown>> | und
         truncated: r["truncated"] === true,
       });
     }
+  }
+  return out;
+}
+
+/** STEER records by turn number: which turns had activation steering. Empty for a run that never used it. */
+export function parseSteers(records: ReadonlyArray<Record<string, unknown>> | undefined): Map<number, SteerRecord> {
+  const out = new Map<number, SteerRecord>();
+  for (const r of records ?? []) {
+    if (!r || r["ev"] !== "STEER" || r["scored"] === false) continue;   // an unscored one labels no scored turn
+    if (!isNum(r["turn"]) || !isNum(r["gain"]) || r["gain"] <= 0 || out.has(r["turn"])) continue;
+    const b = r["band"];
+    if (!Array.isArray(b) || b.length !== 2 || !isNum(b[0]) || !isNum(b[1]) || b[0] < 0 || b[0] >= b[1]) continue;
+    out.set(r["turn"], {
+      ev: "STEER", turn: r["turn"], gain: r["gain"], band: [b[0], b[1]],
+      pack_hash: typeof r["pack_hash"] === "string" ? r["pack_hash"] : "",
+    });
   }
   return out;
 }

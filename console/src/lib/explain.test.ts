@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { ACTION_MEANING, describeRun, detectionRows, explainedDrift, ladderSteps, measureKind, parseContractInfo } from "./contractInfo";
 import { groupRuns, seriesOf, shouldGroup } from "./series";
-import { parseTurns } from "./replay";
+import { parseSteers, parseTurns } from "./replay";
 import type { Json, Run, StateRecord } from "./types";
 
 const contract = (extra: Record<string, Json> = {}): Json => ({
@@ -182,5 +182,38 @@ describe("parseTurns", () => {
   it("is empty for a trace that captured no content", () => {
     expect(parseTurns([]).size).toBe(0);
     expect(parseTurns(undefined).size).toBe(0);
+  });
+});
+
+describe("parseSteers", () => {
+  const steer = { ev: "STEER", turn: 2, gain: 0.05, band: [10, 19], pack_hash: "sha256:p" };
+
+  it("reads which turns had activation steering, at what gain and over which layers", () => {
+    const m = parseSteers([{ ev: "STATE", turn: 1 }, steer]);
+    expect(m.size).toBe(1);
+    expect(m.get(2)).toEqual({ ev: "STEER", turn: 2, gain: 0.05, band: [10, 19], pack_hash: "sha256:p" });
+  });
+
+  it("is empty when nothing was steered, and never throws on odd input", () => {
+    expect(parseSteers([]).size).toBe(0);
+    expect(parseSteers(undefined).size).toBe(0);
+    for (const bad of [
+      { ev: "STEER", turn: "2", gain: 0.05, band: [10, 19] },        // turn is not a number
+      { ev: "STEER", turn: 2, gain: "high", band: [10, 19] },        // gain is not a number
+      { ev: "STEER", turn: 2, gain: 0.05, band: [10] },              // band is not a pair
+      { ev: "STEER", turn: 2, gain: 0.05, band: [19, 10] },          // band is backwards
+      { ev: "STEER", turn: 2, gain: 0.05, band: ["a", "b"] },
+      { ev: "STEER", turn: 2, gain: -1, band: [10, 19] },            // a gain is above zero
+    ]) expect(parseSteers([bad as Record<string, unknown>]).size).toBe(0);
+  });
+
+  it("leaves out a steering record whose turn was never scored", () => {
+    expect(parseSteers([{ ...steer, scored: false }]).size).toBe(0);
+    expect(parseSteers([{ ...steer, scored: true }]).size).toBe(1);
+  });
+
+  it("keeps the first record for a turn", () => {
+    const m = parseSteers([steer, { ...steer, gain: 0.1 }]);
+    expect(m.get(2)?.gain).toBe(0.05);
   });
 });

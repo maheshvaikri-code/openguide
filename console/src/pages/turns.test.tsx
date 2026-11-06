@@ -179,3 +179,39 @@ describe("what the contract requires", () => {
     expect(screen.queryByText("What this contract requires")).not.toBeInTheDocument();
   });
 });
+
+describe("activation steering on a turn", () => {
+  const STEER = { ev: "STEER", turn: 2, gain: 0.05, band: [10, 19], pack_hash: "sha256:p" };
+  const steered = [STATES[0]!, STATES[1]!, STATES[2]!, STEER] as Array<Record<string, unknown>>;
+
+  it("says so on a steered turn: the gain, the layers, and why it was on", async () => {
+    show(api(steered));
+    await screen.findByLabelText("Details of turn 0");
+    fireEvent.keyDown(slider(), { key: "End" });                                          // turn 2
+    const note = within(screen.getByLabelText("Details of turn 2")).getByLabelText("Activation steering");
+    expect(note).toHaveTextContent("Activation steering was on for this turn");
+    expect(note).toHaveTextContent("gain 0.05");
+    expect(note).toHaveTextContent("layers 10 to 18");
+    expect(note).toHaveTextContent("because the previous turn needed a correction");
+  });
+
+  it("does not report the steering record as a record that was left out of the replay", async () => {
+    show(api(steered));
+    await screen.findByLabelText("Details of turn 0");
+    expect(screen.queryByText(/not behavioral-state records/)).not.toBeInTheDocument();
+  });
+
+  it("says nothing about steering on a turn that wasn't steered", async () => {
+    show(api(steered));
+    expect(await screen.findByLabelText("Details of turn 0")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Activation steering")).not.toBeInTheDocument();
+  });
+
+  it("says nothing at all about steering for a run that never used it", async () => {
+    show(api(stateOnly));
+    await screen.findByLabelText("Details of turn 0");
+    fireEvent.keyDown(slider(), { key: "End" });
+    expect(screen.queryByLabelText("Activation steering")).not.toBeInTheDocument();
+    expect(screen.queryByText(/steering/i)).not.toBeInTheDocument();
+  });
+});

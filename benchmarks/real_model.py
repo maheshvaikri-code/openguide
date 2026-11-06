@@ -250,8 +250,11 @@ async def run_naive(upstream, seed: int, turns: int = 30, every: int = 8, store=
 
 
 async def run_contract(upstream, seed: int, turns: int = 30, store=None, plain_only: bool = False,
-                       shocks: tuple[int, ...] | None = None) -> ArmResult:
-    """The real proxy: governed requests through create_app, one session per conversation."""
+                       shocks: tuple[int, ...] | None = None, steering=None,
+                       arm: str = "contract") -> ArmResult:
+    """The real proxy: governed requests through create_app, one session per conversation. With
+    ``steering`` (a proxy.steering.SteeringConfig, upstream must be able to steer) the proxy also runs its
+    drift-gated T0 loop; give such a run its own ``arm`` name so it never collides with the T2-only run."""
     import httpx
 
     from proxy.app import create_app
@@ -259,8 +262,9 @@ async def run_contract(upstream, seed: int, turns: int = 30, store=None, plain_o
 
     registry = ContractRegistry(measures=make_measures())
     h = registry.register(contract_dict())
-    app = create_app(registry=registry, upstream=upstream, store=store, capture_content=True)
-    sid = f"real-contract-s{seed}"
+    app = create_app(registry=registry, upstream=upstream, store=store, capture_content=True,
+                     steering=steering)
+    sid = f"real-{arm}-s{seed}"
     headers = {"X-OpenGuide-Contract": h, "X-OpenGuide-Session": sid}
     history: list[dict[str, str]] = [{"role": "system", "content": SYSTEM_PROMPT}]
     replies: list[tuple[int, str, str]] = []
@@ -277,7 +281,7 @@ async def run_contract(upstream, seed: int, turns: int = 30, store=None, plain_o
     sess = app.state.governor.sessions.get(sid)
     states = [s for s in sess.reconciler.trace.records if s.get("ev") == "STATE"]
     out = [_turn(t, u, rep, states[t]) for t, u, rep in replies]
-    return ArmResult("contract", seed, sid, sess.reconciler.trace, sess.compiled.tier_active, out)
+    return ArmResult(arm, seed, sid, sess.reconciler.trace, sess.compiled.tier_active, out)
 
 
 def _rate(turns: list[dict[str, Any]]) -> float | None:

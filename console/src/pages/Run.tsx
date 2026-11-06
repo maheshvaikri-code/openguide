@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { BAND_LABEL, driftBand } from "../lib/heat";
 import { measureKind, parseContractInfo, type ContractInfo } from "../lib/contractInfo";
-import { clampIndex, correctionIndexes, firstCorrection, invariantIds, parseStates, parseTurns, readingSeries, signalIds } from "../lib/replay";
+import { clampIndex, correctionIndexes, firstCorrection, invariantIds, parseStates, parseSteers, parseTurns, readingSeries, signalIds } from "../lib/replay";
 import { hrefFor } from "../lib/router";
 import { atOrAbove, parseThresholds, UNKNOWN_THRESHOLDS, type Thresholds } from "../lib/thresholds";
-import type { Run, StateRecord, TurnRecord } from "../lib/types";
+import type { Run, StateRecord, SteerRecord, TurnRecord } from "../lib/types";
 import { useResource } from "../lib/useResource";
 import { useApi } from "../ui/ApiContext";
 import { ConversationList } from "../ui/ConversationList";
@@ -39,6 +39,7 @@ interface Loaded {
   gates: Thresholds; // from the run's own contract; null fields mean the contract doesn't say
   info: ContractInfo; // the contract's rules, weights and response steps, for explaining each turn
   turns: Map<number, TurnRecord>; // what was said; empty unless the proxy captured content
+  steers: Map<number, SteerRecord>; // turns that had activation steering; empty if the run never used it
 }
 
 function Replay({ runId }: { runId: string }) {
@@ -51,11 +52,11 @@ function Replay({ runId }: { runId: string }) {
     const gates = body === null ? UNKNOWN_THRESHOLDS : parseThresholds(body);
     const info = parseContractInfo(body);
     if (!run.trace_cas_key) {
-      return { run, states: [], ignored: 0, verified: run.verified, head: run.trace_hash, metadataOnly: false, noTrace: true, gates, info, turns: new Map() };
+      return { run, states: [], ignored: 0, verified: run.verified, head: run.trace_hash, metadataOnly: false, noTrace: true, gates, info, turns: new Map(), steers: new Map() };
     }
     const tr = await api.trace(runId);
     const { states, ignored } = parseStates(tr.records);
-    return { run, states, ignored, verified: tr.verified, head: tr.head, metadataOnly: Boolean(tr.metadata_only), noTrace: false, gates, info, turns: parseTurns(tr.records) };
+    return { run, states, ignored, verified: tr.verified, head: tr.head, metadataOnly: Boolean(tr.metadata_only), noTrace: false, gates, info, turns: parseTurns(tr.records), steers: parseSteers(tr.records) };
   }, [runId]);
   const [others] = useTracedRuns();
   const [baseRes] = useResource<StateRecord[]>(
@@ -193,7 +194,7 @@ function ReplayView({
         </div>
       </section>
 
-      <TurnDetail state={cur} turn={d.turns.get(cur.turn)} info={d.info} anyContent={d.turns.size > 0} />
+      <TurnDetail state={cur} turn={d.turns.get(cur.turn)} steer={d.steers.get(cur.turn)} info={d.info} anyContent={d.turns.size > 0} />
 
       <div className="split">
         <div className="stack">

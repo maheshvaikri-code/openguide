@@ -1,5 +1,5 @@
 import { ACTION_MEANING, detectionRows, explainedDrift, ladderSteps, type ContractInfo, type DetectionRow, type RuleStatus } from "../lib/contractInfo";
-import type { StateRecord, TurnRecord } from "../lib/types";
+import type { StateRecord, SteerRecord, TurnRecord } from "../lib/types";
 import { fmt } from "./format";
 
 const RESULT: Record<RuleStatus, { glyph: string; text: string; color: string }> = {
@@ -21,11 +21,14 @@ function Result({ row }: { row: DetectionRow }) {
 export function TurnDetail({
   state,
   turn,
+  steer,
   info,
   anyContent,
 }: {
   state: StateRecord;
   turn: TurnRecord | undefined;
+  /** Set when this turn's generation was steered at the model's activations (T0). */
+  steer?: SteerRecord | undefined;
   info: ContractInfo;
   /** Whether ANY turn of this run has recorded text (so a gap here isn't mistaken for capture being off). */
   anyContent: boolean;
@@ -67,6 +70,14 @@ export function TurnDetail({
             </p>
           )}
         </div>
+
+        {steer && (
+          <p className="notice" aria-label="Activation steering">
+            <b>Activation steering was on for this turn</b> (peak gain {steer.gain}, layers {steer.band[0]} to {steer.band[1] - 1}),
+            because the previous turn needed a correction. The model's internal activations were nudged toward the
+            rules while it wrote this reply, in addition to any reminder above.
+          </p>
+        )}
 
         <div>
           <h3>What the sensors detected</h3>

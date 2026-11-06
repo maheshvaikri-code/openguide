@@ -91,6 +91,10 @@ def compile_spec(spec: dict) -> Grid:
 
 # ── signal pack ───────────────────────────────────────────────────────
 
+# The one steering signal a pack holds and the gain field drives (numpy-only: naming it needs no torch).
+STEER_SIGNAL = "anchor"
+
+
 class SignalPack:
     """Per-model steering vectors: {signal -> {layer -> vector(d)}}."""
 

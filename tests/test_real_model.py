@@ -273,3 +273,53 @@ def test_the_unmanaged_arm_never_records_a_restatement():
     res = run(rm.run_none(drifting_model(), seed=1, turns=6, store=Store()))
     assert all(t["restated"] is None for t in _turn_events(res.trace))
 
+
+
+# ── drift-gated T0 in the contract arm (ADR-003) ──────────────────────
+class _Steerable:
+    """The scripted model, plus the ability to be steered: it only records the gain it was asked for."""
+    supports_steering = True
+
+    def __init__(self, inner):
+        self.inner, self.gains = inner, []
+
+    async def chat(self, body, headers, steer=0.0, receipt=None):
+        self.gains.append(steer)
+        out = await self.inner.chat(body, headers)
+        if steer > 0 and receipt is not None:
+            receipt.produced = True                              # a real upstream reports what it did
+        return out
+
+
+def _steering_config():
+    import numpy as np
+
+    from guidancegrid.core.grid import STEER_SIGNAL, SignalPack
+    from proxy.steering import SteeringConfig
+
+    pack = SignalPack("m", 8)
+    for layer in (1, 2, 3):
+        pack.set_vector(STEER_SIGNAL, layer, np.ones(8, dtype=np.float32))
+    return SteeringConfig(pack, (1, 4), 0.05)
+
+
+def test_the_contract_arm_can_steer_in_a_closed_loop_and_keeps_its_runs_apart():
+    up = _Steerable(drifting_model())
+    store = Store()
+    res = run(rm.run_contract(up, seed=1, turns=8, store=store, steering=_steering_config(),
+                              arm="closedloop"))
+    assert res.arm == "closedloop"
+    assert store.get_run("real-closedloop-s1") is not None and store.get_run("real-contract-s1") is None
+    states = [r for r in res.trace.records if r["ev"] == "STATE"]
+    steered = [r["turn"] for r in res.trace.records if r["ev"] == "STEER"]
+    # a turn is steered exactly when the turn before it fired a correction
+    assert steered == [t for t in range(1, 8) if states[t - 1]["recovery_fired"] is not None]
+    assert steered, "the scripted model drifts, so something must have been steered"
+    assert [t for t, g in enumerate(up.gains) if g > 0] == steered
+    assert res.trace.verify()
+
+
+def test_the_contract_arm_without_steering_is_unchanged_and_never_steers():
+    res = run(rm.run_contract(drifting_model(), seed=1, turns=8, store=Store()))
+    assert res.arm == "contract" and res.run_id == "real-contract-s1"
+    assert not [r for r in res.trace.records if r["ev"] == "STEER"]
