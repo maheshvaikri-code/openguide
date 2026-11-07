@@ -43,7 +43,8 @@
 | NIT: redundant `isfinite`; `Upstream` protocol does not declare `steer` | Left as is (harmless / documented). |
 
 ## Known limitations (not fixed)
-- Benefit shown on one model and rule set, on prompts from a pool of 40 (REPORT 7.4). Capability was measured with steering
+- Benefit shown on one model and rule set, in three pre-registered studies; the third used a new pool of prompts written in the
+  same style (REPORT 7.4-7.6). Capability was measured with steering
   always on, not through the loop. Conversations where the gate keeps firing do worse (7 of 60 in 7.4, 6 of 60 in 7.5), not shown to be
   caused by steering; a cap on consecutive steered turns was tested (7.5) and did not help.
 - Steering reacts one turn late, so it cannot prevent the first failure or the "shock" turns.

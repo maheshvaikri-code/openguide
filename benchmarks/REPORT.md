@@ -175,6 +175,9 @@ The design was not fixed in advance. In order:
 8. **The cap study (7.5) was pre-registered** (commit `0d16993`), but the cap values (2 and 3) were chosen from the
    7.4 data and the study was run on fresh seeds. It did not pass. It also showed that the 7.4 reading of the
    consecutive-turn numbers ("a single nudge") was confounded by selection; 7.4 is corrected accordingly.
+9. **The generalization study (7.6) was pre-registered** (spec `2bf35dd`, prompt pool `51529a7`). The pool was written
+   and frozen before any run and without looking at any model's behaviour on it. After a smoke test on two other seeds I
+   guessed the new pool might be easy for the unsteered arm; it was harder (7.6). Nothing was changed. No deviations.
 
 ### 7.1 Does re-anchoring help? (recovery on a real model)
 
@@ -328,7 +331,9 @@ refused to start unless the spec was committed and unmodified. No deviations. Ra
 Also: all-turn compliance 61.6% -> 76.3%; compliance on the shock turns 5% in both arms (steering does not make the
 model refuse an explicit request on that turn); steering was on for 23.2% of turns; shortest steered reply 3 words,
 none under 3 words. The GSM8K interval's upper end (+7.7) is below the registered 10-point "harm not ruled out" line,
-but a loss of several points is within it.
+but a loss of several points is within it. Under the stricter three-way rule adopted for 7.6 (drop <= 5 *and* the
+interval's upper end <= 5 points) this result would read "harm not ruled out" (drop 1.7, upper end 7.7); the
+`harm_not_ruled_out: false` in the result file is the registered 10-point line, not that rule.
 
 **Exploratory (chosen after seeing the data; not part of the registered verdict).**
 - **Compliance falls with each consecutive steered turn.** The first steered turn follows all rules 87% of the time
@@ -398,26 +403,68 @@ reported. Capability was not re-run, as registered.
 **Consequence.** The cap stays an opt-in setting, off by default, and is documented as tested and not recommended.
 Steering is left uncapped. No language-check veto was built: the evidence for it is one reply in 1,920.
 
-### 7.6 What this does and does not show
+### 7.6 Pre-registered generalization study (a new prompt pool, the full GSM8K test)
+
+Registered before any run: [`../docs/preregistration/t0-generalization.md`](../docs/preregistration/t0-generalization.md)
+(spec commit `2bf35dd`). Same model, pack, contract and gain 0.05, **uncapped**; a **new pool of 40 prompts**
+([`prompts_v2.py`](prompts_v2.py), frozen in `51529a7`, sharing no prompt with the first pool or with the prompts the pack was
+derived on); **new seeds 300-359** (60 conversations x 16 turns, shocks at 4 and 10); two paired arms (`t2`, `t2+t0`).
+Capability: **all 1,319 GSM8K test problems** and 500 MMLU questions, steering always on vs none, paired. Run from code commit
+`52e3970` (clean) in 8,189 s; no deviations. Raw data: [`results/qwen2.5-1.5b/replication_pool2.json`](results/qwen2.5-1.5b/replication_pool2.json).
+
+**Registered outcome: supports (new prompts).**
+
+| Measure (registered) | Result | Rule |
+|---|---|---|
+| Recovery, mean over 60 conversations | t2 52.0% -> t2+t0 91.8% | |
+| Paired difference | **+0.398**, 95% CI **[+0.307, +0.490]** | >= +0.10 and CI lower bound > 0: **PASS** |
+| Wins / ties / losses | 48 / 11 / 1 (exact sign test p = 1.8e-13) | |
+| Conversations that drift under t2 (recovery < 1) | 51; difference **+0.480** [+0.396, +0.569] | |
+| GSM8K, all 1,319 problems, steering always on | 59.0% (778) -> 58.5% (771); drop **+0.5 points**, CI of the drop [-2.3, +3.3] | drop <= 5 and upper end <= 5: **no harm shown** |
+| MMLU (500, the same questions as 7.4) | 58.0% -> 56.6%; drop +1.4 points [-1.0, +3.8] | same categories, information only: no harm shown |
+
+Also: all-turn compliance 50.6% -> 77.3%; compliance on the shock turns 1.7% -> 5.0%; steering was on for 22.0% of turns; shortest
+steered reply 4 words, none under 3; 73.5% of the 211 steered replies followed all rules; **no reply in a language other than
+English in either arm**. The worst paired difference is -0.60 (seed 327, 1.00 -> 0.40, 12 steered turns), the only loss.
+
+**Reading it.**
+- **The new pool was harder for text re-anchoring, not easier:** t2 recovery was 52.0%, against 66.6% on the first pool (120
+  conversations). More conversations drifted (51 of 60, against 36-42), so there was more to recover and the effect is larger.
+  The size of the effect on a harder pool should not be compared directly with the earlier +0.22 and +0.26.
+- **The benefit held on prompts it had not seen.** Pooled over all three registered sets (180 conversations, exploratory):
+  +0.294, 95% CI [+0.242, +0.348], 118 wins / 53 ties / 9 losses; worst -1.00 (7.4's seed 130).
+- **The tighter capability test was passed.** With the whole GSM8K test split the drop is 0.5 points and even the upper end of its
+  interval is 3.3 points. That meets the stricter rule, which the first replication's numbers (upper end 7.7) would not have (see 7.4).
+- Conversations where the gate kept firing (8 or more steered turns) appeared again, in 3 of 60, with a mean paired difference of
+  -0.13 (exploratory, n = 3), against 7 of 60 in 7.4 and 6 of 60 in 7.5.
+
+**What it does not show.** The new prompts were written by the same system as the first pool, in the same style, for the same app
+and rules, so this tests new content and not a different kind of conversation. It says nothing about another rule set, another
+model or a larger one, or sampling instead of greedy decoding. Capability was measured with steering always on (the worst case),
+not through the loop. The MMLU questions are the same 500 as in 7.4, so that line is not independent of it. The rule checker
+passes some degenerate text, which is why the replies were also read.
+
+### 7.7 What this does and does not show
 
 - **Shows:** a real-model pipeline works end to end (proxy, real sensors, traces, steering, replay); on this
   model the proxy's current re-anchoring does little; activation steering at a *small* gain (0.05) changes
   behavior in the intended direction with no detectable capability loss, and at larger gains destroys the
   model; the capability cost is sharp, not gradual; steering only after a failed turn raised recovery from 68.5% to
-  90.8% over 60 pre-registered conversations (7.4) and by a similar amount over 60 more (7.5); a cap on consecutive
-  steered turns did not help (7.5).
+  90.8% over 60 pre-registered conversations (7.4), by a similar amount over 60 more (7.5), and from 52.0% to 91.8% on a new
+  prompt pool with the full GSM8K test split showing no harm by the stricter rule (7.6); a cap on consecutive steered turns
+  did not help (7.5).
 - **Does not show:** anything about 7B/8B models (the blueprint's Qwen2.5-7B does not fit in 8 GB at full
-  precision, so that gate is still unrun); that results hold for other rules, prompts or models; that the
+  precision, so that gate is still unrun); that results hold for other rules or models (new prompts of the same style were covered in 7.6); that the
   placement of a re-anchor matters (it flips by conversation); a benefit of re-anchoring in text (n = 5
-  conversations, intervals touch zero); that the closed loop's benefit holds beyond this model, rule set and prompt pool.
-- **Limits:** one model, one contract, scripted prompts from a pool of 40, greedy decoding (no sampling variance), 5
-  conversations per arm in 7.1-7.3 (60 in 7.4), MMLU on 300-500 random test questions and GSM8K on 100-300. The
+  conversations, intervals touch zero); that the closed loop's benefit holds beyond this model and rule set.
+- **Limits:** one model, one contract, scripted prompts (two pools of 40, same author and style), greedy decoding (no sampling variance), 5
+  conversations per arm in 7.1-7.3 (60 in each of 7.4-7.6), MMLU on 300-500 random test questions and GSM8K on 100-1,319. The
   steering vector was derived and evaluated on the same kind of question (different questions, same template).
   Rule checkers count degenerate text as compliant on some rules (see the warning above).
 
-Reproduce (GPU, ~1.5 hours in total, plus ~5 minutes for 7.3, ~1.7 hours for 7.4 and ~1.6 hours for 7.5): `python scripts/calibrate_real_rules.py`;
+Reproduce (GPU, ~1.5 hours in total, plus ~5 minutes for 7.3, ~1.7 hours for 7.4, ~1.6 hours for 7.5 and ~2.3 hours for 7.6): `python scripts/calibrate_real_rules.py`;
 `python scripts/real_placement_ablation.py` (add `--plain-only` for the ablation);
-`python scripts/real_t0_gate.py`; `python scripts/replicate_t0.py` (7.4) and `python scripts/replicate_cap.py` (7.5), both of which refuse to run unless
+`python scripts/real_t0_gate.py`; `python scripts/replicate_t0.py` (7.4) and `python scripts/replicate_cap.py` (7.5) and `python scripts/replicate_pool2.py` (7.6), each of which refuses to run unless
 their spec is committed;
 then `python scripts/real_model_demo.py --serve` to browse the runs in the
 Console. Weights go in `.models/Qwen2.5-1.5B-Instruct` (git-ignored). The raw results of the runs reported

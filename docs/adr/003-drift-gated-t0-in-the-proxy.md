@@ -52,8 +52,9 @@ Wire T0 into the proxy as a **drift-gated closed loop**, opt-in:
   reconciler that measures replies.
 - A steering pack is specific to one model. It must be derived for that model (`scripts/derive_steering_pack.py`)
   and is checked against the model's hidden size and the layer band at start-up.
-- Validated only on Qwen2.5-1.5B-Instruct and on this rule set. A pre-registered replication (60 conversations,
-  `benchmarks/REPORT.md` §7.4) met both registered bars: recovery 68.5% -> 90.8%, GSM8K drop 1.7 points.
+- Validated only on Qwen2.5-1.5B-Instruct and on this rule set. Three pre-registered studies (60 conversations
+  each, `benchmarks/REPORT.md` §7.4-7.6) support it: recovery +0.22, +0.26 and, on a new prompt pool, +0.40; GSM8K drop 1.7
+  points (n = 300) and 0.5 points on all 1,319 problems with the upper end of the interval at 3.3.
 - **Known weakness:** when the gate keeps firing, steering stays on and those conversations do worse (7 of 60 in the
   replication ran 8+ steered turns; mean paired difference -0.04; one fell 1.00 -> 0.00 because the steered replies dropped
   the brackets of `[END]`). That is not shown to be caused by steering (they are the conversations where the model keeps

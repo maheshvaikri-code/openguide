@@ -13,6 +13,7 @@ GPU kernels can differ across machines.
 | `real_closed_loop_results.json` | `scripts/real_closed_loop.py` | Drift-gated T0 in the proxy (report 7.3): `t2` vs `t2+t0` on the same 5 conversations x 16 turns, every turn's text and checks, and which turns were steered. Gain 0.05 was chosen after the earlier runs. |
 | `replication_t0.json` | `scripts/replicate_t0.py` | The pre-registered replication (report 7.4): 60 conversations x 2 arms with every turn, the analysis, the capability results, the verdict, and the provenance (spec commit, code commit, pack and contract hashes, versions). Registered design: `docs/preregistration/t0-replication.md`. |
 | `replication_cap.json` | `scripts/replicate_cap.py` | The pre-registered cap study (report 7.5): 60 conversations x 3 arms (t2, uncapped, capped) with every turn, the analysis, the verdict and the provenance. Registered design: `docs/preregistration/t0-cap-study.md`. |
+| `replication_pool2.json` | `scripts/replicate_pool2.py` | The pre-registered generalization study (report 7.6): 60 conversations x 2 arms on a new prompt pool, with every turn, plus per-condition GSM8K (all 1,319) and MMLU (500) results, the analysis, the verdict and the provenance. Registered design: `docs/preregistration/t0-generalization.md`; pool: `benchmarks/prompts_v2.py`. |
 
 The runs in `.console-demo/real-model.db` (what the Console shows) are rebuilt from these files with
 `scripts/rebuild_real_db.py`, which replays the recorded replies and refuses to write unless every turn

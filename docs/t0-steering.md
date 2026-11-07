@@ -65,8 +65,10 @@ no cap (-0.03, CI [-0.08, +0.01]). Pausing steering let some conversations that 
 - It reacts one turn late: it acts on the turn after the drift was seen, so it cannot prevent the first failure.
 - Measured, not assumed. A pre-registered replication on 60 new conversations (`benchmarks/REPORT.md` 7.4) raised
   recovery from 68.5% to 90.8% (paired +0.22, 95% CI [+0.14, +0.31]), mostly in conversations that drift, and GSM8K
-  dropped 1.7 points with steering always on (CI [-4.7, +7.7]). The prompts come from a pool of 40, so this is new
-  conversations, not new content.
+  dropped 1.7 points with steering always on (CI [-4.7, +7.7]). A second set (7.5) gave +0.26. A third, pre-registered
+  study on a **new pool of prompts** (7.6) gave +0.40 (CI [+0.31, +0.49], 48 wins / 11 ties / 1 loss) and, on all 1,319 GSM8K
+  problems with steering always on, a drop of 0.5 points with the interval's upper end at 3.3 ("no harm shown" under the
+  stricter rule). The new prompts are in the same style and written by the same system; no other model or rule set was tested.
 - **Conversations where the gate keeps firing do worse** (7 of 60 ran 8 or more steered turns; mean paired difference
   -0.04), and in one the steered replies dropped the brackets of `[END]` so the gate never switched off (1.00 -> 0.00).
   These are the conversations where the model keeps breaking the rules, so this is not shown to be caused by steering. A

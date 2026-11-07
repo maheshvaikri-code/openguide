@@ -13,7 +13,8 @@ All notable changes to this project are documented here. Format follows
   upstreams that cannot steer. A client cannot turn it on or change the gain. New tools:
   `scripts/derive_steering_pack.py`, `scripts/real_closed_loop.py`. Pre-registered replication (60 conversations, one small
   model): recovery 68.5% -> 90.8%, GSM8K drop 1.7 points with steering always on, within the registered bars. A second
-  60-conversation set gave +0.26 again (`benchmarks/REPORT.md` 7.4, 7.5). Conversations where the gate keeps firing do worse.
+  60-conversation set gave +0.26 again, and a pre-registered study on a new prompt pool gave +0.40 with GSM8K (all 1,319
+  problems) down 0.5 points, interval upper end 3.3 (`benchmarks/REPORT.md` 7.4-7.6). Conversations where the gate keeps firing do worse.
 - README "How the pieces fit" diagram.
 - Opt-in cap on consecutive steered turns (`SteeringConfig(max_consecutive=..., pause_turns=...)`, off by default) and its
   pre-registered study (`docs/preregistration/t0-cap-study.md`, `scripts/replicate_cap.py`). The study found the cap does
