@@ -38,6 +38,18 @@ def _flatten(content: Any) -> str:
     return "" if content is None else str(content)
 
 
+def _resolve_dtype(name: str | None, device: str):
+    """A torch dtype from its name. ``None`` keeps the default every earlier result used (fp16 on CUDA)."""
+    import torch
+
+    if name is None:
+        return torch.float16 if device == "cuda" else torch.float32
+    table = {"float16": torch.float16, "bfloat16": torch.bfloat16, "float32": torch.float32}
+    if name not in table:
+        raise ValueError(f"dtype must be one of {sorted(table)}, got {name!r}")
+    return table[name]
+
+
 class HFUpstream:
     def __init__(self, generate_fn: GenerateFn, *, served_name: str = "local:hf-model",
                  max_new_tokens: int = 128):
@@ -57,6 +69,7 @@ class HFUpstream:
         self.steer_factory: Callable[[float], AbstractContextManager[Any]] | None = None
         # forward passes the steering field covers (set by enable_steering)
         self._steer_steps: int | None = None
+        self._gain_ceiling: float = MAX_SAFE_GAIN      # set from the config by enable_steering
 
     @property
     def supports_steering(self) -> bool:
@@ -106,6 +119,7 @@ class HFUpstream:
                     f"state instead of nudging it, whatever the gain")
         model, pack, band = self.model, config.pack_in_band(), tuple(config.band)
         self._steer_steps = MAX_STEPS
+        self._gain_ceiling = config.gain_ceiling
         manifest = config.manifest(self.served_name)
         self.steer_factory = lambda gain: steering_context(model, pack, band, gain, manifest)()
         return self
@@ -113,14 +127,14 @@ class HFUpstream:
     # ── loading a real model ─────────────────────────────────────────
     @classmethod
     def from_pretrained(cls, path: str, *, served_name: str | None = None, max_new_tokens: int = 128,
-                        device: str | None = None) -> "HFUpstream":
+                        device: str | None = None, dtype: str | None = None) -> "HFUpstream":
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
         dev = device or ("cuda" if torch.cuda.is_available() else "cpu")
         tok = AutoTokenizer.from_pretrained(path)
         model = AutoModelForCausalLM.from_pretrained(
-            path, dtype=torch.float16 if dev == "cuda" else torch.float32).to(dev).eval()
+            path, dtype=_resolve_dtype(dtype, dev)).to(dev).eval()
 
         def generate(messages: list[dict[str, str]], max_new: int) -> tuple[str, int, int]:
             ids = tok.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt",
@@ -142,8 +156,8 @@ class HFUpstream:
                    receipt: SteerReceipt | None = None) -> dict[str, Any]:
         if steer > 0 and self.steer_factory is None:
             raise ValueError("asked to steer, but this upstream cannot steer (call enable_steering first)")
-        if steer > MAX_SAFE_GAIN:
-            raise ValueError(f"steering gain {steer} is above the safe ceiling {MAX_SAFE_GAIN}")
+        if steer > self._gain_ceiling:
+            raise ValueError(f"steering gain {steer} is above the safe ceiling {self._gain_ceiling}")
         messages = [{"role": m.get("role", "user"), "content": _flatten(m.get("content"))}
                     for m in body.get("messages", [])]
         if not messages:

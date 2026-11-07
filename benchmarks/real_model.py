@@ -260,7 +260,7 @@ async def run_naive(upstream, seed: int, turns: int = 30, every: int = 8, store=
 
 async def run_contract(upstream, seed: int, turns: int = 30, store=None, plain_only: bool = False,
                        shocks: tuple[int, ...] | None = None, steering=None,
-                       arm: str = "contract", pool: str = "v1") -> ArmResult:
+                       arm: str = "contract", pool: str = "v1", model_id: str = MODEL_ID) -> ArmResult:
     """The real proxy: governed requests through create_app, one session per conversation. With
     ``steering`` (a proxy.steering.SteeringConfig, upstream must be able to steer) the proxy also runs its
     drift-gated T0 loop; give such a run its own ``arm`` name so it never collides with the T2-only run."""
@@ -282,7 +282,7 @@ async def run_contract(upstream, seed: int, turns: int = 30, store=None, plain_o
         for t, user in enumerate(user_turns(seed, turns, plain_only, shocks, pool)):
             messages = history + [{"role": "user", "content": user}]
             r = await client.post("/v1/chat/completions", headers=headers,
-                                  json={"model": MODEL_ID, "messages": messages})
+                                  json={"model": model_id, "messages": messages})
             r.raise_for_status()
             reply = _reply(r.json())
             replies.append((t, user, reply))

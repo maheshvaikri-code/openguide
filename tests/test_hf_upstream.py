@@ -380,3 +380,31 @@ def test_enable_steering_steers_only_the_bands_layers_even_if_the_pack_has_more(
     layers = {layer for rec in steerer.trace.records if rec.get("ev") == "STEP"
               for layer, _ in rec["applied"].get(STEER_SIGNAL, [])}
     assert layers and layers <= {2, 3}
+
+
+def test_the_upstream_enforces_the_configured_ceiling_not_just_the_default():
+    import pytest
+
+    from proxy.steering import SteeringConfig
+
+    model = _tiny_model()
+    up = HFUpstream(generate_fn=lambda m, n: ("x", 1, 1), max_new_tokens=64)
+    up.model = model
+    up.enable_steering(SteeringConfig(_scaled_pack(model, 1.0), (1, 4), 0.075, gain_ceiling=0.075))
+    asyncio.run(up.chat({"messages": [{"role": "user", "content": "hi"}]}, {}, steer=0.075))     # at it
+    with pytest.raises(ValueError, match="gain"):
+        asyncio.run(up.chat({"messages": [{"role": "user", "content": "hi"}]}, {}, steer=0.08))
+
+
+def test_the_dtype_option_resolves_names_and_defaults_are_unchanged():
+    import pytest
+
+    torch = pytest.importorskip("torch")
+    from proxy.hf_upstream import _resolve_dtype
+
+    assert _resolve_dtype(None, "cuda") is torch.float16              # the default every earlier result used
+    assert _resolve_dtype(None, "cpu") is torch.float32
+    assert _resolve_dtype("bfloat16", "cuda") is torch.bfloat16
+    assert _resolve_dtype("float32", "cuda") is torch.float32
+    with pytest.raises(ValueError, match="dtype"):
+        _resolve_dtype("int4", "cuda")

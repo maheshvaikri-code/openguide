@@ -58,13 +58,14 @@ def chat_ids(tok, system: str, users: list[str], device):
     return enc["input_ids"], enc["attention_mask"]
 
 
-def derive(up) -> t0.SignalPack:
-    layers = list(range(*BAND))
+def derive(up, band=None, key: str = "qwen2.5-1.5b-instruct") -> t0.SignalPack:
+    """The steering pack for ``up``'s model. The defaults are the Qwen setup every earlier result used."""
+    layers = list(range(*(band or BAND)))
     with_rules = t0.last_token_states(up.model, *chat_ids(up.tokenizer, rm.SYSTEM_PROMPT, DERIVATION_PROMPTS,
                                                           up.model.device), layers)
     without = t0.last_token_states(up.model, *chat_ids(up.tokenizer, BASE_SYSTEM, DERIVATION_PROMPTS,
                                                        up.model.device), layers)
-    return t0.build_pack("qwen2.5-1.5b-instruct", with_rules, without)
+    return t0.build_pack(key, with_rules, without)
 
 
 def ctx_for(up, pack, gain):

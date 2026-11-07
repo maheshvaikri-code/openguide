@@ -385,3 +385,11 @@ def test_the_contract_arm_can_run_on_the_second_pool():
     res = run(rm.run_contract(drifting_model(), seed=300, turns=8, store=Store(), shocks=(3,), pool="v2"))
     assert all(t["user"] in set(v2.PLAIN_V2 + v2.TEMPTING_V2) for t in res.turns)
     assert res.turns[3]["kind"] == "tempting"
+
+
+def test_a_run_carries_the_label_of_the_model_it_used_and_defaults_to_qwen():
+    other = run(rm.run_contract(drifting_model(), seed=1, turns=4, store=Store(),
+                                model_id="local:other-model"))
+    assert other.trace.manifest["model"] == "local:other-model"
+    default = run(rm.run_contract(drifting_model(), seed=1, turns=4, store=Store()))
+    assert default.trace.manifest["model"] == rm.MODEL_ID

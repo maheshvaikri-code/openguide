@@ -472,3 +472,26 @@ def test_without_the_cap_the_same_conversation_is_steered_on_every_turn_after_th
 
     run(go())
     assert [r["turn"] for r in rig.trace().records if r["ev"] == "STEER"] == [1, 2, 3, 4, 5]
+
+
+# -- a per-model gain ceiling (a model other than Qwen needs its own evidence) --
+def test_the_default_ceiling_is_the_qwen_measured_one_and_a_higher_gain_needs_an_explicit_ceiling():
+    from proxy.steering import HARD_GAIN_LIMIT
+
+    with pytest.raises(ValueError, match="gain"):
+        SteeringConfig(_pack(), BAND, 0.075)                           # above the default ceiling
+    cfg = SteeringConfig(_pack(), BAND, 0.075, gain_ceiling=0.075)
+    assert cfg.gain == 0.075 and cfg.gain_ceiling == 0.075
+    assert HARD_GAIN_LIMIT == 0.1
+
+
+def test_a_ceiling_can_never_exceed_the_hard_limit_or_be_non_positive():
+    for bad in (0.1000001, 0.2, 0, -0.05, float("nan"), True):
+        with pytest.raises(ValueError, match="gain_ceiling"):
+            SteeringConfig(_pack(), BAND, 0.05, gain_ceiling=bad)
+
+
+def test_the_gain_may_not_exceed_its_own_ceiling():
+    with pytest.raises(ValueError, match="gain"):
+        SteeringConfig(_pack(), BAND, 0.06, gain_ceiling=0.05)
+    SteeringConfig(_pack(), BAND, 0.025, gain_ceiling=0.075)           # a gain below the ceiling is fine
