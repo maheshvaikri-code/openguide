@@ -323,3 +323,65 @@ def test_the_contract_arm_without_steering_is_unchanged_and_never_steers():
     res = run(rm.run_contract(drifting_model(), seed=1, turns=8, store=Store()))
     assert res.arm == "contract" and res.run_id == "real-contract-s1"
     assert not [r for r in res.trace.records if r["ev"] == "STEER"]
+
+
+# ── the second prompt pool (docs/preregistration/t0-generalization.md) ──
+def _derivation_prompts():
+    from scripts import real_t0_gate
+    return list(real_t0_gate.DERIVATION_PROMPTS)
+
+
+def test_the_second_pool_has_the_same_shape_and_shares_no_prompt_with_the_first_or_the_pack():
+    from benchmarks import prompts_v2 as v2
+
+    assert len(v2.PLAIN_V2) == 24 and len(v2.TEMPTING_V2) == 16
+    allv2 = v2.PLAIN_V2 + v2.TEMPTING_V2
+    assert len(set(allv2)) == 40                                       # no duplicates
+    assert not set(allv2) & set(rm.POOL)                               # nothing from the first pool
+    assert not set(allv2) & set(_derivation_prompts())                 # nor anything the pack was derived on
+    lower = [p.lower() for p in allv2]
+    assert len(set(lower)) == 40
+
+
+def test_every_prompt_of_the_second_pool_is_classified_by_what_it_asks_for():
+    from benchmarks import prompts_v2 as v2
+
+    assert all(rm.kind_of(p) == "plain" for p in v2.PLAIN_V2)
+    assert all(rm.kind_of(p) == "tempting" for p in v2.TEMPTING_V2)
+    assert all(rm.kind_of(p) == "tempting" for p in rm._TEMPTING)      # the first pool is unchanged
+    assert all(rm.kind_of(p) == "plain" for p in rm._PLAIN)
+
+
+def test_conversations_from_the_second_pool_use_only_it_and_keep_the_shock_turns():
+    from benchmarks import prompts_v2 as v2
+
+    turns = rm.user_turns(300, 16, shocks=(4, 10), pool="v2")
+    assert set(turns) <= set(v2.PLAIN_V2 + v2.TEMPTING_V2)
+    assert [rm.kind_of(t) for t in turns].count("tempting") == 2
+    assert rm.kind_of(turns[4]) == "tempting" and rm.kind_of(turns[10]) == "tempting"
+    assert turns == rm.user_turns(300, 16, shocks=(4, 10), pool="v2")      # deterministic
+    assert turns != rm.user_turns(301, 16, shocks=(4, 10), pool="v2")
+
+
+def test_the_default_pool_is_bit_identical_to_before_the_option_existed():
+    import hashlib
+    import json
+
+    def h(seed):
+        return hashlib.sha256(json.dumps(rm.user_turns(seed, 16, False, (4, 10))).encode()).hexdigest()[:16]
+
+    assert (h(0), h(7), h(100)) == ("04948443bcbb5c61", "a9c0fd5c57c1da4b", "87bfa7a74912aa80")
+    assert rm.user_turns(0, 16, False, (4, 10)) == rm.user_turns(0, 16, False, (4, 10), pool="v1")
+
+
+def test_an_unknown_pool_is_an_error():
+    with pytest.raises(ValueError, match="pool"):
+        rm.user_turns(1, 16, shocks=(4, 10), pool="v3")
+
+
+def test_the_contract_arm_can_run_on_the_second_pool():
+    from benchmarks import prompts_v2 as v2
+
+    res = run(rm.run_contract(drifting_model(), seed=300, turns=8, store=Store(), shocks=(3,), pool="v2"))
+    assert all(t["user"] in set(v2.PLAIN_V2 + v2.TEMPTING_V2) for t in res.turns)
+    assert res.turns[3]["kind"] == "tempting"

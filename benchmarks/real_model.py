@@ -76,10 +76,16 @@ _TEMPTING = [
 ]
 POOL = _PLAIN + _TEMPTING
 
+# A second, disjoint pool of the same shape (see benchmarks/prompts_v2.py), selected with ``pool="v2"``.
+from benchmarks.prompts_v2 import PLAIN_V2 as _PLAIN_V2  # noqa: E402
+from benchmarks.prompts_v2 import TEMPTING_V2 as _TEMPTING_V2  # noqa: E402
+
+POOLS = {"v1": (_PLAIN, _TEMPTING), "v2": (_PLAIN_V2, _TEMPTING_V2)}
+
 
 def kind_of(user: str) -> str:
     """'tempting' prompts ask for exactly what the rules forbid; 'plain' ones do not."""
-    return "tempting" if user in _TEMPTING else "plain"
+    return "tempting" if user in _TEMPTING or user in _TEMPTING_V2 else "plain"
 
 
 # ── the sensors: deterministic checks on the model's actual output ────
@@ -115,20 +121,23 @@ def compiled_contract():
 
 
 def user_turns(seed: int, n: int = 30, plain_only: bool = False,
-               shocks: tuple[int, ...] | None = None) -> list[str]:
+               shocks: tuple[int, ...] | None = None, pool: str = "v1") -> list[str]:
     """A deterministic conversation, no repeats within it.
 
     Default: a random mix of plain and tempting prompts. ``plain_only`` drops the tempting ones (a
     violation is then drift, not the user asking for a list). ``shocks`` makes the turns at those
     indices tempting and every other turn plain: a mostly ordinary conversation with a few moments
     where the user asks for exactly what the rules forbid."""
+    if pool not in POOLS:
+        raise ValueError(f"pool must be one of {sorted(POOLS)}, got {pool!r}")
+    plain_pool, tempting_pool = POOLS[pool]
     rng = random.Random(seed)
     if shocks is None:
-        return rng.sample(_PLAIN if plain_only else POOL, n)
+        return rng.sample(plain_pool if plain_only else plain_pool + tempting_pool, n)
     if any(not 0 <= s < n for s in shocks):
         raise ValueError(f"every shock turn must be in 0..{n - 1}, got {shocks}")
-    plain = rng.sample(_PLAIN, n - len(shocks))
-    tempting = rng.sample(_TEMPTING, len(shocks))
+    plain = rng.sample(plain_pool, n - len(shocks))
+    tempting = rng.sample(tempting_pool, len(shocks))
     it_plain, it_tempt = iter(plain), iter(tempting)
     return [next(it_tempt) if i in shocks else next(it_plain) for i in range(n)]
 
@@ -251,7 +260,7 @@ async def run_naive(upstream, seed: int, turns: int = 30, every: int = 8, store=
 
 async def run_contract(upstream, seed: int, turns: int = 30, store=None, plain_only: bool = False,
                        shocks: tuple[int, ...] | None = None, steering=None,
-                       arm: str = "contract") -> ArmResult:
+                       arm: str = "contract", pool: str = "v1") -> ArmResult:
     """The real proxy: governed requests through create_app, one session per conversation. With
     ``steering`` (a proxy.steering.SteeringConfig, upstream must be able to steer) the proxy also runs its
     drift-gated T0 loop; give such a run its own ``arm`` name so it never collides with the T2-only run."""
@@ -270,7 +279,7 @@ async def run_contract(upstream, seed: int, turns: int = 30, store=None, plain_o
     replies: list[tuple[int, str, str]] = []
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(transport=transport, base_url="http://proxy", timeout=600) as client:
-        for t, user in enumerate(user_turns(seed, turns, plain_only, shocks)):
+        for t, user in enumerate(user_turns(seed, turns, plain_only, shocks, pool)):
             messages = history + [{"role": "user", "content": user}]
             r = await client.post("/v1/chat/completions", headers=headers,
                                   json={"model": MODEL_ID, "messages": messages})
