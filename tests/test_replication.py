@@ -283,3 +283,45 @@ def test_the_verdict_carries_both_categories_and_mmlu_is_information_only():
     v = rp.pool_verdict(_conv(0.2, 0.1), caps)
     assert v["benefit_pass"] is True and v["gsm8k"] == "no harm shown" and v["mmlu"] == "harm"
     assert v["outcome"] == "supports (new prompts)"                          # MMLU does not enter the outcome
+
+
+# -- the second-model pilot rule (docs/preregistration/t0-second-model-pilot.md) --
+def row(gain, recovery_diff, drop):
+    return {"gain": gain, "recovery_diff": recovery_diff, "gsm8k_drop_points": drop}
+
+
+def test_the_pilot_picks_the_eligible_gain_with_the_highest_recovery_gain():
+    r = rp.pilot_choice([row(0.025, 0.10, 1.0), row(0.05, 0.25, 1.5), row(0.075, 0.20, 0.5)])
+    assert r["chosen"] == 0.05 and r["eligible"] == [0.025, 0.05, 0.075]
+
+
+def test_a_gain_is_eligible_with_a_drop_of_exactly_two_points_and_not_above():
+    assert rp.pilot_choice([row(0.05, 0.2, 2.0)])["chosen"] == 0.05
+    assert rp.pilot_choice([row(0.05, 0.2, 2.0001)])["chosen"] is None
+
+
+def test_a_gain_with_a_better_recovery_but_too_large_a_drop_is_ignored():
+    r = rp.pilot_choice([row(0.025, 0.05, 0.5), row(0.05, 0.30, 2.5), row(0.075, 0.40, 6.0)])
+    assert r["chosen"] == 0.025 and r["eligible"] == [0.025]
+
+
+def test_equal_recovery_goes_to_the_lower_gain():
+    r = rp.pilot_choice([row(0.075, 0.20, 1.0), row(0.025, 0.20, 1.0), row(0.05, 0.20, 1.0)])
+    assert r["chosen"] == 0.025
+    near = rp.pilot_choice([row(0.05, 0.2, 1.0), row(0.075, 0.2 + 1e-12, 1.0)])      # equal within 1e-9
+    assert near["chosen"] == 0.05
+
+
+def test_if_no_gain_is_eligible_the_pilot_stops_and_says_why():
+    r = rp.pilot_choice([row(0.025, 0.1, 3.0), row(0.05, 0.2, 4.0), row(0.075, 0.3, 9.0)])
+    assert r["chosen"] is None and r["eligible"] == [] and "no gain" in r["reason"]
+
+
+def test_the_rule_as_written_can_choose_a_gain_whose_recovery_is_not_positive_and_flags_it():
+    r = rp.pilot_choice([row(0.025, -0.05, 1.0), row(0.05, -0.10, 1.0), row(0.075, 0.0, 6.0)])
+    assert r["chosen"] == 0.025 and r["chosen_recovery_not_positive"] is True
+    assert rp.pilot_choice([row(0.05, 0.1, 1.0)])["chosen_recovery_not_positive"] is False
+
+
+def test_negative_drops_mean_steering_scored_better_and_stay_eligible():
+    assert rp.pilot_choice([row(0.05, 0.2, -3.0)])["chosen"] == 0.05

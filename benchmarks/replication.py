@@ -268,3 +268,24 @@ def pool_verdict(conv: dict[str, Any], cap: dict[str, Any]) -> dict[str, Any]:
     else:
         outcome = f"benefit shown; {gsm}"
     return {"benefit_pass": bool(benefit), "gsm8k": gsm, "mmlu": mmlu, "outcome": outcome}
+
+
+# -- the second-model pilot: docs/preregistration/t0-second-model-pilot.md --
+PILOT_MAX_DROP_POINTS = 2.0
+
+
+def pilot_choice(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
+    """The registered gain-selection rule. Each row: {gain, recovery_diff, gsm8k_drop_points}. A gain is
+    eligible if its GSM8K drop is at most 2 points; choose the eligible gain with the highest recovery gain,
+    ties to the lower gain; if none is eligible the pilot stops."""
+    eligible = [r for r in rows if r["gsm8k_drop_points"] <= PILOT_MAX_DROP_POINTS + _EPS]
+    names = sorted(r["gain"] for r in eligible)
+    if not eligible:
+        return {"chosen": None, "eligible": [], "chosen_recovery_not_positive": None,
+                "reason": f"no gain is eligible (GSM8K drop over {PILOT_MAX_DROP_POINTS:g} points for all)"}
+    best = max(r["recovery_diff"] for r in eligible)
+    tied = [r for r in eligible if best - r["recovery_diff"] <= _EPS]
+    chosen = min(tied, key=lambda r: r["gain"])
+    return {"chosen": chosen["gain"], "eligible": names, "chosen_recovery_not_positive": bool(best <= _EPS),
+            "reason": f"gain {chosen['gain']:g}: highest recovery gain ({best:+.3f}) among eligible gains"
+                      + (" (tie -> lower gain)" if len(tied) > 1 else "")}
