@@ -50,3 +50,6 @@ node_modules/
 .models/
 benchmarks/real_*results*.json
 ~$*
+# pre-registered replication: checkpoints and the smoke run (the registered result is committed separately)
+benchmarks/replication_t0_*
+benchmarks/results/qwen2.5-1.5b/replication_t0.smoke.json

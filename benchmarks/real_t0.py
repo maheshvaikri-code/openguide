@@ -13,7 +13,6 @@ uses the norm-preserving ActivationSteerer in guidancegrid/channels/t0_activatio
 """
 from __future__ import annotations
 
-import math
 import re
 from decimal import Decimal, InvalidOperation
 from typing import Any, Callable
@@ -21,6 +20,7 @@ from typing import Any, Callable
 import numpy as np
 
 from benchmarks import real_model as rm
+from benchmarks.replication import wilson  # noqa: F401  (re-exported: the one definition lives there)
 from guidancegrid.channels.t0_activation import SIGNAL, decoder_layers, steering_context
 from guidancegrid.core.grid import SignalPack
 
@@ -135,13 +135,3 @@ def compliance(replies: list[str]) -> dict[str, Any]:
         **{rule: ((sum(c[rule] for c in checks) / n) if n else None) for rule in rm.RULES},
     }
 
-
-def wilson(k: int, n: int, z: float = 1.96) -> tuple[float | None, float | None]:
-    """95% Wilson score interval for a proportion: honest about small samples."""
-    if n == 0:
-        return None, None
-    p = k / n
-    denom = 1 + z * z / n
-    centre = (p + z * z / (2 * n)) / denom
-    half = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / denom
-    return max(0.0, centre - half), min(1.0, centre + half)
