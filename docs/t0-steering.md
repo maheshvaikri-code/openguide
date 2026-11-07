@@ -50,9 +50,10 @@ as a typed argument, never from a header or body.
 ## Optional cap on consecutive steered turns
 
 `SteeringConfig(..., max_consecutive=2, pause_turns=3)` limits steering to 2 turns in a row, then pauses it for 3
-turns (the text re-anchor still runs). It is **off by default** and nothing here claims it works: it was designed
-from the data that showed sustained steering failing, and whether it helps is being tested on fresh conversations
-under a pre-registered plan ([docs/preregistration/t0-cap-study.md](preregistration/t0-cap-study.md)).
+turns (the text re-anchor still runs). It is **off by default and not recommended.** It was tested on 60 fresh
+conversations under a pre-registered plan ([docs/preregistration/t0-cap-study.md](preregistration/t0-cap-study.md)) and
+**did not pass**: it kept the benefit (+0.23) but did not reduce losses (5, against 3 uncapped) and was slightly worse than
+no cap (-0.03, CI [-0.08, +0.01]). Pausing steering let some conversations that steering had been holding relapse.
 
 ## Limits (read before relying on it)
 
@@ -66,10 +67,10 @@ under a pre-registered plan ([docs/preregistration/t0-cap-study.md](preregistrat
   recovery from 68.5% to 90.8% (paired +0.22, 95% CI [+0.14, +0.31]), mostly in conversations that drift, and GSM8K
   dropped 1.7 points with steering always on (CI [-4.7, +7.7]). The prompts come from a pool of 40, so this is new
   conversations, not new content.
-- **It helps as a single nudge, not a sustained push.** The first steered turn follows the rules 87% of the time; the
-  third in a row 10%. In 7 of 60 conversations steering stayed on for 8 or more turns and the mean paired difference
-  there was -0.04 (one conversation fell from 1.00 to 0.00). That analysis was done after seeing the data. A cap on
-  consecutive steered turns is the obvious next experiment and has not been tried.
+- **Conversations where the gate keeps firing do worse** (7 of 60 ran 8 or more steered turns; mean paired difference
+  -0.04), and in one the steered replies dropped the brackets of `[END]` so the gate never switched off (1.00 -> 0.00).
+  These are the conversations where the model keeps breaking the rules, so this is not shown to be caused by steering. A
+  second 60-conversation set had no such catastrophe (worst -0.20), and its uncapped arm gained +0.26 again.
 - The rule checker can pass broken output, so look at the replies as well as the scores.
 
 See [ADR-003](adr/003-drift-gated-t0-in-the-proxy.md) for the decision and the alternatives rejected.

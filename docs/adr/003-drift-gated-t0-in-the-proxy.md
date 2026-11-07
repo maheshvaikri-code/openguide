@@ -54,11 +54,12 @@ Wire T0 into the proxy as a **drift-gated closed loop**, opt-in:
   and is checked against the model's hidden size and the layer band at start-up.
 - Validated only on Qwen2.5-1.5B-Instruct and on this rule set. A pre-registered replication (60 conversations,
   `benchmarks/REPORT.md` §7.4) met both registered bars: recovery 68.5% -> 90.8%, GSM8K drop 1.7 points.
-- **Known failure mode (found after seeing the data):** the first steered turn works (87% comply) but a second,
-  third... in a row does not (47%, 10%, ...). When the gate keeps firing, steering stays on and can hurt (7 of 60
-  conversations ran 8+ steered turns; their mean paired difference was -0.04). A limit on consecutive steered turns
-  is the natural fix. It exists as an opt-in setting (`max_consecutive`, `pause_turns`; off by default) that makes no
-  claim; whether it helps is tested by `docs/preregistration/t0-cap-study.md` on fresh seeds before it could become a default.
+- **Known weakness:** when the gate keeps firing, steering stays on and those conversations do worse (7 of 60 in the
+  replication ran 8+ steered turns; mean paired difference -0.04; one fell 1.00 -> 0.00 because the steered replies dropped
+  the brackets of `[END]`). That is not shown to be caused by steering (they are the conversations where the model keeps
+  failing). A cap on consecutive steered turns exists as an opt-in setting (`max_consecutive`, `pause_turns`; off by
+  default). A pre-registered study on fresh seeds (`docs/preregistration/t0-cap-study.md`, REPORT 7.5) found it did **not**
+  help (5 losses against 3 uncapped; capped - uncapped -0.03, CI lower bound -0.08). Steering stays uncapped by default.
 - Hosted APIs (OpenAI, Anthropic, ...) cannot be steered this way; they stay T2/T3.
 
 ## Alternatives rejected

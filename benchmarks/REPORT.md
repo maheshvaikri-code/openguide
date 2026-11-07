@@ -172,6 +172,9 @@ The design was not fixed in advance. In order:
    turns and recovery fell from 0.90 to 0.00; that was noted and nothing was changed because of it. There were no
    deviations from the registered design. The breakdown by how long steering stayed on (7.4, "Exploratory") was
    chosen after seeing the data and is labelled as such.
+8. **The cap study (7.5) was pre-registered** (commit `0d16993`), but the cap values (2 and 3) were chosen from the
+   7.4 data and the study was run on fresh seeds. It did not pass. It also showed that the 7.4 reading of the
+   consecutive-turn numbers ("a single nudge") was confounded by selection; 7.4 is corrected accordingly.
 
 ### 7.1 Does re-anchoring help? (recovery on a real model)
 
@@ -328,33 +331,81 @@ none under 3 words. The GSM8K interval's upper end (+7.7) is below the registere
 but a loss of several points is within it.
 
 **Exploratory (chosen after seeing the data; not part of the registered verdict).**
-- **Steering helps as a single nudge and not as a sustained push.** The first steered turn follows all rules 87% of
-  the time (n = 146); the second in a row 47% (19), the third 10% (10), the fourth 0% (8), the fifth and later 15% (40).
-- **When one nudge is not enough, the loop can get stuck.** In 7 of 60 conversations steering stayed on for 8 or more
-  turns. Their mean paired difference is **-0.04**, against **+0.26** for the other 53. The worst is seed 130 (1.00 ->
-  0.00, 15 steered turns): the steered replies wrote `END` without the brackets, so the sign-off rule failed every
-  turn and the drift gate never switched steering off. The 5 losses are seeds 104, 123, 130, 153 and 157.
+- **Compliance falls with each consecutive steered turn.** The first steered turn follows all rules 87% of the time
+  (n = 146); the second in a row 47% (19), the third 10% (10), the fourth 0% (8), the fifth and later 15% (40). **This
+  does not show that sustained steering stops working.** A conversation only reaches its third consecutive steered turn
+  if the first two failed, so the later positions hold the hard cases. (When this was first written it was read as "a
+  single nudge, not a sustained push". Section 7.5 tested that reading and it did not hold.)
+- **Conversations where the gate keeps firing do worse.** In 7 of 60 conversations steering stayed on for 8 or more
+  turns. Their mean paired difference is **-0.04**, against **+0.26** for the other 53. These are the conversations
+  where the model keeps breaking the rules, so this does not show that steering made them worse. The worst is seed 130
+  (1.00 -> 0.00, 15 steered turns): the steered replies wrote `END` without the brackets, so the sign-off rule failed
+  every turn and the drift gate never switched steering off. The 5 losses are seeds 104, 123, 130, 153 and 157.
 - **One steered reply switched language** (seed 134: "Note deleted permanently." followed by Chinese text); the `t2` arm had none.
 
 **What it shows.** On this model, rule set and conversation generator, drift-gated steering at gain 0.05 raised
 recovery by about 22 points, mostly in the conversations that drift (+41 points), with no capability loss large
-enough to fail the registered bar. Most of the benefit is obtained from the first steered turn.
+enough to fail the registered bar. Which steered turns carry the benefit is not established (see 7.5).
 
 **What it does not show.** Anything about another model, rule set or pack. The prompts are not new: they come from the
 same 40-prompt pool, 31 of which appeared in seeds 0-4; this tests new conversations, not new content. The registered
-bar compared the means over all conversations, and 24 of 60 never drifted. A cap on consecutive steered turns might
-reduce the stuck-loop failures, but that idea came from this data; it is untested, and testing it needs its own
-pre-registration. Capability was measured with steering always on (the worst case), not through the loop. The rule
+bar compared the means over all conversations, and 24 of 60 never drifted. A cap on consecutive steered turns was then
+tested on fresh seeds and did not help (7.5). Capability was measured with steering always on (the worst case), not through the loop. The rule
 checker passes some degenerate text, which is why the replies were also read.
 
-### 7.5 What this does and does not show
+### 7.5 Pre-registered cap study (limiting consecutive steered turns)
+
+Registered before any run: [`../docs/preregistration/t0-cap-study.md`](../docs/preregistration/t0-cap-study.md) (commit
+`0d16993`). Three paired arms on 60 new conversations (seeds 200-259, 16 turns, shocks at 4 and 10): `t2`; `uncapped`
+(steering exactly as in 7.4); `capped` (at most 2 consecutive steered turns, then 3 turns without steering). Gain
+0.05, the same pack and contract. Run from code commit `c3d0ddf` (clean), 5,926 s, no deviations. The cap values came
+from the 7.4 data; the study tests them on conversations never run before. Raw data:
+[`results/qwen2.5-1.5b/replication_cap.json`](results/qwen2.5-1.5b/replication_cap.json).
+
+**Registered outcome: does not pass** (conditions 2 and 3 failed).
+
+| Registered comparison (paired, 60 conversations) | Result | Condition |
+|---|---|---|
+| capped - t2 | **+0.230**, 95% CI [+0.127, +0.330]; 36 wins / 19 ties / 5 losses | 1. benefit kept (>= +0.10, CI lower > 0): **PASS** |
+| uncapped - t2 | +0.262, CI [+0.178, +0.350]; 36 / 21 / 3 | |
+| losses vs t2 | capped **5**, uncapped **3** | 2. harm reduced (capped fewer): **FAIL** |
+| capped - uncapped | **-0.032**, CI [-0.083, +0.010]; 2 / 54 / 4 | 3. CI lower bound >= -0.05: **FAIL** |
+
+Mean recovery: t2 64.7%, uncapped 90.8%, capped 87.7%. Worst paired difference vs t2: uncapped -0.20, capped **-0.90**.
+Steered turns per conversation (min / median / max / mean): uncapped 1 / 3 / 15 / 3.9, capped 1 / 3 / 7 / 3.1.
+Compliance on the shock turns: t2 6%, uncapped 8%, capped 7%. Replies not in English: none in any arm. 42 of 60
+conversations drifted under `t2`.
+
+**What it shows.**
+- **The cap did not help; it was slightly worse.** The cap removed the longest runs (max 7 steered turns instead of 15) and
+  the one catastrophe the uncapped arm had on seed 256 (0.00, 15 steered turns; capped 0.50). But it introduced two new
+  ones: seeds 223 and 234 went from 0.90 and 0.70 uncapped to 0.00 capped, and seed 246 from 0.80 to 0.00. In all three
+  the uncapped arm kept steering through turns 3-5 and recovered, while the capped arm paused there and relapsed. Three
+  conversations suggest the pause lets some conversations relapse; they do not establish it.
+- **The 7.4 reading of "a single nudge" was wrong.** The fall in compliance with consecutive steered turns is confounded by
+  selection (see 7.4). On these seeds the same pattern appears (87%, 35%, 31%, 11%, 13% by position), and yet continuing to
+  steer through those turns was better than pausing.
+- **The benefit replicates.** The uncapped arm gained +0.262 on seeds 200-259, close to +0.223 on seeds 100-159. Pooled over
+  both sets (120 conversations, exploratory): +0.242, CI [+0.182, +0.307]. The catastrophic loss of 7.4 (seed 130: 1.00 ->
+  0.00) did not recur among the uncapped arm's 60 conversations (worst -0.20); it is about one conversation in 120 so far.
+- **Language switching did not recur:** 0 replies in a language other than English across all three arms here, and 1 reply
+  in 1,920 uncapped replies across both sets.
+
+**What it does not show.** That no cap could help: only this cap (2 then 3), on this model and rule set. The prompts come
+from the same pool of 40. Condition 2 counts losses and ignores their size, which is why the worst paired difference is
+reported. Capability was not re-run, as registered.
+
+**Consequence.** The cap stays an opt-in setting, off by default, and is documented as tested and not recommended.
+Steering is left uncapped. No language-check veto was built: the evidence for it is one reply in 1,920.
+
+### 7.6 What this does and does not show
 
 - **Shows:** a real-model pipeline works end to end (proxy, real sensors, traces, steering, replay); on this
   model the proxy's current re-anchoring does little; activation steering at a *small* gain (0.05) changes
   behavior in the intended direction with no detectable capability loss, and at larger gains destroys the
   model; the capability cost is sharp, not gradual; steering only after a failed turn raised recovery from 68.5% to
-  90.8% over 60 pre-registered conversations (7.4), with its benefit coming from the first steered turn and a
-  failure mode when steering stays on.
+  90.8% over 60 pre-registered conversations (7.4) and by a similar amount over 60 more (7.5); a cap on consecutive
+  steered turns did not help (7.5).
 - **Does not show:** anything about 7B/8B models (the blueprint's Qwen2.5-7B does not fit in 8 GB at full
   precision, so that gate is still unrun); that results hold for other rules, prompts or models; that the
   placement of a re-anchor matters (it flips by conversation); a benefit of re-anchoring in text (n = 5
@@ -364,9 +415,10 @@ checker passes some degenerate text, which is why the replies were also read.
   steering vector was derived and evaluated on the same kind of question (different questions, same template).
   Rule checkers count degenerate text as compliant on some rules (see the warning above).
 
-Reproduce (GPU, ~1.5 hours in total, plus ~5 minutes for 7.3 and ~1.7 hours for 7.4): `python scripts/calibrate_real_rules.py`;
+Reproduce (GPU, ~1.5 hours in total, plus ~5 minutes for 7.3, ~1.7 hours for 7.4 and ~1.6 hours for 7.5): `python scripts/calibrate_real_rules.py`;
 `python scripts/real_placement_ablation.py` (add `--plain-only` for the ablation);
-`python scripts/real_t0_gate.py`; `python scripts/replicate_t0.py` (7.4, refuses to run unless the spec is committed);
+`python scripts/real_t0_gate.py`; `python scripts/replicate_t0.py` (7.4) and `python scripts/replicate_cap.py` (7.5), both of which refuse to run unless
+their spec is committed;
 then `python scripts/real_model_demo.py --serve` to browse the runs in the
 Console. Weights go in `.models/Qwen2.5-1.5B-Instruct` (git-ignored). The raw results of the runs reported
 here are committed in [`results/qwen2.5-1.5b/`](results/qwen2.5-1.5b/) with a note on how to read them; new runs

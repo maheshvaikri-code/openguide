@@ -12,11 +12,12 @@ All notable changes to this project are documented here. Format follows
   steered. Each steered turn adds a hash-chained `STEER` trace record, shown in the Console's turn panel. Refused for
   upstreams that cannot steer. A client cannot turn it on or change the gain. New tools:
   `scripts/derive_steering_pack.py`, `scripts/real_closed_loop.py`. Pre-registered replication (60 conversations, one small
-  model): recovery 68.5% -> 90.8%, GSM8K drop 1.7 points with steering always on, within the registered bars. Most of the
-  benefit comes from the first steered turn, and steering that stays on can hurt (`benchmarks/REPORT.md` 7.4).
+  model): recovery 68.5% -> 90.8%, GSM8K drop 1.7 points with steering always on, within the registered bars. A second
+  60-conversation set gave +0.26 again (`benchmarks/REPORT.md` 7.4, 7.5). Conversations where the gate keeps firing do worse.
 - README "How the pieces fit" diagram.
 - Opt-in cap on consecutive steered turns (`SteeringConfig(max_consecutive=..., pause_turns=...)`, off by default) and its
-  pre-registered study (`docs/preregistration/t0-cap-study.md`, `scripts/replicate_cap.py`).
+  pre-registered study (`docs/preregistration/t0-cap-study.md`, `scripts/replicate_cap.py`). The study found the cap does
+  **not** help (more losses than uncapped; non-inferiority failed), so it is not recommended (`benchmarks/REPORT.md` 7.5).
 - Pre-registration of the T0 replication (`docs/preregistration/t0-replication.md`, frozen before the run) and its runner
   (`scripts/replicate_t0.py`, which refuses to start unless the spec is committed) and tested analysis (`benchmarks/replication.py`).
 - **Console** (`console/`): Vite + React + TypeScript dashboard with Fleet, Run replay,
