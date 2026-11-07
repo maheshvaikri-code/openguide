@@ -10,6 +10,7 @@ import hashlib
 import math
 import os
 import subprocess
+import unicodedata
 from typing import Any, Sequence
 
 import numpy as np
@@ -187,3 +188,56 @@ def spec_state(path: str, repo: str) -> dict[str, Any]:
         return out
     out["ok"] = True
     return out
+
+
+# ── the cap study: docs/preregistration/t0-cap-study.md ───────────────
+NON_INFERIORITY_MARGIN = -0.05       # capped - uncapped: the CI lower bound must be at least this
+
+
+def not_english(text: str) -> bool:
+    """True if the reply has at least one letter outside the Latin script (another language or script)."""
+    return any(ch.isalpha() and not unicodedata.name(ch, "").startswith("LATIN") for ch in text)
+
+
+def _spread(counts: Sequence[int]) -> dict[str, Any]:
+    ordered = sorted(counts)
+    hist: dict[int, int] = {}
+    for c in ordered:
+        hist[c] = hist.get(c, 0) + 1
+    return {"min": ordered[0], "median": float(np.median(ordered)), "max": ordered[-1],
+            "mean": float(np.mean(ordered)), "histogram": hist}
+
+
+def _not_english_counts(convs: Sequence[dict[str, Any]]) -> dict[str, int]:
+    per = [sum(not_english(t["reply"]) for t in c["turns"]) for c in convs]
+    return {"replies": int(sum(per)), "conversations": int(sum(1 for n in per if n))}
+
+
+def compare_cap_arms(t2: Sequence[dict[str, Any]], uncapped: Sequence[dict[str, Any]],
+                     capped: Sequence[dict[str, Any]]) -> dict[str, Any]:
+    """The three registered paired comparisons and the also-reported measures. Every comparison is
+    (second arm) - (first arm), paired by seed."""
+    capped_vs_t2 = compare_conversations(t2, capped)
+    uncapped_vs_t2 = compare_conversations(t2, uncapped)
+    return {
+        "capped_vs_t2": capped_vs_t2,
+        "uncapped_vs_t2": uncapped_vs_t2,
+        "capped_vs_uncapped": compare_conversations(uncapped, capped),
+        "worst_diff": {"uncapped": min(r["diff"] for r in uncapped_vs_t2["per_seed"]),
+                       "capped": min(r["diff"] for r in capped_vs_t2["per_seed"])},
+        "steered_per_conversation": {"uncapped": _spread([len(c.get("steered_turns", [])) for c in uncapped]),
+                                     "capped": _spread([len(c.get("steered_turns", [])) for c in capped])},
+        "not_english": {"t2": _not_english_counts(t2), "uncapped": _not_english_counts(uncapped),
+                        "capped": _not_english_counts(capped)},
+    }
+
+
+def cap_verdict(cmps: dict[str, Any]) -> dict[str, Any]:
+    """The registered decision: all three conditions must hold."""
+    benefit = helps_pass(cmps["capped_vs_t2"])
+    harm = cmps["capped_vs_t2"]["losses"] < cmps["uncapped_vs_t2"]["losses"]
+    non_inf = cmps["capped_vs_uncapped"]["ci95"][0] >= NON_INFERIORITY_MARGIN - 1e-12
+    failed = [name for name, ok in (("benefit_kept", benefit), ("harm_reduced", harm),
+                                    ("non_inferior", non_inf)) if not ok]
+    return {"benefit_kept": bool(benefit), "harm_reduced": bool(harm), "non_inferior": bool(non_inf),
+            "failed": failed, "outcome": "supports" if not failed else "does not pass"}

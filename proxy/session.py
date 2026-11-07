@@ -17,6 +17,8 @@ from guidancegrid.compiler import CompiledContract
 from guidancegrid.controller import Reconciler
 from guidancegrid.sensors import MeasureRegistry
 
+from .steering import SteerState
+
 
 @dataclass
 class Session:
@@ -26,6 +28,7 @@ class Session:
     turn: int = 0
     pending_reanchor: str | None = None
     steer_next: float = 0.0              # gain for the next generation (T0), 0 = not steered
+    steer_state: SteerState = field(default_factory=SteerState)    # counters for the optional cap
     max_drift: float = 0.0
     recoveries: int = 0
     halted: bool = False

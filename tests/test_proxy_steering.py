@@ -13,7 +13,7 @@ from guidancegrid.core.trace import steer_event
 from proxy.app import create_app
 from proxy.hf_upstream import HFUpstream
 from proxy.registry import ContractRegistry
-from proxy.steering import MAX_SAFE_GAIN, SteeringConfig
+from proxy.steering import MAX_SAFE_GAIN, SteeringConfig, SteerState, advance
 from proxy.upstream import MockUpstream
 
 GOOD = "Open Settings and tap Sync. [END]"
@@ -31,14 +31,14 @@ def _pack(dim=8, band=BAND):
     return pack
 
 
-def _config(gain=0.05, band=BAND):
-    return SteeringConfig(_pack(band=band), band, gain)
+def _config(gain=0.05, band=BAND, **cap):
+    return SteeringConfig(_pack(band=band), band, gain, **cap)
 
 
 class Rig:
     """A scripted local model whose steering is recorded instead of applied."""
 
-    def __init__(self, replies, gain=0.05, steering=True, fail_on=None):
+    def __init__(self, replies, gain=0.05, steering=True, fail_on=None, **cap):
         self.entered: list[float] = []          # gain of every steered generation, in order
         self.exited = 0
         self.calls = 0                          # every generation, steered or not
@@ -62,7 +62,7 @@ class Rig:
                 outer.exited += 1
 
         self.up.steer_factory = factory
-        self.config = _config(gain)
+        self.config = _config(gain, **cap)
         reg = ContractRegistry(measures=rm.make_measures())
         self.h = reg.register(rm.contract_dict())
         self.app = create_app(registry=reg, upstream=self.up, steering=self.config if steering else None)
@@ -396,3 +396,79 @@ def test_the_blocking_tool_policy_stream_path_steers_and_records_too():
     run(go())
     assert rig.entered == [0.05]
     assert [r["turn"] for r in rig.trace().records if r["ev"] == "STEER"] == [1]
+
+
+# ── the opt-in cap on consecutive steered turns (docs/preregistration/t0-cap-study.md) ──
+def _simulate(cfg, wants_by_turn):
+    """Which turns are steered, given what the gate wants after each scored turn. Turn 0 is never steered."""
+    state, steered_now, out = SteerState(), False, []
+    for turn, wants in enumerate(wants_by_turn):
+        gain, state = advance(cfg, state, steered_now, wants)      # decided after turn `turn`, for turn + 1
+        steered_now = gain > 0
+        if steered_now:
+            out.append(turn + 1)
+    return out
+
+
+def test_with_no_cap_every_turn_after_a_correction_is_steered_as_before():
+    assert _simulate(_config(), [True] * 6) == [1, 2, 3, 4, 5, 6]
+    assert _simulate(_config(), [True, False, True, True, False]) == [1, 3, 4]
+
+
+def test_the_cap_allows_two_in_a_row_then_pauses_three_turns():
+    cfg = _config(max_consecutive=2, pause_turns=3)
+    assert _simulate(cfg, [True] * 13) == [1, 2, 6, 7, 11, 12]
+
+
+def test_a_clean_turn_resets_the_run_so_the_cap_only_counts_consecutive_steering():
+    cfg = _config(max_consecutive=2, pause_turns=3)
+    # steered, steered would hit the cap; a clean turn in between breaks the run
+    assert _simulate(cfg, [True, True, False, True, True, False, True]) == [1, 2, 4, 5, 7]
+
+
+def test_during_the_pause_nothing_is_steered_whatever_the_gate_wants_and_it_counts_down_per_turn():
+    cfg = _config(max_consecutive=1, pause_turns=2)
+    assert _simulate(cfg, [True] * 8) == [1, 4, 7]                  # one, pause 2, one, pause 2, ...
+
+
+def test_a_pause_is_only_started_when_steering_was_wanted():
+    cfg = _config(max_consecutive=2, pause_turns=3)
+    # two steered turns, then the gate goes quiet: no pause is needed, so steering is available right away
+    assert _simulate(cfg, [True, True, False, True]) == [1, 2, 4]
+
+
+@pytest.mark.parametrize("bad", [0, -1, 1.5, True, "2"])
+def test_the_cap_must_be_a_positive_whole_number(bad):
+    with pytest.raises(ValueError, match="max_consecutive"):
+        _config(max_consecutive=bad)
+
+
+@pytest.mark.parametrize("bad", [0, -2, 2.5, False])
+def test_the_pause_must_be_a_positive_whole_number(bad):
+    with pytest.raises(ValueError, match="pause_turns"):
+        _config(max_consecutive=2, pause_turns=bad)
+
+
+def test_through_the_proxy_a_gate_that_never_calms_down_is_steered_in_bursts():
+    rig = Rig([BAD] * 13, max_consecutive=2, pause_turns=3)
+
+    async def go():
+        async with rig.client() as c:
+            for _ in range(13):
+                await rig.say(c)
+
+    run(go())
+    assert [r["turn"] for r in rig.trace().records if r["ev"] == "STEER"] == [1, 2, 6, 7, 11, 12]
+    assert len(rig.entered) == 6 and rig.trace().verify()
+
+
+def test_without_the_cap_the_same_conversation_is_steered_on_every_turn_after_the_first():
+    rig = Rig([BAD] * 6)
+
+    async def go():
+        async with rig.client() as c:
+            for _ in range(6):
+                await rig.say(c)
+
+    run(go())
+    assert [r["turn"] for r in rig.trace().records if r["ev"] == "STEER"] == [1, 2, 3, 4, 5]

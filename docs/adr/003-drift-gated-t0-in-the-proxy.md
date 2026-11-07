@@ -57,7 +57,8 @@ Wire T0 into the proxy as a **drift-gated closed loop**, opt-in:
 - **Known failure mode (found after seeing the data):** the first steered turn works (87% comply) but a second,
   third... in a row does not (47%, 10%, ...). When the gate keeps firing, steering stays on and can hurt (7 of 60
   conversations ran 8+ steered turns; their mean paired difference was -0.04). A limit on consecutive steered turns
-  is the natural fix; it is not implemented because it came from this data and needs its own pre-registration.
+  is the natural fix. It exists as an opt-in setting (`max_consecutive`, `pause_turns`; off by default) that makes no
+  claim; whether it helps is tested by `docs/preregistration/t0-cap-study.md` on fresh seeds before it could become a default.
 - Hosted APIs (OpenAI, Anthropic, ...) cannot be steered this way; they stay T2/T3.
 
 ## Alternatives rejected

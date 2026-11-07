@@ -23,7 +23,7 @@ from guidancegrid.core.trace import steer_event, turn_event
 from .otel import InMemorySpanEmitter
 from .registry import ContractRegistry
 from .session import SessionStore
-from .steering import SteeringConfig, SteerReceipt, wants_steering
+from .steering import SteeringConfig, SteerReceipt, advance, wants_steering
 from .streaming import (
     StreamAssembler,
     detect_trigger_tokens,
@@ -192,8 +192,14 @@ class Governor:
             receipt.recorded = True
             sess.reconciler.trace.append(
                 steer_event(out.turn, receipt.gain, self.steering.band, self.steering.pack_hash))
-        # closed loop: the next generation is steered only if this turn needed a correction
-        sess.steer_next = self.steering.gain if (self.steering and wants_steering(out.action)) else 0.0
+        # closed loop: the next generation is steered only if this turn needed a correction (and, if the
+        # optional cap is on, only within it)
+        if self.steering is not None:
+            steered_now = receipt is not None and receipt.produced
+            sess.steer_next, sess.steer_state = advance(
+                self.steering, sess.steer_state, steered_now, wants_steering(out.action))
+        else:
+            sess.steer_next = 0.0
         if self.capture_content:
             try:
                 self._record_turn(sess, body, content, restated)

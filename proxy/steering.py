@@ -41,6 +41,10 @@ class SteeringConfig:
     band: tuple[int, int]               # decoder layers lo..hi-1 that are steered
     gain: float = DEFAULT_GAIN          # the PEAK of a gaussian envelope across the band (edges get less)
     expected_pack_hash: str | None = None      # pin the pack the operator reviewed; refuse any other
+    # Opt-in, off by default (None): at most this many consecutive steered generations, then pause_turns turns
+    # without steering (the text re-anchor still runs). docs/preregistration/t0-cap-study.md
+    max_consecutive: int | None = None
+    pause_turns: int = 3
 
     def __post_init__(self) -> None:
         g = self.gain
@@ -61,6 +65,11 @@ class SteeringConfig:
                 finite = bool(np.all(np.isfinite(v)))
                 raise ValueError(f"the steering pack's vector at layer {layer} must be a finite flat vector "
                                  f"of length {self.pack.d} (got shape {v.shape}, finite={finite})")
+        for name, value in (("max_consecutive", self.max_consecutive), ("pause_turns", self.pause_turns)):
+            if value is None and name == "max_consecutive":
+                continue
+            if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+                raise ValueError(f"{name} must be a positive whole number, got {value!r}")
         if self.expected_pack_hash is not None and self.expected_pack_hash != self.pack.hash():
             raise ValueError(f"the steering pack's hash is {self.pack.hash()}, not the pinned "
                              f"{self.expected_pack_hash}")
@@ -83,3 +92,30 @@ class SteeringConfig:
 def wants_steering(action: str | None) -> bool:
     """Steer the next generation iff this turn's recovery action fired (the trigger of a T2 re-anchor)."""
     return action is not None
+
+
+@dataclass(frozen=True)
+class SteerState:
+    """Per-session counters for the optional cap."""
+    run: int = 0       # consecutive steered generations just made
+    pause: int = 0     # turns still to go without steering
+
+
+def advance(config: SteeringConfig, state: SteerState, steered_now: bool,
+            wants: bool) -> tuple[float, SteerState]:
+    """Decide the gain for the *next* generation, after a turn has been scored.
+
+    ``steered_now``: the generation just scored was steered (as reported by the upstream). ``wants``: the gate
+    wants steering (a recovery action fired). With no cap this is simply "gain if wants". With a cap, once
+    ``max_consecutive`` steered generations in a row have happened and the gate still wants steering, the next
+    ``pause_turns`` turns are not steered; a turn that is not steered breaks the run.
+    """
+    run = state.run + 1 if steered_now else 0
+    if state.pause > 0:
+        return 0.0, SteerState(run=0, pause=state.pause - 1)
+    if not wants:
+        return 0.0, SteerState(run=0, pause=0)
+    if config.max_consecutive is not None and run >= config.max_consecutive:
+        # this decision is itself the first paused turn
+        return 0.0, SteerState(run=0, pause=config.pause_turns - 1)
+    return config.gain, SteerState(run=run, pause=0)

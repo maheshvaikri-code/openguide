@@ -47,6 +47,13 @@ There is no command-line or environment switch yet; it is configured in Python a
 happen. A client cannot switch steering on or change the gain: the gain travels from the Governor to the model
 as a typed argument, never from a header or body.
 
+## Optional cap on consecutive steered turns
+
+`SteeringConfig(..., max_consecutive=2, pause_turns=3)` limits steering to 2 turns in a row, then pauses it for 3
+turns (the text re-anchor still runs). It is **off by default** and nothing here claims it works: it was designed
+from the data that showed sustained steering failing, and whether it helps is being tested on fresh conversations
+under a pre-registered plan ([docs/preregistration/t0-cap-study.md](preregistration/t0-cap-study.md)).
+
 ## Limits (read before relying on it)
 
 - `gain` is the peak of a gaussian envelope across the layer band: the middle layers get about that much and the

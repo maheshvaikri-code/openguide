@@ -164,3 +164,78 @@ def test_the_spec_check_demands_a_committed_unmodified_file(tmp_path):
     assert state["ok"] is True and state["commit"] == _git(repo, "rev-parse", "HEAD")
     open(spec, "w", encoding="utf-8").write("v2\n")
     assert rp.spec_state(spec, repo)["ok"] is False                      # modified after the commit
+
+
+# ── the cap study (docs/preregistration/t0-cap-study.md) ──────────────
+@pytest.mark.parametrize("text,expected", [
+    ("Open Settings and tap Sync. [END]", False),
+    ("caf\u00e9 cr\u00e8me \u2014 ok \U0001F600 123", False),  # still English
+    ("Note deleted permanently.\u4e0d\u53ef\u6062\u590d\u3002", True),    # Chinese
+    ("\u041f\u0440\u0438\u0432\u0435\u0442", True),                       # Cyrillic
+    ("", False),
+])
+def test_a_reply_is_not_in_english_if_it_contains_a_letter_outside_the_latin_script(text, expected):
+    assert rp.not_english(text) is expected
+
+
+def _arm(seed_to_oks, steered=None):
+    return [conv(seed, oks, steered=(steered or {}).get(seed, ())) for seed, oks in seed_to_oks.items()]
+
+
+def test_the_three_arm_comparison_pairs_everything_by_seed():
+    t2 = _arm({200: [False], 201: [True], 202: [False]})
+    unc = _arm({200: [True], 201: [False], 202: [False]}, {200: (1, 2, 3), 201: tuple(range(1, 12))})
+    cap = _arm({200: [True], 201: [True], 202: [True]}, {200: (1, 2), 201: (1, 2, 6)})
+    r = rp.compare_cap_arms(t2, unc, cap)
+    assert r["capped_vs_t2"]["wins"] == 2 and r["capped_vs_t2"]["losses"] == 0
+    assert r["uncapped_vs_t2"]["wins"] == 1 and r["uncapped_vs_t2"]["losses"] == 1
+    assert r["capped_vs_uncapped"]["mean_diff"] == pytest.approx((0.0 + 1.0 + 1.0) / 3)
+    assert r["worst_diff"] == {"uncapped": pytest.approx(-1.0), "capped": pytest.approx(0.0)}
+    assert r["steered_per_conversation"]["uncapped"]["max"] == 11
+    assert r["steered_per_conversation"]["capped"]["max"] == 3
+
+
+def test_it_counts_replies_not_in_english_per_arm():
+    t2 = _arm({200: [True], 201: [True]})
+    unc = _arm({200: [True], 201: [True]})
+    cap = _arm({200: [True], 201: [True]})
+    unc[1]["turns"][3]["reply"] = "Note deleted.\u4e0d\u53ef\u6062\u590d"
+    r = rp.compare_cap_arms(t2, unc, cap)
+    assert r["not_english"] == {
+        "t2": {"replies": 0, "conversations": 0},
+        "uncapped": {"replies": 1, "conversations": 1},
+        "capped": {"replies": 0, "conversations": 0},
+    }
+
+
+def _cmps(cap_mean, cap_lo, losses_cap, losses_unc, ni_lo):
+    return {"capped_vs_t2": {"mean_diff": cap_mean, "ci95": (cap_lo, cap_mean + 0.1), "losses": losses_cap},
+            "uncapped_vs_t2": {"losses": losses_unc},
+            "capped_vs_uncapped": {"ci95": (ni_lo, 0.1)}}
+
+
+def test_the_cap_passes_only_if_all_three_registered_conditions_hold():
+    v = rp.cap_verdict(_cmps(0.20, 0.10, 3, 5, -0.03))
+    assert v["benefit_kept"] and v["harm_reduced"] and v["non_inferior"] and v["outcome"] == "supports"
+
+
+def test_benefit_kept_uses_the_same_bar_as_the_replication():
+    assert rp.cap_verdict(_cmps(0.10, 0.01, 3, 5, 0.0))["benefit_kept"] is True
+    assert rp.cap_verdict(_cmps(0.0999, 0.01, 3, 5, 0.0))["benefit_kept"] is False
+    assert rp.cap_verdict(_cmps(0.30, 0.0, 3, 5, 0.0))["benefit_kept"] is False
+
+
+def test_harm_reduced_needs_strictly_fewer_losses_than_uncapped():
+    assert rp.cap_verdict(_cmps(0.2, 0.1, 4, 5, 0.0))["harm_reduced"] is True
+    assert rp.cap_verdict(_cmps(0.2, 0.1, 5, 5, 0.0))["harm_reduced"] is False  # a tie is not a reduction
+    assert rp.cap_verdict(_cmps(0.2, 0.1, 6, 5, 0.0))["harm_reduced"] is False
+
+
+def test_non_inferiority_allows_a_ci_lower_bound_of_minus_five_points_and_no_lower():
+    assert rp.cap_verdict(_cmps(0.2, 0.1, 3, 5, -0.05))["non_inferior"] is True
+    assert rp.cap_verdict(_cmps(0.2, 0.1, 3, 5, -0.0501))["non_inferior"] is False
+
+
+def test_the_outcome_names_what_failed():
+    v = rp.cap_verdict(_cmps(0.05, 0.0, 6, 5, -0.2))
+    assert v["outcome"] == "does not pass" and v["failed"] == ["benefit_kept", "harm_reduced", "non_inferior"]
