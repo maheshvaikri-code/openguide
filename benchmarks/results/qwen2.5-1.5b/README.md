@@ -11,6 +11,7 @@ GPU kernels can differ across machines.
 | `real_t0_results.json` | `scripts/real_t0_gate.py` | The steering gate: instruction replacement, GSM8K and MMLU at each gain, replay check, and conversation recovery at gains 0.1 / 0.2 / 0.4. |
 | `real_t0_results_drift.json` | `scripts/real_t0_gate.py --only-drift --drift-gains 0.05,0.1,0.2,0.4` | Recovery under steering at gains 0.05, 0.1, 0.2 and 0.4, **with every turn's text** (`conversations`). Regenerated after the first run to capture the replies; per-conversation scores for all four gains matched the original runs exactly. Gain 0.05 was added after the capability results (see the report's "What changed after seeing results"). |
 | `real_closed_loop_results.json` | `scripts/real_closed_loop.py` | Drift-gated T0 in the proxy (report 7.3): `t2` vs `t2+t0` on the same 5 conversations x 16 turns, every turn's text and checks, and which turns were steered. Gain 0.05 was chosen after the earlier runs. |
+| `replication_t0.json` | `scripts/replicate_t0.py` | The pre-registered replication (report 7.4): 60 conversations x 2 arms with every turn, the analysis, the capability results, the verdict, and the provenance (spec commit, code commit, pack and contract hashes, versions). Registered design: `docs/preregistration/t0-replication.md`. |
 
 The runs in `.console-demo/real-model.db` (what the Console shows) are rebuilt from these files with
 `scripts/rebuild_real_db.py`, which replays the recorded replies and refuses to write unless every turn

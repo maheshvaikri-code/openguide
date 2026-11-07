@@ -11,9 +11,12 @@ All notable changes to this project are documented here. Format follows
   turn that needed a correction is steered at a small gain (default and hard cap 0.05, the only gain measured not to damage reasoning); otherwise nothing is
   steered. Each steered turn adds a hash-chained `STEER` trace record, shown in the Console's turn panel. Refused for
   upstreams that cannot steer. A client cannot turn it on or change the gain. New tools:
-  `scripts/derive_steering_pack.py`, `scripts/real_closed_loop.py`. On the one model tested it recovered the two
-  conversations that text re-anchoring did not, in a small, non-independent test (`benchmarks/REPORT.md` 7.3).
+  `scripts/derive_steering_pack.py`, `scripts/real_closed_loop.py`. Pre-registered replication (60 conversations, one small
+  model): recovery 68.5% -> 90.8%, GSM8K drop 1.7 points with steering always on, within the registered bars. Most of the
+  benefit comes from the first steered turn, and steering that stays on can hurt (`benchmarks/REPORT.md` 7.4).
 - README "How the pieces fit" diagram.
+- Pre-registration of the T0 replication (`docs/preregistration/t0-replication.md`, frozen before the run) and its runner
+  (`scripts/replicate_t0.py`, which refuses to start unless the spec is committed) and tested analysis (`benchmarks/replication.py`).
 - **Console** (`console/`): Vite + React + TypeScript dashboard with Fleet, Run replay,
   Trajectory (3D), Contracts, Packs and Audit pages. `make console-demo` seeds simulated
   data and serves it from the proxy. See `console/README.md` and ADR-001.

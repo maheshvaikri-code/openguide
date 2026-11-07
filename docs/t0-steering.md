@@ -55,7 +55,14 @@ as a typed argument, never from a header or body.
 - A pack belongs to one model and one rule set. It was derived and tested only on Qwen2.5-1.5B-Instruct with the
   support-assistant rules (brevity, plain text, `[END]`).
 - It reacts one turn late: it acts on the turn after the drift was seen, so it cannot prevent the first failure.
-- Whether it beats T2 alone is a measurement, reported in `benchmarks/REPORT.md` 7.3, not an assumption.
+- Measured, not assumed. A pre-registered replication on 60 new conversations (`benchmarks/REPORT.md` 7.4) raised
+  recovery from 68.5% to 90.8% (paired +0.22, 95% CI [+0.14, +0.31]), mostly in conversations that drift, and GSM8K
+  dropped 1.7 points with steering always on (CI [-4.7, +7.7]). The prompts come from a pool of 40, so this is new
+  conversations, not new content.
+- **It helps as a single nudge, not a sustained push.** The first steered turn follows the rules 87% of the time; the
+  third in a row 10%. In 7 of 60 conversations steering stayed on for 8 or more turns and the mean paired difference
+  there was -0.04 (one conversation fell from 1.00 to 0.00). That analysis was done after seeing the data. A cap on
+  consecutive steered turns is the obvious next experiment and has not been tried.
 - The rule checker can pass broken output, so look at the replies as well as the scores.
 
 See [ADR-003](adr/003-drift-gated-t0-in-the-proxy.md) for the decision and the alternatives rejected.

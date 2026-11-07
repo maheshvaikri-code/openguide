@@ -14,8 +14,9 @@
 - Real model (GPU): two conversations re-run with the final code reproduce the saved closed-loop results exactly
   (16/16 identical replies each, the same steered turns, chains verify). The derived steering pack has the same hash
   as the pack used in the earlier T0 experiments.
-- Measured effect: `benchmarks/REPORT.md` 7.3. **Weak evidence** (n = 5, 2 of 5 conversations drifted, p = 0.50, gain chosen
-  after seeing the same conversations). Not a claim that steering works in general.
+- Measured effect: `benchmarks/REPORT.md` 7.3 was weak evidence (n = 5, gain chosen after seeing the same conversations).
+  A pre-registered replication (7.4, 60 new conversations) then met both registered bars. It also found a failure mode
+  (sustained steering can hurt) that is documented and not fixed. Not a claim that steering works in general.
 
 ## Security review: no BLOCKER; two MAJOR, four MINOR, all addressed
 | Finding | Disposition |
@@ -42,7 +43,9 @@
 | NIT: redundant `isfinite`; `Upstream` protocol does not declare `steer` | Left as is (harmless / documented). |
 
 ## Known limitations (not fixed)
-- Evidence for benefit is small and not independent (see REPORT 7.3). Capability was not re-measured through the loop.
+- Benefit shown on one model and rule set, on prompts from a pool of 40 (REPORT 7.4). Capability was measured with steering
+  always on, not through the loop. Sustained steering can hurt (7 of 60 conversations); no limit on consecutive steered
+  turns is implemented.
 - Steering reacts one turn late, so it cannot prevent the first failure or the "shock" turns.
 - One model, one rule set. Hosted APIs cannot be steered.
 - No operator switch (CLI/env). `halt` also triggers steering; the proxy still never blocks a halted session (unchanged).

@@ -166,6 +166,12 @@ The design was not fixed in advance. In order:
    **0.05** was added **after** the capability results showed it was the only gain that keeps the model working.
 6. **The closed-loop test (7.3)** used that same gain 0.05 on those same conversations, so it is not independent
    of the choices above.
+7. **The replication (7.4) was pre-registered.** Its design, seeds and pass bars were committed before the run
+   ([`../docs/preregistration/t0-replication.md`](../docs/preregistration/t0-replication.md), commit `24efe16`).
+   Before the run, a smoke test on two other seeds (900, 901) showed one conversation where steering stayed on for 15
+   turns and recovery fell from 0.90 to 0.00; that was noted and nothing was changed because of it. There were no
+   deviations from the registered design. The breakdown by how long steering stayed on (7.4, "Exploratory") was
+   chosen after seeing the data and is labelled as such.
 
 ### 7.1 Does re-anchoring help? (recovery on a real model)
 
@@ -294,26 +300,74 @@ conversation (turns 1, 5 and 11 in the two conversations that drifted).
 Reproduce (GPU, ~5 minutes): `python scripts/derive_steering_pack.py`, then `python scripts/real_closed_loop.py`. The runs
 are stored as `real-cl-t2-s*` and `real-cl-t2t0-s*` for replay in the Console (each steered turn is marked).
 Raw results: [`results/qwen2.5-1.5b/real_closed_loop_results.json`](results/qwen2.5-1.5b/real_closed_loop_results.json).
+A pre-registered replication on 60 new conversations follows in 7.4.
 
-### 7.4 What this does and does not show
+### 7.4 Pre-registered replication of the closed loop
+
+Registered before any run: [`../docs/preregistration/t0-replication.md`](../docs/preregistration/t0-replication.md)
+(commit `24efe16`). Gain 0.05, the same steering pack (`sha256:7d293722...`) and contract (`sha256:14014a6e...`), 60 new
+conversations (seeds 100-159) x 16 turns with shocks at 4 and 10, two arms on identical conversations (`t2` and
+`t2+t0`), greedy decoding. Run from code commit `c4ff1f2` (clean) on an RTX 4060 laptop GPU in 6,213 s; the runner
+refused to start unless the spec was committed and unmodified. No deviations. Raw data, every turn:
+[`results/qwen2.5-1.5b/replication_t0.json`](results/qwen2.5-1.5b/replication_t0.json).
+
+**Registered outcome: supports (both bars passed).**
+
+| Measure (registered) | Result | Bar |
+|---|---|---|
+| Recovery, mean over 60 conversations | t2 68.5% -> t2+t0 90.8% | |
+| Paired difference | **+0.223**, 95% bootstrap CI **[+0.135, +0.313]** | >= +0.10 and CI lower bound > 0: **PASS** |
+| Wins / ties / losses | 34 / 21 / 5 (exact sign test p = 2.4e-6) | |
+| Conversations that drift under t2 (recovery < 1) | 36 (not underpowered); difference **+0.414** [+0.319, +0.514] | |
+| GSM8K, steering always on at 0.05 (n = 300) | 63.0% (189) -> 61.3% (184); drop **+1.7 points** [-4.7, +7.7] | drop <= 5 points: **PASS** |
+| MMLU (n = 500) | 58.0% (290) -> 56.6% (283); drop +1.4 points [-1.0, +3.8] | reported only |
+
+Also: all-turn compliance 61.6% -> 76.3%; compliance on the shock turns 5% in both arms (steering does not make the
+model refuse an explicit request on that turn); steering was on for 23.2% of turns; shortest steered reply 3 words,
+none under 3 words. The GSM8K interval's upper end (+7.7) is below the registered 10-point "harm not ruled out" line,
+but a loss of several points is within it.
+
+**Exploratory (chosen after seeing the data; not part of the registered verdict).**
+- **Steering helps as a single nudge and not as a sustained push.** The first steered turn follows all rules 87% of
+  the time (n = 146); the second in a row 47% (19), the third 10% (10), the fourth 0% (8), the fifth and later 15% (40).
+- **When one nudge is not enough, the loop can get stuck.** In 7 of 60 conversations steering stayed on for 8 or more
+  turns. Their mean paired difference is **-0.04**, against **+0.26** for the other 53. The worst is seed 130 (1.00 ->
+  0.00, 15 steered turns): the steered replies wrote `END` without the brackets, so the sign-off rule failed every
+  turn and the drift gate never switched steering off. The 5 losses are seeds 104, 123, 130, 153 and 157.
+- **One steered reply switched language** (seed 134: "Note deleted permanently." followed by Chinese text); the `t2` arm had none.
+
+**What it shows.** On this model, rule set and conversation generator, drift-gated steering at gain 0.05 raised
+recovery by about 22 points, mostly in the conversations that drift (+41 points), with no capability loss large
+enough to fail the registered bar. Most of the benefit is obtained from the first steered turn.
+
+**What it does not show.** Anything about another model, rule set or pack. The prompts are not new: they come from the
+same 40-prompt pool, 31 of which appeared in seeds 0-4; this tests new conversations, not new content. The registered
+bar compared the means over all conversations, and 24 of 60 never drifted. A cap on consecutive steered turns might
+reduce the stuck-loop failures, but that idea came from this data; it is untested, and testing it needs its own
+pre-registration. Capability was measured with steering always on (the worst case), not through the loop. The rule
+checker passes some degenerate text, which is why the replies were also read.
+
+### 7.5 What this does and does not show
 
 - **Shows:** a real-model pipeline works end to end (proxy, real sensors, traces, steering, replay); on this
   model the proxy's current re-anchoring does little; activation steering at a *small* gain (0.05) changes
   behavior in the intended direction with no detectable capability loss, and at larger gains destroys the
-  model; the capability cost is sharp, not gradual; steering only after a failed turn (7.3) recovered the two
-  conversations that text re-anchoring did not, in a small, non-independent test.
+  model; the capability cost is sharp, not gradual; steering only after a failed turn raised recovery from 68.5% to
+  90.8% over 60 pre-registered conversations (7.4), with its benefit coming from the first steered turn and a
+  failure mode when steering stays on.
 - **Does not show:** anything about 7B/8B models (the blueprint's Qwen2.5-7B does not fit in 8 GB at full
   precision, so that gate is still unrun); that results hold for other rules, prompts or models; that the
-  placement of a re-anchor matters (it flips by conversation); a statistically established benefit for any
-  intervention (n = 5 conversations, intervals touch zero; the closed loop's sign test is p = 0.50).
-- **Limits:** one model, one contract, scripted prompts, greedy decoding (no sampling variance), 5
-  conversations per arm of which 3 never drifted, MMLU on 300 random test questions and GSM8K on 100. The
+  placement of a re-anchor matters (it flips by conversation); a benefit of re-anchoring in text (n = 5
+  conversations, intervals touch zero); that the closed loop's benefit holds beyond this model, rule set and prompt pool.
+- **Limits:** one model, one contract, scripted prompts from a pool of 40, greedy decoding (no sampling variance), 5
+  conversations per arm in 7.1-7.3 (60 in 7.4), MMLU on 300-500 random test questions and GSM8K on 100-300. The
   steering vector was derived and evaluated on the same kind of question (different questions, same template).
   Rule checkers count degenerate text as compliant on some rules (see the warning above).
 
-Reproduce (GPU, ~1.5 hours in total, plus ~5 minutes for 7.3): `python scripts/calibrate_real_rules.py`;
+Reproduce (GPU, ~1.5 hours in total, plus ~5 minutes for 7.3 and ~1.7 hours for 7.4): `python scripts/calibrate_real_rules.py`;
 `python scripts/real_placement_ablation.py` (add `--plain-only` for the ablation);
-`python scripts/real_t0_gate.py`; then `python scripts/real_model_demo.py --serve` to browse the runs in the
+`python scripts/real_t0_gate.py`; `python scripts/replicate_t0.py` (7.4, refuses to run unless the spec is committed);
+then `python scripts/real_model_demo.py --serve` to browse the runs in the
 Console. Weights go in `.models/Qwen2.5-1.5B-Instruct` (git-ignored). The raw results of the runs reported
 here are committed in [`results/qwen2.5-1.5b/`](results/qwen2.5-1.5b/) with a note on how to read them; new runs
 write to `benchmarks/real_*results*.json` (git-ignored).
