@@ -274,6 +274,15 @@ def pool_verdict(conv: dict[str, Any], cap: dict[str, Any]) -> dict[str, Any]:
 PILOT_MAX_DROP_POINTS = 2.0
 
 
+def pilot_eligibility(drops: dict[float, float]) -> dict[str, Any]:
+    """Which gains pass the capability filter (GSM8K drop <= 2 points). If none do, the registered rule says
+    stop, and the conversations cannot change that, so this can be decided before running them."""
+    eligible = sorted(g for g, d in drops.items() if d <= PILOT_MAX_DROP_POINTS + _EPS)
+    return {"eligible": eligible, "stop": not eligible,
+            "reason": ("no gain is eligible (GSM8K drop over %g points for all)" % PILOT_MAX_DROP_POINTS)
+            if not eligible else f"{len(eligible)} gain(s) eligible"}
+
+
 def pilot_choice(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
     """The registered gain-selection rule. Each row: {gain, recovery_diff, gsm8k_drop_points}. A gain is
     eligible if its GSM8K drop is at most 2 points; choose the eligible gain with the highest recovery gain,

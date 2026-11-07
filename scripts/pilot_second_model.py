@@ -102,6 +102,9 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--profile", default="granite", choices=["granite"], help="the second model")
     ap.add_argument("--smoke", action="store_true", help="pipeline check on other seeds; no selection")
+    ap.add_argument("--capability-only", action="store_true",
+                    help="run only the GSM8K filter (an order of execution, not a change of design); "
+                         "if no gain is eligible the rule says stop and the conversations are not needed")
     args = ap.parse_args()
     prof = models.get(args.profile)
 
@@ -149,6 +152,30 @@ def main() -> int:
     os.makedirs(os.path.dirname(db), exist_ok=True)
 
     t = time.time()
+    if args.capability_only:
+        say(f"\n[B] GSM8K, the first {gsm_n} problems, steering always on, per gain (filter first)")
+        band_pack = configs[f"g{GAINS[0]}"].pack_in_band()
+        flags = run_capability(up, prof, band_pack, gsm_n, cap_progress)
+        acc = {g: rp.compare_accuracy(flags["none"], flags[f"g{g}"]) for g in GAINS}
+        gate_result = rp.pilot_eligibility({g: a["drop_points"] for g, a in acc.items()})
+        out = {"capability_only": True, "smoke": args.smoke, "spec": spec, "code": code_state(),
+               "model": {"key": prof.key, "revision": why, "dtype": prof.dtype, "band": list(prof.band),
+                         "pack_hash": pack.hash(), "norm_report": norms["layers"]},
+               "design": {"gains": list(GAINS), "gsm8k_first_n": gsm_n},
+               "gsm8k": {str(g): a for g, a in acc.items()}, "gate": gate_result, "gsm8k_flags": flags}
+        cap_path = os.path.join(OUT_DIR, f"pilot_capability{tag}.json")
+        with open(cap_path, "w", encoding="utf-8") as f:
+            json.dump(out, f, indent=1)
+        say("\n== capability filter ==")
+        for g in GAINS:
+            a = acc[g]
+            lo, hi = a["drop_ci95_points"]
+            say(f"  gain {g:<6g} none {a['none']['acc']:.1%}  steered {a['steered']['acc']:.1%}  "
+                f"drop {a['drop_points']:+.1f} points [{lo:+.1f}, {hi:+.1f}]  "
+                f"{'eligible' if g in gate_result['eligible'] else 'NOT eligible'}")
+        say(f"  -> {gate_result['reason']}" + ("; the rule says STOP" if gate_result["stop"] else ""))
+        say(f"\nwrote {cap_path}  ({time.time() - t:.0f}s)")
+        return 0
     say(f"\n[A] {len(seeds)} conversations x {len(configs)} arms on pool {POOL} "
         f"({TURNS} turns, shocks at {SHOCKS})")
     convs = run_conversations(up, prof, configs, seeds, Store(db), spec["blob"], progress)

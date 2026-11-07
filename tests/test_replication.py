@@ -325,3 +325,16 @@ def test_the_rule_as_written_can_choose_a_gain_whose_recovery_is_not_positive_an
 
 def test_negative_drops_mean_steering_scored_better_and_stay_eligible():
     assert rp.pilot_choice([row(0.05, 0.2, -3.0)])["chosen"] == 0.05
+
+
+def test_the_capability_gate_lists_the_eligible_gains_without_needing_the_conversations():
+    r = rp.pilot_eligibility({0.025: 1.0, 0.05: 2.0, 0.075: 2.5})
+    assert r["eligible"] == [0.025, 0.05] and r["stop"] is False
+    none = rp.pilot_eligibility({0.025: 2.1, 0.05: 4.0, 0.075: 9.0})
+    assert none["eligible"] == [] and none["stop"] is True and "no gain" in none["reason"]
+
+
+def test_the_capability_gate_agrees_with_the_full_rule_about_who_is_eligible():
+    drops = {0.025: 1.9, 0.05: 2.0, 0.075: 2.0001}
+    rows = [row(g, 0.1, d) for g, d in drops.items()]
+    assert rp.pilot_eligibility(drops)["eligible"] == rp.pilot_choice(rows)["eligible"]
