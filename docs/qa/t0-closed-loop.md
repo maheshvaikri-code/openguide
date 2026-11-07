@@ -43,6 +43,8 @@
 | NIT: redundant `isfinite`; `Upstream` protocol does not declare `steer` | Left as is (harmless / documented). |
 
 ## Known limitations (not fixed)
+- **One model.** A second model (Granite-3.1-2B) failed the pre-registered capability pilot at every tested gain (REPORT 7.7); the
+  default gain ceiling is not a general safe value and nothing yet stops it being used on an unvalidated model.
 - Benefit shown on one model and rule set, in three pre-registered studies; the third used a new pool of prompts written in the
   same style (REPORT 7.4-7.6). Capability was measured with steering
   always on, not through the loop. Conversations where the gate keeps firing do worse (7 of 60 in 7.4, 6 of 60 in 7.5), not shown to be

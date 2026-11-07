@@ -178,6 +178,10 @@ The design was not fixed in advance. In order:
 9. **The generalization study (7.6) was pre-registered** (spec `2bf35dd`, prompt pool `51529a7`). The pool was written
    and frozen before any run and without looking at any model's behaviour on it. After a smoke test on two other seeds I
    guessed the new pool might be easy for the unsteered arm; it was harder (7.6). Nothing was changed. No deviations.
+10. **The Granite pilot (7.7) was pre-registered** (rule `4649b5a`) and **stopped by its own rule**. Its GSM8K filter was run first
+    (an order of execution, not a change of design) because the conversations could not change a "no gain is eligible" outcome.
+    A smoke run on two other seeds, before the registered filter, showed Granite does not end its turn after `[END]` and is slow;
+    nothing was changed because of it.
 
 ### 7.1 Does re-anchoring help? (recovery on a real model)
 
@@ -444,7 +448,55 @@ model or a larger one, or sampling instead of greedy decoding. Capability was me
 not through the loop. The MMLU questions are the same 500 as in 7.4, so that line is not independent of it. The rule checker
 passes some degenerate text, which is why the replies were also read.
 
-### 7.7 What this does and does not show
+### 7.7 A second model (Granite-3.1-2B-Instruct): the gain pilot stops
+
+Registered: the pilot rule ([`../docs/preregistration/t0-second-model-pilot.md`](../docs/preregistration/t0-second-model-pilot.md),
+commit `4649b5a`), which sets a second model's gain from {0.025, 0.05, 0.075} by a rule fixed in advance before a registered study.
+`ibm-granite/granite-3.1-2b-instruct`, pinned to Hugging Face revision `bbc2aed595bd38bd770263dc3ab831db9794441d`, bfloat16;
+steering band layers 14-26 of 40 (Qwen's relative band, 10-18 of 28, mapped to Granite's depth); pack derived by the same procedure
+(`sha256:2744d39e...`; its norm at every band layer is 0.87-1.0x the typical residual there). Granite's residual norms are 4-5x
+smaller than Qwen's (10-22 against 52-65, from its embedding and residual multipliers), which is why gain is relative and nothing
+was rescaled. Code commit `907e359` (clean). Raw data:
+[`results/granite-3.1-2b/pilot_capability.json`](results/granite-3.1-2b/pilot_capability.json).
+
+The rule makes a gain eligible only if its GSM8K drop on the first 300 problems is at most 2 points, and stops if none is. The
+conversations cannot change a "none eligible" outcome, so the GSM8K filter was run first and the 80 pilot conversations were not run.
+
+**Registered outcome: no gain is eligible; the pilot stops and the second-model study is not run.**
+
+| Gain | GSM8K, none -> steering always on (first 300) | Drop, 95% CI | Eligible |
+|---|---|---|---|
+| 0.025 | 73.3% (220) -> 67.0% (201) | **+6.3 points** [+1.0, +11.7] | no |
+| 0.05 | 73.3% -> 53.7% (161) | **+19.7** [+13.7, +25.7] | no |
+| 0.075 | 73.3% -> 31.0% (93) | **+42.3** [+36.3, +48.7] | no |
+
+**Reading it (descriptive).**
+- **The harm is coherent and wrong, not gibberish.** In the four examples looked at, steered replies shrink from 103-163 words to
+  39-67 and skip steps ("Profit: $10,000" for a house-flip whose answer is $70,000). This is the mechanism hypothesised for Qwen at
+  gain 0.1 (7.2): the steering direction encodes terseness, and terse answers skip the chain of thought. It bites Granite at a
+  fraction of that gain.
+- **Granite is more sensitive than its larger band explains.** A 13-layer band gives Granite about 1.5x Qwen's cumulative push at the
+  same peak gain, so Granite at 0.025 is about 0.7x Qwen's dose at 0.05, yet Qwen lost 0.5 points on the full GSM8K set (7.6) and
+  Granite lost 6.3 on 300 problems.
+- **Smoke-run observations (two throwaway seeds, not data).** Granite generates about 8.5 tokens per second on this GPU. Without the
+  contract's sign-off rule it ends its turn normally (31 tokens); with `end every reply with [END]` it never emits its end-of-turn
+  token and writes on, inventing further "user:" turns until the 96-token limit. That would have made the pilot's conversations about
+  5-6 hours and depressed even the unsteered baseline for a reason unrelated to steering. Nothing was changed because of it.
+
+**What it shows.** The steering recipe (rules-versus-no-rules pack, Qwen's relative band, relative gains of 0.025-0.075) **does not
+transfer unchanged**: on Granite even the lowest gain costs 6.3 GSM8K points and the loss grows steadily with gain. "Gain 0.05 is
+safe" is a statement about Qwen2.5-1.5B only. The code's default ceiling (0.05) is Qwen's measured value and would cost Granite about
+20 points.
+
+**What it does not show.** Whether a gain below 0.025, another band or another pack would work on Granite: the registered grid began at
+0.025 and the rule allowed no more. Nothing about whether steering helps *recovery* on Granite, since the conversations were not run.
+Nothing about any other model; Granite is, like Qwen, a Llama-style dense decoder (`GraniteForCausalLM`), so this concerns another
+lab's training and not a different architecture. The terseness explanation rests on four examples.
+
+**Consequence.** The evidence for drift-gated steering (7.4-7.6) is for one model. Steering any other model needs its own pilot, and
+a model with no evidence should not be steered with the defaults.
+
+### 7.8 What this does and does not show
 
 - **Shows:** a real-model pipeline works end to end (proxy, real sensors, traces, steering, replay); on this
   model the proxy's current re-anchoring does little; activation steering at a *small* gain (0.05) changes
@@ -452,19 +504,22 @@ passes some degenerate text, which is why the replies were also read.
   model; the capability cost is sharp, not gradual; steering only after a failed turn raised recovery from 68.5% to
   90.8% over 60 pre-registered conversations (7.4), by a similar amount over 60 more (7.5), and from 52.0% to 91.8% on a new
   prompt pool with the full GSM8K test split showing no harm by the stricter rule (7.6); a cap on consecutive steered turns
-  did not help (7.5).
+  did not help (7.5). The same recipe at the same relative gains degraded a second model's reasoning
+  (Granite-3.1-2B: 6 to 42 GSM8K points), so the evidence for steering is for one model (7.7).
 - **Does not show:** anything about 7B/8B models (the blueprint's Qwen2.5-7B does not fit in 8 GB at full
-  precision, so that gate is still unrun); that results hold for other rules or models (new prompts of the same style were covered in 7.6); that the
+  precision, so that gate is still unrun); that results hold for other rules or models (new prompts of the same style were covered in 7.6; a second model failed its
+  capability pilot, 7.7); that the
   placement of a re-anchor matters (it flips by conversation); a benefit of re-anchoring in text (n = 5
   conversations, intervals touch zero); that the closed loop's benefit holds beyond this model and rule set.
-- **Limits:** one model, one contract, scripted prompts (two pools of 40, same author and style), greedy decoding (no sampling variance), 5
+- **Limits:** one model with a passing result (Qwen2.5-1.5B; a second failed its pilot), one contract, scripted prompts (two pools of 40, same author and style), greedy decoding (no sampling variance), 5
   conversations per arm in 7.1-7.3 (60 in each of 7.4-7.6), MMLU on 300-500 random test questions and GSM8K on 100-1,319. The
   steering vector was derived and evaluated on the same kind of question (different questions, same template).
   Rule checkers count degenerate text as compliant on some rules (see the warning above).
 
-Reproduce (GPU, ~1.5 hours in total, plus ~5 minutes for 7.3, ~1.7 hours for 7.4, ~1.6 hours for 7.5 and ~2.3 hours for 7.6): `python scripts/calibrate_real_rules.py`;
+Reproduce (GPU, ~1.5 hours in total, plus ~5 minutes for 7.3, ~1.7 hours for 7.4, ~1.6 hours for 7.5, ~2.3 hours for 7.6 and ~35 minutes for the 7.7 filter): `python scripts/calibrate_real_rules.py`;
 `python scripts/real_placement_ablation.py` (add `--plain-only` for the ablation);
-`python scripts/real_t0_gate.py`; `python scripts/replicate_t0.py` (7.4) and `python scripts/replicate_cap.py` (7.5) and `python scripts/replicate_pool2.py` (7.6), each of which refuses to run unless
+`python scripts/real_t0_gate.py`; `python scripts/replicate_t0.py` (7.4) and `python scripts/replicate_cap.py` (7.5) `python scripts/replicate_pool2.py` (7.6) and, for 7.7, `python scripts/derive_steering_pack.py --profile granite` then
+`python scripts/pilot_second_model.py --capability-only`, each of which refuses to run unless
 their spec is committed;
 then `python scripts/real_model_demo.py --serve` to browse the runs in the
 Console. Weights go in `.models/Qwen2.5-1.5B-Instruct` (git-ignored). The raw results of the runs reported

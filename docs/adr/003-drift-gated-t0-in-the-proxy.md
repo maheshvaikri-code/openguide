@@ -61,6 +61,9 @@ Wire T0 into the proxy as a **drift-gated closed loop**, opt-in:
   failing). A cap on consecutive steered turns exists as an opt-in setting (`max_consecutive`, `pause_turns`; off by
   default). A pre-registered study on fresh seeds (`docs/preregistration/t0-cap-study.md`, REPORT 7.5) found it did **not**
   help (5 losses against 3 uncapped; capped - uncapped -0.03, CI lower bound -0.08). Steering stays uncapped by default.
+- **The gain ceiling is per model.** `MAX_SAFE_GAIN = 0.05` is Qwen2.5-1.5B's measured value. A pilot on Granite-3.1-2B (REPORT 7.7)
+  found no eligible gain: even the lowest relative gain, 0.025, cost 6.3 GSM8K points. `SteeringConfig.gain_ceiling` lets a model
+  with its own evidence use a different one, but nothing yet stops the default being used on an unvalidated model.
 - Hosted APIs (OpenAI, Anthropic, ...) cannot be steered this way; they stay T2/T3.
 
 ## Alternatives rejected

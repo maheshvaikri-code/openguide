@@ -57,6 +57,10 @@ no cap (-0.03, CI [-0.08, +0.01]). Pausing steering let some conversations that 
 
 ## Limits (read before relying on it)
 
+- **Validated on one model only.** The same recipe at the same *relative* gains (0.025, 0.05, 0.075) was tried on a second model,
+  Granite-3.1-2B-Instruct, and its reasoning degraded at every gain (GSM8K down 6.3, 19.7 and 42.3 points on 300 problems), so the
+  pre-registered pilot stopped (`benchmarks/REPORT.md` 7.7). The default ceiling of 0.05 is Qwen2.5-1.5B's measured value, not a
+  general safe value. Do not steer a model without a pilot of its own.
 - `gain` is the peak of a gaussian envelope across the layer band: the middle layers get about that much and the
   edge layers less. A pack must be on the model's own scale (the derive script makes it so); `enable_steering`
   refuses one that is not, and `SteeringConfig(..., expected_pack_hash=...)` pins the pack you reviewed.
