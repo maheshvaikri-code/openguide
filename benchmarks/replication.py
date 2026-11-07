@@ -146,6 +146,9 @@ def no_harm_pass(cap: dict[str, Any]) -> bool:
 
 
 def harm_not_ruled_out(cap: dict[str, Any]) -> bool:
+    """The first replication's flag, as registered in docs/preregistration/t0-replication.md: the upper end of
+    the drop's 95% CI is over **10** points. That is a deliberately loose line, not the 5-point pass bar, so
+    ``False`` here does not mean harm is excluded. The stricter three-way rule is ``harm_category``."""
     return bool(cap["gsm8k"]["drop_ci95_points"][1] > HARM_NOT_RULED_OUT_POINTS)
 
 
@@ -241,3 +244,27 @@ def cap_verdict(cmps: dict[str, Any]) -> dict[str, Any]:
                                     ("non_inferior", non_inf)) if not ok]
     return {"benefit_kept": bool(benefit), "harm_reduced": bool(harm), "non_inferior": bool(non_inf),
             "failed": failed, "outcome": "supports" if not failed else "does not pass"}
+
+
+# ── the generalization study: docs/preregistration/t0-generalization.md ──
+def harm_category(cap: dict[str, float]) -> str:
+    """The registered three-way rule on the drop (none minus steered, in points) and its CI upper bound."""
+    drop, upper = cap["drop_points"], cap["drop_ci95_points"][1]
+    if drop > NO_HARM_MAX_DROP_POINTS + _EPS:
+        return "harm"
+    if upper > NO_HARM_MAX_DROP_POINTS + _EPS:
+        return "harm not ruled out"
+    return "no harm shown"
+
+
+def pool_verdict(conv: dict[str, Any], cap: dict[str, Any]) -> dict[str, Any]:
+    """Benefit bar on recovery, then the GSM8K category; MMLU gets a category but does not decide."""
+    benefit = helps_pass(conv)
+    gsm, mmlu = harm_category(cap["gsm8k"]), harm_category(cap["mmlu"])
+    if not benefit:
+        outcome = "no benefit shown"
+    elif gsm == "no harm shown":
+        outcome = "supports (new prompts)"
+    else:
+        outcome = f"benefit shown; {gsm}"
+    return {"benefit_pass": bool(benefit), "gsm8k": gsm, "mmlu": mmlu, "outcome": outcome}

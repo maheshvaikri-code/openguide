@@ -239,3 +239,47 @@ def test_non_inferiority_allows_a_ci_lower_bound_of_minus_five_points_and_no_low
 def test_the_outcome_names_what_failed():
     v = rp.cap_verdict(_cmps(0.05, 0.0, 6, 5, -0.2))
     assert v["outcome"] == "does not pass" and v["failed"] == ["benefit_kept", "harm_reduced", "non_inferior"]
+
+
+# ── the generalization study (docs/preregistration/t0-generalization.md) ──
+def acc(drop, upper):
+    return {"drop_points": drop, "drop_ci95_points": (drop - 3.0, upper)}
+
+
+def test_capability_is_no_harm_shown_only_if_both_the_drop_and_its_upper_bound_are_within_five_points():
+    assert rp.harm_category(acc(1.7, 5.0)) == "no harm shown"
+    assert rp.harm_category(acc(5.0, 5.0)) == "no harm shown"           # exactly on the line is within it
+    assert rp.harm_category(acc(-2.0, 1.0)) == "no harm shown"          # steered did better
+
+
+def test_a_small_drop_with_an_interval_reaching_past_five_points_is_harm_not_ruled_out():
+    assert rp.harm_category(acc(1.7, 7.7)) == "harm not ruled out"       # the first run's GSM8K numbers
+    assert rp.harm_category(acc(1.0, 5.01)) == "harm not ruled out"
+    assert rp.harm_category(acc(5.0, 6.0)) == "harm not ruled out"
+
+
+def test_a_drop_over_five_points_is_harm_whatever_the_interval():
+    assert rp.harm_category(acc(5.01, 9.0)) == "harm"
+    assert rp.harm_category(acc(12.0, 20.0)) == "harm"
+
+
+def _conv(mean, lo):
+    return {"mean_diff": mean, "ci95": (lo, mean + 0.1)}
+
+
+def test_the_outcome_combines_the_benefit_bar_and_the_capability_category_as_registered():
+    ok = {"gsm8k": acc(1.0, 4.0), "mmlu": acc(0.5, 2.0)}
+    unsure = {"gsm8k": acc(1.0, 6.5), "mmlu": acc(0.5, 2.0)}
+    harm = {"gsm8k": acc(8.0, 12.0), "mmlu": acc(0.5, 2.0)}
+    assert rp.pool_verdict(_conv(0.2, 0.1), ok)["outcome"] == "supports (new prompts)"
+    assert rp.pool_verdict(_conv(0.2, 0.1), unsure)["outcome"] == "benefit shown; harm not ruled out"
+    assert rp.pool_verdict(_conv(0.2, 0.1), harm)["outcome"] == "benefit shown; harm"
+    assert rp.pool_verdict(_conv(0.05, -0.02), ok)["outcome"] == "no benefit shown"
+    assert rp.pool_verdict(_conv(0.05, -0.02), harm)["outcome"] == "no benefit shown"
+
+
+def test_the_verdict_carries_both_categories_and_mmlu_is_information_only():
+    caps = {"gsm8k": acc(1.0, 4.0), "mmlu": acc(9.0, 12.0)}                # MMLU would be 'harm'
+    v = rp.pool_verdict(_conv(0.2, 0.1), caps)
+    assert v["benefit_pass"] is True and v["gsm8k"] == "no harm shown" and v["mmlu"] == "harm"
+    assert v["outcome"] == "supports (new prompts)"                          # MMLU does not enter the outcome
