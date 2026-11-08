@@ -19,7 +19,9 @@ All notable changes to this project are documented here. Format follows
 - **Steering fails closed (behaviour change).** `HFUpstream.enable_steering` now refuses weights with no validation record
   (`proxy/validation.py`: weight SHA-256, band, pack, gain ceiling, evidence); only Qwen2.5-1.5B-Instruct has one. `SteeringConfig`
   has no default gain or ceiling (`MAX_SAFE_GAIN` and `DEFAULT_GAIN` are removed). Experiments need `experimental=True` plus an
-  explicit `gain_ceiling`, settable only in code; their `STEER` records carry `"experimental": true`.
+  explicit `gain_ceiling`, settable only in code; their `STEER` records carry `"experimental": true`. The authorisation is
+  kept on the upstream and checked by the Governor (a review found the first version checked only at enable time); the model
+  identity covers `config.json`, is not cached, and the dtype and loaded path are checked.
 - Second-model support for the experiments (model profiles with a relative steering band, a per-model `gain_ceiling`, a dtype
   option, a pinned-revision check) and a pre-registered gain pilot. On Granite-3.1-2B-Instruct the pilot stopped: no gain was
   eligible (GSM8K down 6.3 to 42.3 points), so steering is validated on one model only (`benchmarks/REPORT.md` 7.7).

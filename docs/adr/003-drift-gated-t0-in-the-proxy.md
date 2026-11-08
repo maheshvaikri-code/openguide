@@ -22,8 +22,13 @@ Wire T0 into the proxy as a **drift-gated closed loop**, opt-in:
 4. **Steering fails closed.** There is no default gain and no default ceiling. Steering is allowed only on weights that have
    a validation record (`proxy/validation.py`): the weights' identity (SHA-256 of the weight files), the band, the steering
    pack, a gain ceiling and the evidence (results files with their commits). The only record is Qwen2.5-1.5B-Instruct: band
-   10-18, ceiling 0.05, the three pre-registered studies. `HFUpstream.enable_steering` checks the loaded model against the
-   records and refuses anything else, naming the missing evidence. (An earlier draft capped the gain at 0.1 for all models and
+   10-18, ceiling 0.05, float16, the three pre-registered studies. `HFUpstream.enable_steering` checks the loaded model
+   against the records and refuses anything else, naming the missing evidence. The identity covers the weight files and
+   `config.json`, is recomputed every time (no cache), and the loaded model must report the path that was hashed.
+   The result is an `Authorisation` kept on the upstream: the upstream refuses to steer without it, the Governor refuses
+   a config it does not cover (band, pack, gain, experimental flag), and the trace's `experimental` mark comes from it.
+   The steering hook is private. (A security review found the first version checked only at `enable_steering`, so a hook
+   set directly bypassed it, and the trace took its mark from the Governor's config. Both are closed and tested.) (An earlier draft capped the gain at 0.1 for all models and
    called that usable; the capability table shows it is not, and a second model showed no gain is general.)
 5. Every steered turn appends a `STEER` record (turn, peak gain, layer band, pack hash) to the hash-chained trace,
    so what was steered is as auditable as what was measured. The record is written only when the upstream reports (through a `SteerReceipt`) that a steered reply was
@@ -68,7 +73,8 @@ Wire T0 into the proxy as a **drift-gated closed loop**, opt-in:
   an unvalidated model is refused. To experiment, a `SteeringConfig` must say `experimental=True` and give an explicit
   `gain_ceiling`; that can only be done in code (no server or environment setting reaches it), and every steered turn under
   it carries `"experimental": true` in its `STEER` record and is labelled in the Console. A model gains a record only with
-  its own pre-registered evidence.
+  its own pre-registered evidence. This is a guard against operator error, not against code that can already edit the
+  process; adapters or state loaded onto the model after `enable_steering` are not covered.
 - Hosted APIs (OpenAI, Anthropic, ...) cannot be steered this way; they stay T2/T3.
 
 ## Alternatives rejected

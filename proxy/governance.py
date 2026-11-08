@@ -69,11 +69,23 @@ class Governor:
         self.tool_policy = tool_policy or ToolPolicy()
         # Opt-in, off by default: traces then hold behavioral state only, never message text.
         self.capture_content = capture_content
-        # Opt-in drift-gated T0 steering (ADR-003). Refused up front for an upstream that cannot steer, so a
-        # trace can never claim steering that did not happen.
-        if steering is not None and not getattr(upstream, "supports_steering", False):
-            raise ValueError("steering was requested, but this upstream cannot steer the model's activations "
-                             "(it needs the weights in-process: HFUpstream.enable_steering)")
+        # Opt-in drift-gated T0 steering (ADR-003). Refused up front for an upstream that cannot steer or was
+        # never authorised to, and for a config the authorisation does not cover, so a trace can never claim
+        # steering that did not happen or mislabel what was authorised.
+        self._steer_experimental = False
+        if steering is not None:
+            if not isinstance(steering, SteeringConfig):
+                raise TypeError(f"steering must be a SteeringConfig, got {type(steering).__name__}")
+            auth = getattr(upstream, "steering_authorisation", None)
+            if not getattr(upstream, "supports_steering", False) or auth is None:
+                raise ValueError("steering was requested, but this upstream has not been authorised to "
+                                 "steer the model's activations (it needs the weights in-process: "
+                                 "HFUpstream.enable_steering)")
+            why = auth.not_covered_reason(steering)
+            if why:
+                raise ValueError(f"steering was requested with a config the upstream was not authorised "
+                                 f"for: {why}")
+            self._steer_experimental = auth.mode == "experimental"
         self.steering = steering
 
     # ── helpers ──────────────────────────────────────────────────────
@@ -155,7 +167,7 @@ class Governor:
         cfg = self.steering
         sess.reconciler.trace.append(
             steer_event(sess.turn, receipt.gain, cfg.band, cfg.pack_hash, scored=False,
-                        experimental=cfg.experimental))
+                        experimental=self._steer_experimental))
         try:
             self._persist(sess, sess.compiled)
         except Exception:                                # noqa: BLE001
@@ -193,7 +205,7 @@ class Governor:
             receipt.recorded = True
             sess.reconciler.trace.append(
                 steer_event(out.turn, receipt.gain, self.steering.band, self.steering.pack_hash,
-                            experimental=self.steering.experimental))
+                            experimental=self._steer_experimental))
         # closed loop: the next generation is steered only if this turn needed a correction (and, if the
         # optional cap is on, only within it)
         if self.steering is not None:

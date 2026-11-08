@@ -45,10 +45,13 @@ There is no command-line or environment switch; it is configured in Python as ab
 
 ## Steering fails closed
 
-Steering is allowed only on weights that have a validation record in `proxy/validation.py`: the identity of the weights (a
-SHA-256 of the weight files), the band, the pack and a gain ceiling, with the evidence behind them. Only Qwen2.5-1.5B-Instruct
-has one. `enable_steering` checks the loaded model and refuses any other, saying what is missing; it also refuses a different
-band, pack or a gain above the recorded ceiling. There is no default gain or ceiling.
+Steering is allowed only on weights that have a validation record in `proxy/validation.py`: the identity of the model files
+(a SHA-256 of the weight files and `config.json`, recomputed each time), the band, the pack, the dtype and a gain ceiling,
+with the evidence behind them. Only Qwen2.5-1.5B-Instruct (float16) has one. `enable_steering` checks the loaded model
+(which must have been loaded from the hashed directory) and refuses any other, saying what is missing; it also refuses a
+different band, pack or dtype, or a gain above the recorded ceiling. The authorisation stays on the upstream, the upstream
+refuses to steer without it, and the Governor refuses a config it does not cover. There is no default gain or ceiling. A hub
+id or a single file cannot be identified, so load from a local directory.
 
 To experiment on a model with no record, say so in code: `SteeringConfig(pack, band, gain, experimental=True,
 gain_ceiling=...)`. No server setting or environment variable can do this, every steered turn under it is marked

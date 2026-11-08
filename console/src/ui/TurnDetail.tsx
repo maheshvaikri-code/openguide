@@ -77,7 +77,7 @@ export function TurnDetail({
             because the previous turn needed a correction. The model's internal activations were nudged toward the
             rules while it wrote this reply, in addition to any reminder above.
             {steer.experimental && (
-              <> <b>This was an experiment:</b> the model has no validation record, so nothing shows this setting is safe for it.</>
+              <> <b>This was an experiment:</b> this model or setting has no validation record, so nothing shows it is safe.</>
             )}
           </p>
         )}

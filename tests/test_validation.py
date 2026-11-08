@@ -47,13 +47,13 @@ def test_the_identity_changes_when_a_weight_file_changes_or_is_renamed(tmp_path)
     assert val.weights_identity(_weights(tmp_path, {"other.safetensors": b"weights"}, name="c")) != base
 
 
-def test_the_identity_covers_every_shard_and_ignores_files_that_are_not_weights(tmp_path):
+def test_the_identity_covers_every_shard_and_ignores_files_that_are_neither_weights_nor_config(tmp_path):
     two = val.weights_identity(_weights(tmp_path, {"a.safetensors": b"1", "b.safetensors": b"2"}, name="x"))
     one = val.weights_identity(_weights(tmp_path, {"a.safetensors": b"1"}, name="y"))
     assert two != one
-    extra = {"a.safetensors": b"1", "b.safetensors": b"2", "tokenizer.json": b"{}", "config.json": b"{}"}
+    extra = {"a.safetensors": b"1", "b.safetensors": b"2", "tokenizer.json": b"{}", "vocab.txt": b"v"}
     noisy = val.weights_identity(_weights(tmp_path, extra, name="z"))
-    assert noisy == two
+    assert noisy == two                                                    # the tokenizer is not part of it
 
 
 def test_a_directory_with_no_weights_has_no_identity(tmp_path):
@@ -67,6 +67,7 @@ def test_qwen_is_the_only_validated_model_and_its_record_cites_the_three_studies
     rec = next(iter(val.RECORDS.values()))
     assert rec.key == "qwen2.5-1.5b-instruct" and rec.band == (10, 19) and rec.gain_ceiling == 0.05
     assert rec.pack_hash == "sha256:7d293722ca740ee286715992969ad0f88db58cf894690604412bd5fab701b61f"
+    assert rec.dtype == "float16"                                      # the numeric type the evidence ran in
     files = [f for f, _ in rec.evidence]
     assert any(f.endswith("replication_t0.json") for f in files)
     assert any(f.endswith("replication_cap.json") for f in files)
@@ -165,3 +166,85 @@ def test_there_is_no_implicit_qwen_ceiling_left_in_the_steering_module():
     import proxy.steering as st
 
     assert not hasattr(st, "MAX_SAFE_GAIN") and not hasattr(st, "DEFAULT_GAIN")
+
+
+# -- hardening from the security review ---------------------------------------------------------------
+def test_the_identity_follows_the_file_contents_even_if_size_and_mtime_are_unchanged(tmp_path):
+    path = _weights(tmp_path, {"model.safetensors": b"AAAA"})
+    f = os.path.join(path, "model.safetensors")
+    stamp = os.stat(f).st_mtime_ns
+    before = val.weights_identity(path)
+    with open(f, "wb") as fh:
+        fh.write(b"BBBB")                                                    # same size
+    os.utime(f, ns=(stamp, stamp))                                           # same mtime
+    assert val.weights_identity(path) != before                              # nothing is cached
+
+
+def test_the_architecture_config_is_part_of_the_identity(tmp_path):
+    def ident(cfg, name):
+        files = {"model.safetensors": b"w", "config.json": cfg}
+        return val.weights_identity(_weights(tmp_path, files, name=name))
+
+    a, b = ident(b'{"rope": 1}', "a"), ident(b'{"rope": 2}', "b")
+    none = val.weights_identity(_weights(tmp_path, {"model.safetensors": b"w"}, name="c"))
+    assert len({a, b, none}) == 3
+
+
+@pytest.mark.parametrize("bad", ["Qwen/Qwen2.5-1.5B-Instruct", "no/such/dir"])
+def test_a_hub_id_or_missing_path_is_a_clear_refusal_not_an_os_error(bad):
+    with pytest.raises(val.NotValidated, match="local directory"):
+        val.weights_identity(bad)
+
+
+def test_a_path_to_a_single_file_is_a_clear_refusal(tmp_path):
+    f = tmp_path / "model.safetensors"
+    f.write_bytes(b"w")
+    with pytest.raises(val.NotValidated, match="local directory"):
+        val.weights_identity(str(f))
+
+
+def test_the_dtype_the_evidence_ran_in_is_part_of_what_is_validated(tmp_path):
+    path = _weights(tmp_path, {"model.safetensors": b"validated model"})
+    pack = _pack()
+    rec = dataclasses.replace(_record(path, pack), dtype="float16")
+    recs = {rec.weights_sha256: rec}
+    cfg = SteeringConfig(pack, BAND, 0.03)
+    assert val.authorise(path, cfg, recs, dtype="float16").mode == "validated"
+    with pytest.raises(val.NotValidated, match="float16"):
+        val.authorise(path, cfg, recs, dtype="bfloat16")
+    # a record that does not pin a dtype accepts any
+    plain = _record(path, pack)
+    assert val.authorise(path, cfg, {plain.weights_sha256: plain}, dtype="bfloat16").mode == "validated"
+
+
+def test_the_loaded_model_must_report_the_path_that_was_hashed(tmp_path):
+    path = _weights(tmp_path, {"model.safetensors": b"validated model"})
+    pack = _pack()
+    rec = _record(path, pack)
+    recs = {rec.weights_sha256: rec}
+    cfg = SteeringConfig(pack, BAND, 0.03)
+    assert val.authorise(path, cfg, recs, loaded_from=path, check_loaded=True).mode == "validated"
+    for wrong in (None, "", str(tmp_path / "elsewhere")):
+        with pytest.raises(val.NotValidated, match="loaded"):
+            val.authorise(path, cfg, recs, loaded_from=wrong, check_loaded=True)
+
+
+def test_only_a_real_steering_config_is_accepted():
+    class Imposter:
+        experimental, gain_ceiling, gain, band, pack_hash = True, 1.0, 0.09, (1, 4), "x"
+
+    with pytest.raises(TypeError, match="SteeringConfig"):
+        val.authorise(None, Imposter())
+
+
+def test_an_authorisation_covers_a_config_only_within_what_it_allowed():
+    pack = _pack()
+    cfg = SteeringConfig(pack, BAND, 0.03)
+    auth = val.Authorisation("validated", 0.05, None, BAND, pack.hash())
+    assert auth.not_covered_reason(cfg) is None
+    assert auth.not_covered_reason(SteeringConfig(pack, BAND, 0.05)) is None             # at the ceiling
+    assert "gain" in auth.not_covered_reason(SteeringConfig(pack, BAND, 0.06))
+    assert "band" in auth.not_covered_reason(SteeringConfig(_pack(band=(0, 6)), (2, 5), 0.03))
+    assert "pack" in auth.not_covered_reason(SteeringConfig(_pack(dim=9), BAND, 0.03))
+    exp = SteeringConfig(pack, BAND, 0.03, experimental=True, gain_ceiling=0.05)
+    assert "experimental" in auth.not_covered_reason(exp)                       # validated vs experimental

@@ -215,7 +215,10 @@ describe("parseSteers", () => {
   it("carries the experimental mark only when the record says so", () => {
     expect(parseSteers([{ ...steer, experimental: true }]).get(2)?.experimental).toBe(true);
     expect(parseSteers([steer]).get(2)).not.toHaveProperty("experimental");
-    expect(parseSteers([{ ...steer, experimental: "yes" }]).get(2)).not.toHaveProperty("experimental");
+    expect(parseSteers([{ ...steer, experimental: false }]).get(2)).not.toHaveProperty("experimental");
+    // a malformed value must not read as "validated": anything but an explicit false is shown as an experiment
+    expect(parseSteers([{ ...steer, experimental: "yes" }]).get(2)?.experimental).toBe(true);
+    expect(parseSteers([{ ...steer, experimental: 1 }]).get(2)?.experimental).toBe(true);
   });
 
   it("keeps the first record for a turn", () => {

@@ -158,8 +158,24 @@ def _steerable(events):
         finally:
             events.append(("exit", gain))
 
-    up.steer_factory = factory
+    from steering_doubles import attach_steering
+
+    from proxy.steering import SteeringConfig
+
+    cfg = SteeringConfig(_toy_pack(), (1, 4), 0.1, experimental=True, gain_ceiling=0.1)
+    attach_steering(up, factory, cfg, ceiling=0.1)
     return up
+
+
+def _toy_pack():
+    import numpy as np
+
+    from guidancegrid.core.grid import STEER_SIGNAL, SignalPack
+
+    pack = SignalPack("toy", 8)
+    for layer in (1, 2, 3):
+        pack.set_vector(STEER_SIGNAL, layer, np.ones(8, dtype=np.float32))
+    return pack
 
 
 def test_an_upstream_without_a_steering_hook_does_not_claim_to_support_it():
@@ -249,7 +265,7 @@ def test_enable_steering_checks_the_pack_against_the_model_and_hooks_only_while_
         up.enable_steering(_exp(_wide_pack(32, 9), (1, 9)))
     assert up.enable_steering(_exp(_scaled_pack(model, 1.0), (1, 4))) is up
     assert up.supports_steering and hooks() == 0  # nothing hooked until steered
-    with up.steer_factory(0.05):
+    with up._steer_factory(0.05):
         assert hooks() == 6
     assert hooks() == 0
 
@@ -370,7 +386,7 @@ def test_enable_steering_steers_only_the_bands_layers_even_if_the_pack_has_more(
     up = HFUpstream(generate_fn=lambda m, n: ("x", 1, 1), max_new_tokens=64)
     up.model = model
     up.enable_steering(_exp(wide, (2, 4)))
-    with up.steer_factory(0.05) as steerer:
+    with up._steer_factory(0.05) as steerer:
         with torch.no_grad():
             model(input_ids=torch.arange(1, 9).unsqueeze(0))
     layers = {layer for rec in steerer.trace.records if rec.get("ev") == "STEP"
@@ -428,13 +444,14 @@ def _validated_upstream(tmp_path, records_for=None):
     up = HFUpstream(generate_fn=lambda m, n: ("x", 1, 1), max_new_tokens=64)
     up.model = model
     up.weights_path = _weights_dir(tmp_path)
+    model.config._name_or_path = up.weights_path            # what from_pretrained records
     pack = _scaled_pack(model, 1.0)
     rec = val.ValidationRecord(key="tiny", weights_sha256=val.weights_identity(up.weights_path), band=(1, 4),
                                gain_ceiling=0.04, pack_hash=pack.hash(), evidence=(("r.json", "abc1234"),))
     return up, pack, {rec.weights_sha256: rec}
 
 
-def test_a_model_with_no_record_cannot_be_steered_and_nothing_is_hooked(tmp_path):
+def test_a_model_with_no_record_cannot_be_steered_and_nothing_is_hooked(tmp_path, monkeypatch):
     import pytest
 
     from proxy import validation as val
@@ -444,31 +461,35 @@ def test_a_model_with_no_record_cannot_be_steered_and_nothing_is_hooked(tmp_path
     up = HFUpstream(generate_fn=lambda m, n: ("x", 1, 1), max_new_tokens=64)
     up.model = model
     up.weights_path = _weights_dir(tmp_path)
+    model.config._name_or_path = up.weights_path
+    monkeypatch.setattr(val, "RECORDS", {})
     with pytest.raises(val.NotValidated, match="no validation record"):
-        up.enable_steering(SteeringConfig(_scaled_pack(model, 1.0), (1, 4), 0.025), records={})
-    assert up.supports_steering is False and up.steer_factory is None
+        up.enable_steering(SteeringConfig(_scaled_pack(model, 1.0), (1, 4), 0.025))
+    assert up.supports_steering is False and up._steer_factory is None
 
 
-def test_a_validated_model_is_steerable_within_its_recorded_ceiling_and_no_further(tmp_path):
+def test_a_validated_model_is_steerable_within_its_recorded_ceiling_and_no_further(tmp_path, monkeypatch):
     import pytest
 
     from proxy.steering import SteeringConfig
 
     up, pack, records = _validated_upstream(tmp_path)
-    up.enable_steering(SteeringConfig(pack, (1, 4), 0.03), records=records)
+    monkeypatch.setattr(__import__("proxy.validation", fromlist=["RECORDS"]), "RECORDS", records)
+    up.enable_steering(SteeringConfig(pack, (1, 4), 0.03))
     assert up.supports_steering
     asyncio.run(up.chat({"messages": [{"role": "user", "content": "hi"}]}, {}, steer=0.04))   # at the ceiling
     with pytest.raises(ValueError, match="gain"):
         asyncio.run(up.chat({"messages": [{"role": "user", "content": "hi"}]}, {}, steer=0.05))
 
 
-def test_the_experimental_override_works_without_a_record_and_sets_its_own_ceiling(tmp_path):
+def test_the_experimental_override_works_without_a_record_and_sets_its_own_ceiling(tmp_path, monkeypatch):
     import pytest
 
     model = _tiny_model()
     up = HFUpstream(generate_fn=lambda m, n: ("x", 1, 1), max_new_tokens=64)
     up.model = model
-    up.enable_steering(_exp(_scaled_pack(model, 1.0), (1, 4), gain=0.025, ceiling=0.06), records={})
+    monkeypatch.setattr(__import__("proxy.validation", fromlist=["RECORDS"]), "RECORDS", {})
+    up.enable_steering(_exp(_scaled_pack(model, 1.0), (1, 4), gain=0.025, ceiling=0.06))
     asyncio.run(up.chat({"messages": [{"role": "user", "content": "hi"}]}, {}, steer=0.06))
     with pytest.raises(ValueError, match="gain"):
         asyncio.run(up.chat({"messages": [{"role": "user", "content": "hi"}]}, {}, steer=0.07))

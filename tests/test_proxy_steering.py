@@ -6,6 +6,7 @@ from contextlib import contextmanager
 import httpx
 import numpy as np
 import pytest
+from steering_doubles import attach_steering
 
 from benchmarks import real_model as rm
 from guidancegrid.core.grid import STEER_SIGNAL, SignalPack
@@ -61,8 +62,8 @@ class Rig:
             finally:
                 outer.exited += 1
 
-        self.up.steer_factory = factory
         self.config = _config(gain, **cap)
+        attach_steering(self.up, factory, self.config)
         reg = ContractRegistry(measures=rm.make_measures())
         self.h = reg.register(rm.contract_dict())
         self.app = create_app(registry=reg, upstream=self.up, steering=self.config if steering else None)
@@ -515,6 +516,36 @@ def test_steering_on_a_validated_setup_has_no_experimental_mark():
         async with rig.client() as c:
             for _ in range(3):
                 await rig.say(c)
+
+    run(go())
+    steers = [r for r in rig.trace().records if r["ev"] == "STEER"]
+    assert steers and all("experimental" not in r for r in steers)
+
+
+def test_an_abandoned_stream_under_the_experimental_override_keeps_its_mark():
+    rig = Rig([BAD, GOOD, GOOD], experimental=True, gain_ceiling=0.05)
+
+    async def go():
+        async with rig.client() as c:
+            await rig.say(c)
+        gen, _ = rig.app.state.governor.open_stream(_stream_body(), _hdrs(rig))
+        await gen.__anext__()
+        await gen.aclose()
+
+    run(go())
+    steers = [r for r in rig.trace().records if r["ev"] == "STEER"]
+    assert [(r["turn"], r.get("scored"), r.get("experimental")) for r in steers] == [(1, False, True)]
+
+
+def test_a_validated_setup_with_an_abandoned_stream_has_no_experimental_mark():
+    rig = Rig([BAD, GOOD, GOOD])
+
+    async def go():
+        async with rig.client() as c:
+            await rig.say(c)
+        gen, _ = rig.app.state.governor.open_stream(_stream_body(), _hdrs(rig))
+        await gen.__anext__()
+        await gen.aclose()
 
     run(go())
     steers = [r for r in rig.trace().records if r["ev"] == "STEER"]

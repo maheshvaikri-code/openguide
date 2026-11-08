@@ -22,7 +22,7 @@ from typing import Any, AsyncIterator, Callable
 import numpy as np
 
 from . import validation
-from .steering import HARD_GAIN_LIMIT, MAX_VECTOR_NORM_RATIO, SteerReceipt
+from .steering import MAX_VECTOR_NORM_RATIO, SteerReceipt
 from .upstream import _chunk_text
 
 # (messages, max_new_tokens) -> (text, prompt_tokens, completion_tokens)
@@ -65,17 +65,21 @@ class HFUpstream:
         # set by from_pretrained, so callers that need the model itself (e.g. steering) can reach it
         self.model: Any = None
         self.tokenizer: Any = None
-        # gain -> context manager that steers the activations while it is open (ADR-003). Set by
-        # enable_steering; the Governor passes a gain per call, a client never can.
-        self.steer_factory: Callable[[float], AbstractContextManager[Any]] | None = None
+        # gain -> context manager that steers the activations while it is open (ADR-003). Private: only
+        # enable_steering sets it, after ``validation.authorise`` allowed it. The Governor passes a gain per
+        # call; a client never can.
+        self._steer_factory: Callable[[float], AbstractContextManager[Any]] | None = None
+        # What enable_steering was authorised to do. The Governor checks its config against this and takes the
+        # trace's "experimental" mark from it.
+        self.steering_authorisation: validation.Authorisation | None = None
         # forward passes the steering field covers (set by enable_steering)
         self._steer_steps: int | None = None
         self.weights_path: str | None = None            # set by from_pretrained: what identifies the model
-        self._gain_ceiling: float = HARD_GAIN_LIMIT     # set by enable_steering to the model's own ceiling
+        self._gain_ceiling: float = 0.0                 # nothing steers until enable_steering authorises it
 
     @property
     def supports_steering(self) -> bool:
-        return self.steer_factory is not None
+        return self._steer_factory is not None and self.steering_authorisation is not None
 
     def _typical_residual_norms(self, n_layers: int) -> dict[int, float]:
         """Median per-token residual norm after each decoder layer on a fixed token sequence (the last layer
@@ -88,11 +92,18 @@ class HFUpstream:
             states = self.model(input_ids=ids, output_hidden_states=True).hidden_states
         return {i: float(states[i + 1][0].float().norm(dim=-1).median()) for i in range(n_layers - 1)}
 
-    def enable_steering(self, config: Any, records: Any = None) -> "HFUpstream":
-        """Let the Governor steer this model's activations (T0). Checks the pack against the model now, so a
-        mismatch fails at start-up rather than on the first corrected turn. Imports torch only here."""
+    def enable_steering(self, config: Any) -> "HFUpstream":
+        """Let the Governor steer this model's activations (T0). Fails closed: only weights with a validation
+        record (or an explicit experiment) are allowed, and the authorisation is kept on this upstream. Checks
+        the pack against the model now, so a mismatch fails at start-up, not on the first corrected turn."""
+        self._steer_factory, self.steering_authorisation = None, None                  # start closed
+        self._gain_ceiling = 0.0
         if self.model is None:
             raise ValueError("steering needs the model itself: build this upstream with from_pretrained")
+        dtype = str(next(self.model.parameters()).dtype).removeprefix("torch.")
+        loaded_from = getattr(getattr(self.model, "config", None), "_name_or_path", None)
+        decision = validation.authorise(self.weights_path, config, dtype=dtype, loaded_from=loaded_from,
+                                        check_loaded=True)
         from guidancegrid.channels.t0_activation import MAX_STEPS, decoder_layers, steering_context
         from guidancegrid.core.grid import STEER_SIGNAL
 
@@ -119,13 +130,12 @@ class HFUpstream:
                     f"{MAX_VECTOR_NORM_RATIO:g}x "
                     f"this model's typical residual norm {typical[layer]:.3g}: it would replace the hidden "
                     f"state instead of nudging it, whatever the gain")
-        # Fails closed: only weights with a validation record (or an explicit experiment) may be steered.
-        decision = validation.authorise(self.weights_path, config, records)
         model, pack, band = self.model, config.pack_in_band(), tuple(config.band)
-        self._steer_steps = MAX_STEPS
-        self._gain_ceiling = decision.ceiling
         manifest = config.manifest(self.served_name)
-        self.steer_factory = lambda gain: steering_context(model, pack, band, gain, manifest)()
+        self._steer_steps = MAX_STEPS
+        self._steer_factory = lambda gain: steering_context(model, pack, band, gain, manifest)()
+        self._gain_ceiling = decision.ceiling
+        self.steering_authorisation = decision
         return self
 
     # ── loading a real model ─────────────────────────────────────────
@@ -159,8 +169,11 @@ class HFUpstream:
     # ── Upstream protocol ────────────────────────────────────────────
     async def chat(self, body: dict[str, Any], headers: dict[str, str], steer: float = 0.0,
                    receipt: SteerReceipt | None = None) -> dict[str, Any]:
-        if steer > 0 and self.steer_factory is None:
+        if steer > 0 and self._steer_factory is None:
             raise ValueError("asked to steer, but this upstream cannot steer (call enable_steering first)")
+        if steer > 0 and self.steering_authorisation is None:
+            raise ValueError("asked to steer, but steering has not been authorised for this model "
+                             "(enable_steering decides that)")
         if steer > self._gain_ceiling:
             raise ValueError(f"steering gain {steer} is above the safe ceiling {self._gain_ceiling}")
         messages = [{"role": m.get("role", "user"), "content": _flatten(m.get("content"))}
@@ -177,7 +190,7 @@ class HFUpstream:
             with self._lock:
                 self.calls += 1
                 with (self.around() if self.around else nullcontext()):
-                    with (self.steer_factory(steer) if steer > 0 and self.steer_factory else nullcontext()):
+                    with (self._steer_factory(steer) if steer > 0 and self._steer_factory else nullcontext()):
                         result = self._generate(messages, max_new)
                         if steer > 0 and receipt is not None:
                             receipt.produced = True    # a reply now exists, written under steering

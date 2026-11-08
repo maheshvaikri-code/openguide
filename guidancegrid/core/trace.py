@@ -40,7 +40,7 @@ def steer_event(turn: int, gain: float, band: tuple[int, int] | list[int], pack_
     if not scored:
         rec["scored"] = False
     if experimental:
-        rec["experimental"] = True       # the model had no validation record: this steering was an experiment
+        rec["experimental"] = True       # outside a validation record, or with none: an experiment
     return rec
 
 

@@ -280,8 +280,11 @@ class _Steerable:
     """The scripted model, plus the ability to be steered: it only records the gain it was asked for."""
     supports_steering = True
 
-    def __init__(self, inner):
+    def __init__(self, inner, config):
+        from steering_doubles import authorisation_for
+
         self.inner, self.gains = inner, []
+        self.steering_authorisation = authorisation_for(config)
 
     async def chat(self, body, headers, steer=0.0, receipt=None):
         self.gains.append(steer)
@@ -304,10 +307,10 @@ def _steering_config():
 
 
 def test_the_contract_arm_can_steer_in_a_closed_loop_and_keeps_its_runs_apart():
-    up = _Steerable(drifting_model())
+    cfg = _steering_config()
+    up = _Steerable(drifting_model(), cfg)
     store = Store()
-    res = run(rm.run_contract(up, seed=1, turns=8, store=store, steering=_steering_config(),
-                              arm="closedloop"))
+    res = run(rm.run_contract(up, seed=1, turns=8, store=store, steering=cfg, arm="closedloop"))
     assert res.arm == "closedloop"
     assert store.get_run("real-closedloop-s1") is not None and store.get_run("real-contract-s1") is None
     states = [r for r in res.trace.records if r["ev"] == "STATE"]

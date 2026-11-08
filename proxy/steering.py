@@ -17,8 +17,8 @@ from guidancegrid.core.grid import STEER_SIGNAL, SignalPack
 
 # There is no default gain and no default ceiling: a safe gain is a property of one model, established by its
 # own evidence (see ``proxy.validation``), not a general number. This is only an outer limit that no setting
-# may pass, the gain at which Qwen's GSM8K collapsed (benchmarks/REPORT.md 7.2); a model's own ceiling is
-# below it.
+# may pass, the gain at which Qwen's GSM8K collapsed (benchmarks/REPORT.md 7.2). A gain at the limit is only
+# for experiments; a validated model's own ceiling is below it.
 HARD_GAIN_LIMIT = 0.1
 # A pack vector may be at most this many times the model's typical residual norm (derive makes it 1x).
 # The gain bounds the push only if the vector is on the model's own scale: injection is renormalised to the
