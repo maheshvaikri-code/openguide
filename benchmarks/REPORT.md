@@ -182,6 +182,9 @@ The design was not fixed in advance. In order:
     (an order of execution, not a change of design) because the conversations could not change a "no gain is eligible" outcome.
     A smoke run on two other seeds, before the registered filter, showed Granite does not end its turn after `[END]` and is slow;
     nothing was changed because of it.
+11. **The 7.7 diagnostics were run after the pilot stopped and are exploratory.** They were specified, with a reading guide, before
+    they were run, and they changed neither the pilot's verdict nor any later decision about Granite. Their result did not match
+    either outcome the reading guide anticipated (see 7.7).
 
 ### 7.1 Does re-anchoring help? (recovery on a real model)
 
@@ -496,6 +499,49 @@ lab's training and not a different architecture. The terseness explanation rests
 **Consequence.** The evidence for drift-gated steering (7.4-7.6) is for one model. Steering any other model needs its own pilot, and
 a model with no evidence should not be steered with the defaults.
 
+**Diagnostics (exploratory; run after the pilot stopped; not pre-registered).** Two cheap questions about *why* Granite is more
+sensitive, with `scripts/diagnose_granite_sensitivity.py`; raw data in
+[`results/granite-3.1-2b/diagnostics.json`](results/granite-3.1-2b/diagnostics.json). Nothing here changes the pilot's verdict.
+
+*D2: does Granite's push dominate because its layers write less?* On one fixed chat, per decoder layer, the median over tokens of
+`||output - input|| / ||input||`:
+
+| | Qwen2.5-1.5B (band 10-18) | Granite-3.1-2B (band 14-26) |
+|---|---|---|
+| Median write ratio over the band | 0.356 | 0.282 (**0.79x** Qwen's) |
+| Steering push divided by the layer's write, median over the band | 0.10 (gain 0.05) | 0.06 (gain 0.025), 0.12 (0.05), 0.18 (0.075) |
+| Cumulative relative push over the band | 0.288 (gain 0.05) | 0.229 (0.025), 0.458 (0.05), 0.687 (0.075) |
+
+Granite's layers do not write much less than Qwen's, and Granite at its lowest gain gets *less* push than Qwen at its validated gain
+(0.79x cumulatively, 0.6x per unit of layer write). Yet Qwen lost 0.5 GSM8K points on the full set and Granite lost 6.3. **So "the same
+relative push dominates because Granite's layers write less" is not supported**, and neither is "Granite simply gets a bigger push".
+
+*D1: is it the rules direction, or just a push of that size?* Random directions with the rules pack's per-layer norms, Granite,
+gain 0.025, the same first 300 GSM8K problems, steering always on, three seeds:
+
+| Arm | Accuracy | Drop vs none, 95% CI |
+|---|---|---|
+| rules pack (registered) | 67.0% | +6.3 points [+1.0, +11.7] |
+| random direction, seed 0 / 1 / 2 | 68.7% / 71.0% / 69.3% | +4.7 [+0.3, +9.0] / +2.3 [-1.7, +6.3] / +4.0 [-0.3, +8.3] |
+| mean of the three random directions | | **+3.7 [+0.4, +6.9]** (paired over questions) |
+| random minus rules pack (the rules direction's extra harm) | | **+2.7 [-2.2, +7.7]** |
+
+A random push of this size **does hurt Granite** (the pooled interval excludes zero), about 60% as much as the rules direction. The
+rules direction's extra harm is estimated at 2.7 points, but its interval includes zero, so it is not established. The questions lost
+differ almost entirely from push to push (only 4 of the rules pack's 43 lost questions are also lost under all three random pushes),
+so greedy decoding flips many answers either way and only the net change is meaningful.
+
+**What the two diagnostics show together.** Neither explanation the reading guide offered fits. The harm is not mainly the rules
+direction (a random one hurts too), and it is not explained by Granite's layers writing less or by a larger total push (D2). What is
+left is that **Granite's reasoning is more fragile than Qwen's to a residual-stream perturbation of this relative size, whatever its
+direction**; why is not shown. Untested candidates include Granite's embedding and residual multipliers, its bfloat16 against Qwen's
+float16, and training differences. D1 had no Qwen counterpart: a random-direction control on Qwen at gain 0.05 would show whether Qwen
+shrugs off such pushes or the rules direction was what it tolerated.
+
+**What it does not show.** Anything about gains below 0.025 on Granite, or whether any gain both helps *recovery* there and avoids the
+harm (the conversations were not run). Three random seeds and 300 problems give wide intervals. It does not say the recipe cannot be
+made to work on Granite, only that the cause of the harm is not the one hypothesised and a simple rescaling would not obviously fix it.
+
 ### 7.8 What this does and does not show
 
 - **Shows:** a real-model pipeline works end to end (proxy, real sensors, traces, steering, replay); on this
@@ -505,7 +551,8 @@ a model with no evidence should not be steered with the defaults.
   90.8% over 60 pre-registered conversations (7.4), by a similar amount over 60 more (7.5), and from 52.0% to 91.8% on a new
   prompt pool with the full GSM8K test split showing no harm by the stricter rule (7.6); a cap on consecutive steered turns
   did not help (7.5). The same recipe at the same relative gains degraded a second model's reasoning
-  (Granite-3.1-2B: 6 to 42 GSM8K points), so the evidence for steering is for one model (7.7).
+  (Granite-3.1-2B: 6 to 42 GSM8K points), so the evidence for steering is for one model (7.7). Exploratory diagnostics found the harm is not mainly the rules direction (a random
+  push of the same size also hurt) and is not explained by Granite's layers writing less; why Granite is more fragile is not shown.
 - **Does not show:** anything about 7B/8B models (the blueprint's Qwen2.5-7B does not fit in 8 GB at full
   precision, so that gate is still unrun); that results hold for other rules or models (new prompts of the same style were covered in 7.6; a second model failed its
   capability pilot, 7.7); that the

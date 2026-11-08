@@ -59,3 +59,4 @@ benchmarks/replication_pool2_*
 benchmarks/results/qwen2.5-1.5b/replication_pool2.smoke.json
 benchmarks/pilot_*
 benchmarks/results/granite-3.1-2b/pilot.smoke.json
+benchmarks/diagnostics_d1_progress.json
