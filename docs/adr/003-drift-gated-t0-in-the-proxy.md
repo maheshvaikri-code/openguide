@@ -19,10 +19,12 @@ Wire T0 into the proxy as a **drift-gated closed loop**, opt-in:
    T2 re-anchor), the **next** generation of that session is steered at the configured gain.
 2. When a turn is clean, the following generation is not steered. The decision is re-made every turn.
 3. The T2 re-anchor is still sent; T0 adds to it, it does not replace it.
-4. The gain is capped in code at `MAX_SAFE_GAIN = 0.05`, the only gain measured to keep the model's reasoning
-   intact, and defaults to it. (An earlier draft capped it at 0.1 and called that usable; the capability table
-   in the report shows it is not.)
-   Raising the cap is a deliberate edit of that constant, not a setting.
+4. **Steering fails closed.** There is no default gain and no default ceiling. Steering is allowed only on weights that have
+   a validation record (`proxy/validation.py`): the weights' identity (SHA-256 of the weight files), the band, the steering
+   pack, a gain ceiling and the evidence (results files with their commits). The only record is Qwen2.5-1.5B-Instruct: band
+   10-18, ceiling 0.05, the three pre-registered studies. `HFUpstream.enable_steering` checks the loaded model against the
+   records and refuses anything else, naming the missing evidence. (An earlier draft capped the gain at 0.1 for all models and
+   called that usable; the capability table shows it is not, and a second model showed no gain is general.)
 5. Every steered turn appends a `STEER` record (turn, peak gain, layer band, pack hash) to the hash-chained trace,
    so what was steered is as auditable as what was measured. The record is written only when the upstream reports (through a `SteerReceipt`) that a steered reply was
    produced. A reply that was produced but never scored (the client closed the stream) is recorded marked
@@ -61,9 +63,12 @@ Wire T0 into the proxy as a **drift-gated closed loop**, opt-in:
   failing). A cap on consecutive steered turns exists as an opt-in setting (`max_consecutive`, `pause_turns`; off by
   default). A pre-registered study on fresh seeds (`docs/preregistration/t0-cap-study.md`, REPORT 7.5) found it did **not**
   help (5 losses against 3 uncapped; capped - uncapped -0.03, CI lower bound -0.08). Steering stays uncapped by default.
-- **The gain ceiling is per model.** `MAX_SAFE_GAIN = 0.05` is Qwen2.5-1.5B's measured value. A pilot on Granite-3.1-2B (REPORT 7.7)
-  found no eligible gain: even the lowest relative gain, 0.025, cost 6.3 GSM8K points. `SteeringConfig.gain_ceiling` lets a model
-  with its own evidence use a different one, but nothing yet stops the default being used on an unvalidated model.
+- **The gain ceiling is per model, and now enforced as such.** A pilot on Granite-3.1-2B (REPORT 7.7) found no eligible gain:
+  even the lowest relative gain, 0.025, cost 6.3 GSM8K points. So the Qwen ceiling of 0.05 is no longer an implicit default:
+  an unvalidated model is refused. To experiment, a `SteeringConfig` must say `experimental=True` and give an explicit
+  `gain_ceiling`; that can only be done in code (no server or environment setting reaches it), and every steered turn under
+  it carries `"experimental": true` in its `STEER` record and is labelled in the Console. A model gains a record only with
+  its own pre-registered evidence.
 - Hosted APIs (OpenAI, Anthropic, ...) cannot be steered this way; they stay T2/T3.
 
 ## Alternatives rejected

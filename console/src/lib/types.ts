@@ -57,6 +57,8 @@ export interface SteerRecord {
   /** The decoder layers steered: from `band[0]` up to, not including, `band[1]`. */
   band: [number, number];
   pack_hash: string;
+  /** Present (true) only when the model had no validation record and steering was an explicit experiment. */
+  experimental?: boolean;
 }
 
 export interface ChainReport {

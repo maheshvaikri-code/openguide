@@ -13,7 +13,7 @@ from guidancegrid.core.trace import steer_event
 from proxy.app import create_app
 from proxy.hf_upstream import HFUpstream
 from proxy.registry import ContractRegistry
-from proxy.steering import MAX_SAFE_GAIN, SteeringConfig, SteerState, advance
+from proxy.steering import HARD_GAIN_LIMIT, SteeringConfig, SteerState, advance
 from proxy.upstream import MockUpstream
 
 GOOD = "Open Settings and tap Sync. [END]"
@@ -85,10 +85,10 @@ def run(coro):
 
 
 # ── the configuration ─────────────────────────────────────────────────
-def test_the_gain_is_capped_at_the_measured_usable_ceiling():
-    assert MAX_SAFE_GAIN == 0.05                                     # 0.1 collapsed GSM8K (66% -> 24%)
-    SteeringConfig(_pack(), BAND, MAX_SAFE_GAIN)                     # the ceiling itself is allowed
-    for bad in (0.0500001, 0.1, 0.2, 0.4):
+def test_no_gain_may_pass_the_outer_limit_and_the_limit_itself_is_allowed():
+    assert HARD_GAIN_LIMIT == 0.1                              # where Qwen's GSM8K collapsed (66% -> 24%)
+    SteeringConfig(_pack(), BAND, HARD_GAIN_LIMIT)
+    for bad in (0.1000001, 0.2, 0.4):
         with pytest.raises(ValueError, match="gain"):
             SteeringConfig(_pack(), BAND, bad)
 
@@ -475,14 +475,10 @@ def test_without_the_cap_the_same_conversation_is_steered_on_every_turn_after_th
 
 
 # -- a per-model gain ceiling (a model other than Qwen needs its own evidence) --
-def test_the_default_ceiling_is_the_qwen_measured_one_and_a_higher_gain_needs_an_explicit_ceiling():
-    from proxy.steering import HARD_GAIN_LIMIT
-
-    with pytest.raises(ValueError, match="gain"):
-        SteeringConfig(_pack(), BAND, 0.075)                           # above the default ceiling
-    cfg = SteeringConfig(_pack(), BAND, 0.075, gain_ceiling=0.075)
-    assert cfg.gain == 0.075 and cfg.gain_ceiling == 0.075
-    assert HARD_GAIN_LIMIT == 0.1
+def test_there_is_no_default_ceiling_it_comes_from_the_models_record_or_an_explicit_experiment():
+    cfg = SteeringConfig(_pack(), BAND, 0.075)
+    assert cfg.gain_ceiling is None                                  # nothing is assumed
+    assert SteeringConfig(_pack(), BAND, 0.075, gain_ceiling=0.075).gain_ceiling == 0.075
 
 
 def test_a_ceiling_can_never_exceed_the_hard_limit_or_be_non_positive():
@@ -495,3 +491,31 @@ def test_the_gain_may_not_exceed_its_own_ceiling():
     with pytest.raises(ValueError, match="gain"):
         SteeringConfig(_pack(), BAND, 0.06, gain_ceiling=0.05)
     SteeringConfig(_pack(), BAND, 0.025, gain_ceiling=0.075)           # a gain below the ceiling is fine
+
+
+# -- experiments are marked in the trace --------------------------------------------------------
+def test_steering_under_the_experimental_override_is_marked_in_every_steer_record():
+    rig = Rig([BAD, GOOD, GOOD], experimental=True, gain_ceiling=0.05)
+
+    async def go():
+        async with rig.client() as c:
+            for _ in range(3):
+                await rig.say(c)
+
+    run(go())
+    steers = [r for r in rig.trace().records if r["ev"] == "STEER"]
+    assert steers and all(r.get("experimental") is True for r in steers)
+    assert rig.trace().verify()
+
+
+def test_steering_on_a_validated_setup_has_no_experimental_mark():
+    rig = Rig([BAD, GOOD, GOOD])
+
+    async def go():
+        async with rig.client() as c:
+            for _ in range(3):
+                await rig.say(c)
+
+    run(go())
+    steers = [r for r in rig.trace().records if r["ev"] == "STEER"]
+    assert steers and all("experimental" not in r for r in steers)

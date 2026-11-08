@@ -27,7 +27,7 @@ from benchmarks import real_model as rm  # noqa: E402
 from guidancegrid.core.grid import SignalPack  # noqa: E402
 from guidancegrid.store import Store  # noqa: E402
 from proxy.hf_upstream import HFUpstream  # noqa: E402
-from proxy.steering import DEFAULT_GAIN, SteeringConfig  # noqa: E402
+from proxy.steering import SteeringConfig  # noqa: E402
 from scripts import real_t0_gate as gate  # noqa: E402
 from scripts.derive_steering_pack import DEFAULT_OUT as DEFAULT_PACK  # noqa: E402
 
@@ -65,7 +65,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--model", default=gate.MODEL)
     ap.add_argument("--pack", default=DEFAULT_PACK)
-    ap.add_argument("--gain", type=float, default=DEFAULT_GAIN)
+    ap.add_argument("--gain", type=float, default=0.05, help="Qwen's validated ceiling is 0.05")
     ap.add_argument("--seeds", type=int, default=5)
     ap.add_argument("--turns", type=int, default=16)
     ap.add_argument("--shocks", default="4,10")

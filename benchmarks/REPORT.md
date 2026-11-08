@@ -485,8 +485,8 @@ conversations cannot change a "none eligible" outcome, so the GSM8K filter was r
 
 **What it shows.** The steering recipe (rules-versus-no-rules pack, Qwen's relative band, relative gains of 0.025-0.075) **does not
 transfer unchanged**: on Granite even the lowest gain costs 6.3 GSM8K points and the loss grows steadily with gain. "Gain 0.05 is
-safe" is a statement about Qwen2.5-1.5B only. The code's default ceiling (0.05) is Qwen's measured value and would cost Granite about
-20 points.
+safe" is a statement about Qwen2.5-1.5B only. The code's then-default ceiling (0.05) is Qwen's measured value and would have cost Granite about
+20 points; steering now refuses any model without a validation record of its own (ADR-003).
 
 **What it does not show.** Whether a gain below 0.025, another band or another pack would work on Granite: the registered grid began at
 0.025 and the rule allowed no more. Nothing about whether steering helps *recovery* on Granite, since the conversations were not run.

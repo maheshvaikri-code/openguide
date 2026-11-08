@@ -224,7 +224,6 @@ def test_enable_steering_checks_the_pack_against_the_model_and_hooks_only_while_
     from transformers import Qwen2Config, Qwen2ForCausalLM
 
     from guidancegrid.core.grid import STEER_SIGNAL, SignalPack
-    from proxy.steering import SteeringConfig
 
     torch.manual_seed(0)
     cfg = Qwen2Config(vocab_size=64, hidden_size=32, intermediate_size=64, num_hidden_layers=6,
@@ -242,13 +241,13 @@ def test_enable_steering_checks_the_pack_against_the_model_and_hooks_only_while_
 
     up = HFUpstream(generate_fn=lambda m, n: ("x", 1, 1))
     with pytest.raises(ValueError, match="model"):                       # needs the model itself
-        up.enable_steering(SteeringConfig(pack(32), (1, 4), 0.05))
+        up.enable_steering(_exp(pack(32), (1, 4)))
     up.model = model
     with pytest.raises(ValueError, match="hidden size"):                 # a pack for another model
-        up.enable_steering(SteeringConfig(pack(16), (1, 4), 0.05))
+        up.enable_steering(_exp(pack(16), (1, 4)))
     with pytest.raises(ValueError, match="layers"):                      # band reaches past the last layer
-        up.enable_steering(SteeringConfig(_wide_pack(32, 9), (1, 9), 0.05))
-    assert up.enable_steering(SteeringConfig(_scaled_pack(model, 1.0), (1, 4), 0.05)) is up
+        up.enable_steering(_exp(_wide_pack(32, 9), (1, 9)))
+    assert up.enable_steering(_exp(_scaled_pack(model, 1.0), (1, 4))) is up
     assert up.supports_steering and hooks() == 0  # nothing hooked until steered
     with up.steer_factory(0.05):
         assert hooks() == 6
@@ -300,28 +299,26 @@ def _scaled_pack(model, scale):
 def test_enable_steering_accepts_a_pack_at_the_models_own_scale_and_refuses_one_that_would_overwrite_it():
     import pytest
 
-    from proxy.steering import SteeringConfig
 
     model = _tiny_model()
     up = HFUpstream(generate_fn=lambda m, n: ("x", 1, 1), max_new_tokens=64)
     up.model = model
-    up.enable_steering(SteeringConfig(_scaled_pack(model, 1.0), (1, 4), 0.05))      # what derive makes
+    up.enable_steering(_exp(_scaled_pack(model, 1.0), (1, 4)))      # what derive makes
     with pytest.raises(ValueError, match="norm"):
-        up.enable_steering(SteeringConfig(_scaled_pack(model, 1e6), (1, 4), 0.05))   # swamps the state
+        up.enable_steering(_exp(_scaled_pack(model, 1e6), (1, 4)))   # swamps the state
     with pytest.raises(ValueError, match="norm"):
-        up.enable_steering(SteeringConfig(_scaled_pack(model, 50.0), (1, 4), 0.05))
+        up.enable_steering(_exp(_scaled_pack(model, 50.0), (1, 4)))
 
 
 def test_enable_steering_refuses_a_reply_length_longer_than_the_steering_field_covers():
     import pytest
 
-    from proxy.steering import SteeringConfig
 
     model = _tiny_model()
     up = HFUpstream(generate_fn=lambda m, n: ("x", 1, 1), max_new_tokens=5000)
     up.model = model
     with pytest.raises(ValueError, match="max_new_tokens"):
-        up.enable_steering(SteeringConfig(_scaled_pack(model, 1.0), (1, 4), 0.05))
+        up.enable_steering(_exp(_scaled_pack(model, 1.0), (1, 4)))
 
 
 def test_the_gain_ceiling_is_enforced_at_the_upstream_too():
@@ -365,7 +362,6 @@ def test_enable_steering_steers_only_the_bands_layers_even_if_the_pack_has_more(
 
     torch = pytest.importorskip("torch")
     from guidancegrid.core.grid import STEER_SIGNAL
-    from proxy.steering import SteeringConfig
 
     model = _tiny_model()
     wide = _scaled_pack(model, 1.0)                                   # layers 1..3
@@ -373,7 +369,7 @@ def test_enable_steering_steers_only_the_bands_layers_even_if_the_pack_has_more(
         wide.set_vector(STEER_SIGNAL, layer, np.asarray(wide.get(STEER_SIGNAL, 2)))
     up = HFUpstream(generate_fn=lambda m, n: ("x", 1, 1), max_new_tokens=64)
     up.model = model
-    up.enable_steering(SteeringConfig(wide, (2, 4), 0.05))
+    up.enable_steering(_exp(wide, (2, 4)))
     with up.steer_factory(0.05) as steerer:
         with torch.no_grad():
             model(input_ids=torch.arange(1, 9).unsqueeze(0))
@@ -385,12 +381,11 @@ def test_enable_steering_steers_only_the_bands_layers_even_if_the_pack_has_more(
 def test_the_upstream_enforces_the_configured_ceiling_not_just_the_default():
     import pytest
 
-    from proxy.steering import SteeringConfig
 
     model = _tiny_model()
     up = HFUpstream(generate_fn=lambda m, n: ("x", 1, 1), max_new_tokens=64)
     up.model = model
-    up.enable_steering(SteeringConfig(_scaled_pack(model, 1.0), (1, 4), 0.075, gain_ceiling=0.075))
+    up.enable_steering(_exp(_scaled_pack(model, 1.0), (1, 4), gain=0.075, ceiling=0.075))
     asyncio.run(up.chat({"messages": [{"role": "user", "content": "hi"}]}, {}, steer=0.075))     # at it
     with pytest.raises(ValueError, match="gain"):
         asyncio.run(up.chat({"messages": [{"role": "user", "content": "hi"}]}, {}, steer=0.08))
@@ -408,3 +403,78 @@ def test_the_dtype_option_resolves_names_and_defaults_are_unchanged():
     assert _resolve_dtype("float32", "cuda") is torch.float32
     with pytest.raises(ValueError, match="dtype"):
         _resolve_dtype("int4", "cuda")
+
+
+
+def _exp(pack, band, gain=0.05, ceiling=0.05):
+    """A tiny random model has no validation record, so these tests are experiments by definition."""
+    from proxy.steering import SteeringConfig
+
+    return SteeringConfig(pack, band, gain, experimental=True, gain_ceiling=ceiling)
+
+
+# -- steering fails closed on a model with no record (ADR-003, REPORT 7.7) -------------------------
+def _weights_dir(tmp_path, data=b"tiny"):
+    d = tmp_path / "weights"
+    d.mkdir(exist_ok=True)
+    (d / "model.safetensors").write_bytes(data)
+    return str(d)
+
+
+def _validated_upstream(tmp_path, records_for=None):
+    from proxy import validation as val
+
+    model = _tiny_model()
+    up = HFUpstream(generate_fn=lambda m, n: ("x", 1, 1), max_new_tokens=64)
+    up.model = model
+    up.weights_path = _weights_dir(tmp_path)
+    pack = _scaled_pack(model, 1.0)
+    rec = val.ValidationRecord(key="tiny", weights_sha256=val.weights_identity(up.weights_path), band=(1, 4),
+                               gain_ceiling=0.04, pack_hash=pack.hash(), evidence=(("r.json", "abc1234"),))
+    return up, pack, {rec.weights_sha256: rec}
+
+
+def test_a_model_with_no_record_cannot_be_steered_and_nothing_is_hooked(tmp_path):
+    import pytest
+
+    from proxy import validation as val
+    from proxy.steering import SteeringConfig
+
+    model = _tiny_model()
+    up = HFUpstream(generate_fn=lambda m, n: ("x", 1, 1), max_new_tokens=64)
+    up.model = model
+    up.weights_path = _weights_dir(tmp_path)
+    with pytest.raises(val.NotValidated, match="no validation record"):
+        up.enable_steering(SteeringConfig(_scaled_pack(model, 1.0), (1, 4), 0.025), records={})
+    assert up.supports_steering is False and up.steer_factory is None
+
+
+def test_a_validated_model_is_steerable_within_its_recorded_ceiling_and_no_further(tmp_path):
+    import pytest
+
+    from proxy.steering import SteeringConfig
+
+    up, pack, records = _validated_upstream(tmp_path)
+    up.enable_steering(SteeringConfig(pack, (1, 4), 0.03), records=records)
+    assert up.supports_steering
+    asyncio.run(up.chat({"messages": [{"role": "user", "content": "hi"}]}, {}, steer=0.04))   # at the ceiling
+    with pytest.raises(ValueError, match="gain"):
+        asyncio.run(up.chat({"messages": [{"role": "user", "content": "hi"}]}, {}, steer=0.05))
+
+
+def test_the_experimental_override_works_without_a_record_and_sets_its_own_ceiling(tmp_path):
+    import pytest
+
+    model = _tiny_model()
+    up = HFUpstream(generate_fn=lambda m, n: ("x", 1, 1), max_new_tokens=64)
+    up.model = model
+    up.enable_steering(_exp(_scaled_pack(model, 1.0), (1, 4), gain=0.025, ceiling=0.06), records={})
+    asyncio.run(up.chat({"messages": [{"role": "user", "content": "hi"}]}, {}, steer=0.06))
+    with pytest.raises(ValueError, match="gain"):
+        asyncio.run(up.chat({"messages": [{"role": "user", "content": "hi"}]}, {}, steer=0.07))
+
+
+def test_from_pretrained_records_where_the_weights_are():
+    import inspect
+
+    assert "weights_path" in inspect.getsource(HFUpstream.from_pretrained)

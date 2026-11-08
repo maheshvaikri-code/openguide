@@ -30,7 +30,7 @@ def turn_event(turn: int, user: str, output: str, restated: str | None = None) -
 
 
 def steer_event(turn: int, gain: float, band: tuple[int, int] | list[int], pack_hash: str,
-                scored: bool = True) -> dict:
+                scored: bool = True, experimental: bool = False) -> dict:
     """A STEER record: activation steering (T0) was applied to this turn's generation, at this (peak) gain,
     over this range of layers, with this steering pack. Appended after the turn's STATE; only steered turns
     have one. ``scored`` is False (and the key is present) only when the reply was produced but its turn was
@@ -39,6 +39,8 @@ def steer_event(turn: int, gain: float, band: tuple[int, int] | list[int], pack_
            "pack_hash": pack_hash}
     if not scored:
         rec["scored"] = False
+    if experimental:
+        rec["experimental"] = True       # the model had no validation record: this steering was an experiment
     return rec
 
 

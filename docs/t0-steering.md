@@ -36,12 +36,23 @@ from proxy.steering import SteeringConfig
 
 up = HFUpstream.from_pretrained(".models/Qwen2.5-1.5B-Instruct")
 pack = SignalPack.load_safetensors(".models/steering/qwen2.5-1.5b-instruct.safetensors")
-cfg = SteeringConfig(pack, band=(10, 19), gain=0.05)      # layers 10..18; gain must be in (0, 0.1]
-up.enable_steering(cfg)                                   # checks the pack against this model now
+cfg = SteeringConfig(pack, band=(10, 19), gain=0.05)      # Qwen's validated band and ceiling
+up.enable_steering(cfg)                                   # refuses a model with no validation record
 app = create_app(upstream=up, steering=cfg)               # register contracts as usual (POST /v1/openguide/contracts)
 ```
 
-There is no command-line or environment switch yet; it is configured in Python as above.
+There is no command-line or environment switch; it is configured in Python as above.
+
+## Steering fails closed
+
+Steering is allowed only on weights that have a validation record in `proxy/validation.py`: the identity of the weights (a
+SHA-256 of the weight files), the band, the pack and a gain ceiling, with the evidence behind them. Only Qwen2.5-1.5B-Instruct
+has one. `enable_steering` checks the loaded model and refuses any other, saying what is missing; it also refuses a different
+band, pack or a gain above the recorded ceiling. There is no default gain or ceiling.
+
+To experiment on a model with no record, say so in code: `SteeringConfig(pack, band, gain, experimental=True,
+gain_ceiling=...)`. No server setting or environment variable can do this, every steered turn under it is marked
+`"experimental": true` in the trace, and the Console labels it. An experiment is not evidence of safety.
 
 `create_app(..., steering=cfg)` raises if the upstream cannot steer, so a trace never claims steering that did not
 happen. A client cannot switch steering on or change the gain: the gain travels from the Governor to the model
@@ -59,8 +70,8 @@ no cap (-0.03, CI [-0.08, +0.01]). Pausing steering let some conversations that 
 
 - **Validated on one model only.** The same recipe at the same *relative* gains (0.025, 0.05, 0.075) was tried on a second model,
   Granite-3.1-2B-Instruct, and its reasoning degraded at every gain (GSM8K down 6.3, 19.7 and 42.3 points on 300 problems), so the
-  pre-registered pilot stopped (`benchmarks/REPORT.md` 7.7). The default ceiling of 0.05 is Qwen2.5-1.5B's measured value, not a
-  general safe value. Do not steer a model without a pilot of its own.
+  pre-registered pilot stopped (`benchmarks/REPORT.md` 7.7). The ceiling of 0.05 is Qwen2.5-1.5B's measured
+  value, not a general safe value, and steering now refuses any model without a record of its own.
 - `gain` is the peak of a gaussian envelope across the layer band: the middle layers get about that much and the
   edge layers less. A pack must be on the model's own scale (the derive script makes it so); `enable_steering`
   refuses one that is not, and `SteeringConfig(..., expected_pack_hash=...)` pins the pack you reviewed.

@@ -126,6 +126,7 @@ export function parseSteers(records: ReadonlyArray<Record<string, unknown>> | un
     out.set(r["turn"], {
       ev: "STEER", turn: r["turn"], gain: r["gain"], band: [b[0], b[1]],
       pack_hash: typeof r["pack_hash"] === "string" ? r["pack_hash"] : "",
+      ...(r["experimental"] === true ? { experimental: true } : {}),
     });
   }
   return out;

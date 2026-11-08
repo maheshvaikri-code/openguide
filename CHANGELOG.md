@@ -16,6 +16,10 @@ All notable changes to this project are documented here. Format follows
   60-conversation set gave +0.26 again, and a pre-registered study on a new prompt pool gave +0.40 with GSM8K (all 1,319
   problems) down 0.5 points, interval upper end 3.3 (`benchmarks/REPORT.md` 7.4-7.6). Conversations where the gate keeps firing do worse.
 - README "How the pieces fit" diagram.
+- **Steering fails closed (behaviour change).** `HFUpstream.enable_steering` now refuses weights with no validation record
+  (`proxy/validation.py`: weight SHA-256, band, pack, gain ceiling, evidence); only Qwen2.5-1.5B-Instruct has one. `SteeringConfig`
+  has no default gain or ceiling (`MAX_SAFE_GAIN` and `DEFAULT_GAIN` are removed). Experiments need `experimental=True` plus an
+  explicit `gain_ceiling`, settable only in code; their `STEER` records carry `"experimental": true`.
 - Second-model support for the experiments (model profiles with a relative steering band, a per-model `gain_ceiling`, a dtype
   option, a pinned-revision check) and a pre-registered gain pilot. On Granite-3.1-2B-Instruct the pilot stopped: no gain was
   eligible (GSM8K down 6.3 to 42.3 points), so steering is validated on one model only (`benchmarks/REPORT.md` 7.7).

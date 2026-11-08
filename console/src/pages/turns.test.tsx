@@ -243,3 +243,25 @@ describe("the run header says when steering was used", () => {
     expect(head).not.toHaveTextContent("steering");
   });
 });
+
+
+describe("an experimental steer is labelled as one", () => {
+  const exp = { ev: "STEER", turn: 2, gain: 0.05, band: [10, 19], pack_hash: "sha256:p", experimental: true };
+
+  it("says the model had no validation record", async () => {
+    show(api([...STATES, exp] as Array<Record<string, unknown>>));
+    await screen.findByLabelText("Details of turn 0");
+    fireEvent.keyDown(slider(), { key: "End" });                                          // turn 2
+    const note = within(screen.getByLabelText("Details of turn 2")).getByLabelText("Activation steering");
+    expect(note).toHaveTextContent("experiment");
+    expect(note).toHaveTextContent("no validation record");
+  });
+
+  it("says nothing of the kind for a validated steer", async () => {
+    show(api([...STATES, { ...exp, experimental: undefined }] as Array<Record<string, unknown>>));
+    await screen.findByLabelText("Details of turn 0");
+    fireEvent.keyDown(slider(), { key: "End" });
+    const note = within(screen.getByLabelText("Details of turn 2")).getByLabelText("Activation steering");
+    expect(note).not.toHaveTextContent("experiment");
+  });
+});

@@ -154,7 +154,8 @@ class Governor:
         receipt.recorded = True
         cfg = self.steering
         sess.reconciler.trace.append(
-            steer_event(sess.turn, receipt.gain, cfg.band, cfg.pack_hash, scored=False))
+            steer_event(sess.turn, receipt.gain, cfg.band, cfg.pack_hash, scored=False,
+                        experimental=cfg.experimental))
         try:
             self._persist(sess, sess.compiled)
         except Exception:                                # noqa: BLE001
@@ -191,7 +192,8 @@ class Governor:
         if receipt is not None and receipt.produced and not receipt.recorded and self.steering is not None:
             receipt.recorded = True
             sess.reconciler.trace.append(
-                steer_event(out.turn, receipt.gain, self.steering.band, self.steering.pack_hash))
+                steer_event(out.turn, receipt.gain, self.steering.band, self.steering.pack_hash,
+                            experimental=self.steering.experimental))
         # closed loop: the next generation is steered only if this turn needed a correction (and, if the
         # optional cap is on, only within it)
         if self.steering is not None:

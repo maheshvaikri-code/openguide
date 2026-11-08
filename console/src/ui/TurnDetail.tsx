@@ -76,6 +76,9 @@ export function TurnDetail({
             <b>Activation steering was on for this turn</b> (peak gain {steer.gain}, layers {steer.band[0]} to {steer.band[1] - 1}),
             because the previous turn needed a correction. The model's internal activations were nudged toward the
             rules while it wrote this reply, in addition to any reminder above.
+            {steer.experimental && (
+              <> <b>This was an experiment:</b> the model has no validation record, so nothing shows this setting is safe for it.</>
+            )}
           </p>
         )}
 

@@ -212,6 +212,12 @@ describe("parseSteers", () => {
     expect(parseSteers([{ ...steer, scored: true }]).size).toBe(1);
   });
 
+  it("carries the experimental mark only when the record says so", () => {
+    expect(parseSteers([{ ...steer, experimental: true }]).get(2)?.experimental).toBe(true);
+    expect(parseSteers([steer]).get(2)).not.toHaveProperty("experimental");
+    expect(parseSteers([{ ...steer, experimental: "yes" }]).get(2)).not.toHaveProperty("experimental");
+  });
+
   it("keeps the first record for a turn", () => {
     const m = parseSteers([steer, { ...steer, gain: 0.1 }]);
     expect(m.get(2)?.gain).toBe(0.05);

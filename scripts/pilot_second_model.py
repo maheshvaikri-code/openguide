@@ -146,7 +146,7 @@ def main() -> int:
     norms = json.load(open(prof.pack_path + ".norms.json", encoding="utf-8"))
     configs: dict[str, SteeringConfig | None] = {"t2": None}
     for g in GAINS:
-        configs[f"g{g}"] = SteeringConfig(pack, prof.band, g, gain_ceiling=PILOT_CEILING)
+        configs[f"g{g}"] = SteeringConfig(pack, prof.band, g, gain_ceiling=PILOT_CEILING, experimental=True)
     up.enable_steering(configs[f"g{GAINS[-1]}"])
     say(f"pack {pack.hash()[:19]}...  band layers {prof.band[0]}..{prof.band[1] - 1}  gains {GAINS}")
     os.makedirs(os.path.dirname(db), exist_ok=True)

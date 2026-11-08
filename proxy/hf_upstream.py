@@ -21,7 +21,8 @@ from typing import Any, AsyncIterator, Callable
 
 import numpy as np
 
-from .steering import MAX_SAFE_GAIN, MAX_VECTOR_NORM_RATIO, SteerReceipt
+from . import validation
+from .steering import HARD_GAIN_LIMIT, MAX_VECTOR_NORM_RATIO, SteerReceipt
 from .upstream import _chunk_text
 
 # (messages, max_new_tokens) -> (text, prompt_tokens, completion_tokens)
@@ -69,7 +70,8 @@ class HFUpstream:
         self.steer_factory: Callable[[float], AbstractContextManager[Any]] | None = None
         # forward passes the steering field covers (set by enable_steering)
         self._steer_steps: int | None = None
-        self._gain_ceiling: float = MAX_SAFE_GAIN      # set from the config by enable_steering
+        self.weights_path: str | None = None            # set by from_pretrained: what identifies the model
+        self._gain_ceiling: float = HARD_GAIN_LIMIT     # set by enable_steering to the model's own ceiling
 
     @property
     def supports_steering(self) -> bool:
@@ -86,7 +88,7 @@ class HFUpstream:
             states = self.model(input_ids=ids, output_hidden_states=True).hidden_states
         return {i: float(states[i + 1][0].float().norm(dim=-1).median()) for i in range(n_layers - 1)}
 
-    def enable_steering(self, config: Any) -> "HFUpstream":
+    def enable_steering(self, config: Any, records: Any = None) -> "HFUpstream":
         """Let the Governor steer this model's activations (T0). Checks the pack against the model now, so a
         mismatch fails at start-up rather than on the first corrected turn. Imports torch only here."""
         if self.model is None:
@@ -117,9 +119,11 @@ class HFUpstream:
                     f"{MAX_VECTOR_NORM_RATIO:g}x "
                     f"this model's typical residual norm {typical[layer]:.3g}: it would replace the hidden "
                     f"state instead of nudging it, whatever the gain")
+        # Fails closed: only weights with a validation record (or an explicit experiment) may be steered.
+        decision = validation.authorise(self.weights_path, config, records)
         model, pack, band = self.model, config.pack_in_band(), tuple(config.band)
         self._steer_steps = MAX_STEPS
-        self._gain_ceiling = config.gain_ceiling
+        self._gain_ceiling = decision.ceiling
         manifest = config.manifest(self.served_name)
         self.steer_factory = lambda gain: steering_context(model, pack, band, gain, manifest)()
         return self
@@ -149,6 +153,7 @@ class HFUpstream:
         name = served_name or "local:" + path.replace("\\", "/").rstrip("/").split("/")[-1].lower()
         inst = cls(generate, served_name=name, max_new_tokens=max_new_tokens)
         inst.model, inst.tokenizer = model, tok
+        inst.weights_path = path
         return inst
 
     # ── Upstream protocol ────────────────────────────────────────────

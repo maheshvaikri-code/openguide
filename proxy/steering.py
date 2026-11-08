@@ -15,14 +15,10 @@ import numpy as np
 
 from guidancegrid.core.grid import STEER_SIGNAL, SignalPack
 
-# The only gain measured to leave the model's reasoning intact (benchmarks/REPORT.md 7.2: GSM8K 66% with no
-# steering, 60% at 0.05 with no loss detected, 24% at 0.1, degenerate output from 0.2). A code constant on
-# purpose: raising it is a decision, not a setting.
-MAX_SAFE_GAIN = 0.05
-DEFAULT_GAIN = 0.05
-# A model other than Qwen has no measured ceiling of its own, so the default stays Qwen's. A different ceiling
-# must be passed explicitly (``gain_ceiling``) and be backed by that model's own evidence (a pilot); it can
-# never exceed this, the gain at which Qwen's GSM8K collapsed.
+# There is no default gain and no default ceiling: a safe gain is a property of one model, established by its
+# own evidence (see ``proxy.validation``), not a general number. This is only an outer limit that no setting
+# may pass, the gain at which Qwen's GSM8K collapsed (benchmarks/REPORT.md 7.2); a model's own ceiling is
+# below it.
 HARD_GAIN_LIMIT = 0.1
 # A pack vector may be at most this many times the model's typical residual norm (derive makes it 1x).
 # The gain bounds the push only if the vector is on the model's own scale: injection is renormalised to the
@@ -43,26 +39,35 @@ class SteerReceipt:
 class SteeringConfig:
     pack: SignalPack
     band: tuple[int, int]               # decoder layers lo..hi-1 that are steered
-    gain: float = DEFAULT_GAIN          # the PEAK of a gaussian envelope across the band (edges get less)
+    gain: float                         # the PEAK of a gaussian envelope across the band (edges get less)
     expected_pack_hash: str | None = None      # pin the pack the operator reviewed; refuse any other
     # Opt-in, off by default (None): at most this many consecutive steered generations, then pause_turns turns
     # without steering (the text re-anchor still runs). docs/preregistration/t0-cap-study.md
     max_consecutive: int | None = None
     pause_turns: int = 3
-    gain_ceiling: float = MAX_SAFE_GAIN      # per-model; see HARD_GAIN_LIMIT
+    # None: use the model's validated ceiling (proxy.validation). A smaller value narrows it; a larger one is
+    # refused.
+    gain_ceiling: float | None = None
+    # For experiments on a model with no validation record: needs an explicit gain_ceiling, is never read from
+    # a server or environment setting, and every steered turn under it is marked in the trace.
+    experimental: bool = False
 
     def __post_init__(self) -> None:
         c = self.gain_ceiling
-        c_ok = isinstance(c, (int, float)) and not isinstance(c, bool)
-        c_ok = c_ok and math.isfinite(c) and 0 < c <= HARD_GAIN_LIMIT
-        if not c_ok:
-            raise ValueError(f"gain_ceiling must be above 0 and at most {HARD_GAIN_LIMIT}, got {c!r}")
+        if c is not None:
+            c_ok = isinstance(c, (int, float)) and not isinstance(c, bool)
+            c_ok = c_ok and math.isfinite(c) and 0 < c <= HARD_GAIN_LIMIT
+            if not c_ok:
+                raise ValueError(f"gain_ceiling must be above 0 and at most {HARD_GAIN_LIMIT}, got {c!r}")
+        limit = HARD_GAIN_LIMIT if c is None else c
         g = self.gain
-        ok = isinstance(g, (int, float)) and math.isfinite(g) and 0 < g <= c
+        ok = isinstance(g, (int, float)) and not isinstance(g, bool) and math.isfinite(g) and 0 < g <= limit
         if not ok:
             raise ValueError(
-                f"steering gain must be above 0 and at most {c} (larger gains were measured to damage the "
-                f"model's reasoning or output), got {self.gain!r}")
+                f"steering gain must be above 0 and at most {limit} (larger gains were measured to damage "
+                f"the model's reasoning or output), got {self.gain!r}")
+        if not isinstance(self.experimental, bool):
+            raise ValueError(f"experimental must be True or False, got {self.experimental!r}")
         lo, hi = self.band
         if not (0 <= lo < hi):
             raise ValueError(f"steering band must be layers with 0 <= lo < hi, got {self.band!r}")
