@@ -26,6 +26,10 @@ All notable changes to this project are documented here. Format follows
   option, a pinned-revision check) and a pre-registered gain pilot. On Granite-3.1-2B-Instruct the pilot stopped: no gain was
   eligible (GSM8K down 6.3 to 42.3 points), so steering is validated on one model only (`benchmarks/REPORT.md` 7.7). A pre-registered
   ladder then found the capability cost within noise only at 0.0125 and below (drops of 2.0 and 1.3 points), with no recovery evidence.
+- Pre-registered random-direction control on Qwen2.5-1.5B (`docs/preregistration/t0-direction-control.md`,
+  `scripts/replicate_direction_control.py`, `benchmarks/REPORT.md` 7.8): rules direction beat a random direction of the same size
+  (+0.29 recovery, CI [+0.19, +0.40], 60 conversations); the random push did not detectably help (+0.06) and cost no GSM8K accuracy
+  (0.3 points). One random draw. Tested helpers: `direction_verdict` and `ladder_outcome` in `benchmarks/replication.py`.
 - Opt-in cap on consecutive steered turns (`SteeringConfig(max_consecutive=..., pause_turns=...)`, off by default) and its
   pre-registered study (`docs/preregistration/t0-cap-study.md`, `scripts/replicate_cap.py`). The study found the cap does
   **not** help (more losses than uncapped; non-inferiority failed), so it is not recommended (`benchmarks/REPORT.md` 7.5).

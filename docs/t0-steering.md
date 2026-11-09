@@ -88,6 +88,9 @@ no cap (-0.03, CI [-0.08, +0.01]). Pausing steering let some conversations that 
   study on a **new pool of prompts** (7.6) gave +0.40 (CI [+0.31, +0.49], 48 wins / 11 ties / 1 loss) and, on all 1,319 GSM8K
   problems with steering always on, a drop of 0.5 points with the interval's upper end at 3.3 ("no harm shown" under the
   stricter rule). The new prompts are in the same style and written by the same system; no other model or rule set was tested.
+  A fourth, pre-registered study (7.8) swapped the rules direction for a random one of the same per-layer size: rules beat random
+  by +0.29 recovery (CI [+0.19, +0.40]) and the random push did not detectably beat plain T2 (+0.06, CI [-0.03, +0.15]), so on this
+  model the benefit comes from the rules direction, not from any small push at the right moment. That is one random draw.
 - **Conversations where the gate keeps firing do worse** (7 of 60 ran 8 or more steered turns; mean paired difference
   -0.04), and in one the steered replies dropped the brackets of `[END]` so the gate never switched off (1.00 -> 0.00).
   These are the conversations where the model keeps breaking the rules, so this is not shown to be caused by steering. A
