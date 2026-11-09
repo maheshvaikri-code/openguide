@@ -298,3 +298,31 @@ def pilot_choice(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
     return {"chosen": chosen["gain"], "eligible": names, "chosen_recovery_not_positive": bool(best <= _EPS),
             "reason": f"gain {chosen['gain']:g}: highest recovery gain ({best:+.3f}) among eligible gains"
                       + (" (tie -> lower gain)" if len(tied) > 1 else "")}
+
+
+# -- the direction control: docs/preregistration/t0-direction-control.md ---------------------------
+def direction_verdict(rules_vs_random: dict[str, Any], random_vs_t2: dict[str, Any],
+                      rules_vs_t2: dict[str, Any]) -> dict[str, Any]:
+    """The registered reading of the direction control.
+
+    ``rules_vs_random`` is (rules - random) recovery, paired by seed. The benefit depends on the rules
+    direction only if that mean is above 0 and its CI lower bound is above 0."""
+    mean, (lo, hi) = rules_vs_random["mean_diff"], rules_vs_random["ci95"]
+    if mean > 0 and lo > 0:
+        outcome = "the benefit depends on the rules direction"
+    elif mean < 0 and hi < 0:
+        outcome = "a random push does better"
+    else:
+        outcome = "a random push of the same size does not differ detectably"
+    return {"outcome": outcome, "rules_beat_random": bool(mean > 0 and lo > 0),
+            "random_helps": bool(random_vs_t2["mean_diff"] > 0 and random_vs_t2["ci95"][0] > 0),
+            "rules_helps": bool(rules_vs_t2["mean_diff"] > 0 and rules_vs_t2["ci95"][0] > 0)}
+
+
+# -- the Granite gain ladder: docs/preregistration/t0-granite-ladder.md -----------------------------
+def ladder_outcome(drops: dict[float, float]) -> str:
+    """The registered statement: 'eligible at g' for the highest gain within the limit, else the floor."""
+    eligible = pilot_eligibility(drops)["eligible"]
+    if eligible:
+        return f"eligible at {max(eligible):g}"
+    return f"no eligible gain found down to {min(drops):g}"

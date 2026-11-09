@@ -338,3 +338,49 @@ def test_the_capability_gate_agrees_with_the_full_rule_about_who_is_eligible():
     drops = {0.025: 1.9, 0.05: 2.0, 0.075: 2.0001}
     rows = [row(g, 0.1, d) for g, d in drops.items()]
     assert rp.pilot_eligibility(drops)["eligible"] == rp.pilot_choice(rows)["eligible"]
+
+
+# -- the direction control (docs/preregistration/t0-direction-control.md) ---------------------------
+def cmp_(mean, lo, hi, losses=0):
+    return {"mean_diff": mean, "ci95": (lo, hi), "losses": losses}
+
+
+def test_the_benefit_depends_on_the_rules_direction_only_if_rules_beat_random_with_a_ci_above_zero():
+    v = rp.direction_verdict(cmp_(0.15, 0.05, 0.25), cmp_(0.10, 0.02, 0.18), cmp_(0.25, 0.15, 0.35))
+    assert v["outcome"] == "the benefit depends on the rules direction" and v["rules_beat_random"] is True
+
+
+def test_a_ci_lower_bound_of_exactly_zero_is_not_a_pass():
+    v = rp.direction_verdict(cmp_(0.15, 0.0, 0.30), cmp_(0.1, 0.0, 0.2), cmp_(0.2, 0.1, 0.3))
+    assert v["rules_beat_random"] is False
+    assert v["outcome"] == "a random push of the same size does not differ detectably"
+
+
+def test_a_positive_mean_with_an_interval_including_zero_is_no_detectable_difference():
+    v = rp.direction_verdict(cmp_(0.08, -0.03, 0.19), cmp_(0.2, 0.1, 0.3), cmp_(0.28, 0.18, 0.38))
+    assert v["outcome"] == "a random push of the same size does not differ detectably"
+
+
+def test_a_random_push_that_is_detectably_better_is_reported_as_such():
+    v = rp.direction_verdict(cmp_(-0.10, -0.20, -0.02), cmp_(0.3, 0.2, 0.4), cmp_(0.2, 0.1, 0.3))
+    assert v["outcome"] == "a random push does better" and v["rules_beat_random"] is False
+
+
+def test_it_always_says_whether_the_random_push_itself_helped():
+    helps = rp.direction_verdict(cmp_(0.0, -0.1, 0.1), cmp_(0.2, 0.1, 0.3), cmp_(0.2, 0.1, 0.3))
+    nope = rp.direction_verdict(cmp_(0.2, 0.1, 0.3), cmp_(0.02, -0.05, 0.09), cmp_(0.22, 0.1, 0.3))
+    assert helps["random_helps"] is True and nope["random_helps"] is False
+
+
+# -- the Granite ladder (docs/preregistration/t0-granite-ladder.md) ------------------------------------
+def test_the_ladder_names_the_highest_eligible_gain_or_says_none_was_found():
+    assert rp.ladder_outcome({0.0125: 1.5, 0.00625: 0.5}) == "eligible at 0.0125"
+    assert rp.ladder_outcome({0.0125: 3.0, 0.00625: 1.0}) == "eligible at 0.00625"
+    assert rp.ladder_outcome({0.0125: 2.0, 0.00625: 0.0}) == "eligible at 0.0125"  # exactly 2 is eligible
+    assert rp.ladder_outcome({0.0125: 4.0, 0.00625: 2.1}) == "no eligible gain found down to 0.00625"
+
+
+def test_the_ladder_uses_the_same_eligibility_rule_as_the_pilot():
+    drops = {0.0125: 2.0001, 0.00625: 2.0}
+    assert rp.pilot_eligibility(drops)["eligible"] == [0.00625]
+    assert rp.ladder_outcome(drops) == "eligible at 0.00625"
