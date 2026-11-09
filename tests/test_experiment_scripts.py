@@ -19,7 +19,7 @@ def test_the_experiment_script_imports(name):
 
 
 def test_every_script_that_generates_in_batches_sets_left_padding():
-    """Right-padded batches answer differently; a runner once forgot and its unsteered baseline stopped reproducing."""
+    """Right-padded batches answer differently; a runner once forgot and its baseline stopped reproducing."""
     import pathlib
 
     missing = []
