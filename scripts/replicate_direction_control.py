@@ -120,6 +120,9 @@ def main() -> int:
     say(f"loading {prof.path} ({prof.dtype}) ...")
     up = HFUpstream.from_pretrained(prof.path, served_name=prof.served_name, max_new_tokens=96,
                                     dtype=prof.dtype)
+    if up.tokenizer.pad_token is None:
+        up.tokenizer.pad_token = up.tokenizer.eos_token
+    up.tokenizer.padding_side = "left"                      # batched GSM8K generation needs left padding
     rules_pack = SignalPack.load_safetensors(prof.pack_path)
     random_pack = diag.random_direction_pack(rules_pack, prof.band, RANDOM_SEED)
     if rules_pack.hash() != PACK_HASH or random_pack.hash() != RANDOM_PACK_HASH:
