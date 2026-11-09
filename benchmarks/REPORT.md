@@ -185,6 +185,9 @@ The design was not fixed in advance. In order:
 11. **The 7.7 diagnostics were run after the pilot stopped and are exploratory.** They were specified, with a reading guide, before
     they were run, and they changed neither the pilot's verdict nor any later decision about Granite. Their result did not match
     either outcome the reading guide anticipated (see 7.7).
+12. **The Granite gain ladder (7.7) was pre-registered** (spec `f890c30`). Its runner's own baseline check caught a missing
+    left-padding line in the *next* study's runner (7.9) before any registered data existed; the ladder itself reproduced its
+    baseline exactly. The ladder's 0.0125 pass is exactly at the eligibility limit.
 
 ### 7.1 Does re-anchoring help? (recovery on a real model)
 
@@ -541,6 +544,30 @@ shrugs off such pushes or the rules direction was what it tolerated.
 **What it does not show.** Anything about gains below 0.025 on Granite, or whether any gain both helps *recovery* there and avoids the
 harm (the conversations were not run). Three random seeds and 300 problems give wide intervals. It does not say the recipe cannot be
 made to work on Granite, only that the cause of the harm is not the one hypothesised and a simple rescaling would not obviously fix it.
+
+**Gain ladder (pre-registered).** After the diagnostics, a second pre-registered step asked whether any lower gain removes the
+capability cost ([`../docs/preregistration/t0-granite-ladder.md`](../docs/preregistration/t0-granite-ladder.md), commit `f890c30`).
+Same revision, bfloat16 and pack; GSM8K, the first 300 problems, steering always on, gains **0.0125 and 0.00625** (half and a quarter of
+the lowest pilot gain); baseline the pilot's unsteered results, re-run on the first 40 problems and reproduced exactly. Code commit
+`57113db` (clean), 622 s. Raw data: [`results/granite-3.1-2b/ladder.json`](results/granite-3.1-2b/ladder.json).
+
+**Registered statement: eligible at 0.0125.**
+
+| Gain | GSM8K, none -> steered (first 300) | Drop, 95% CI | Eligible (drop <= 2) |
+|---|---|---|---|
+| 0.00625 | 220 (73.3%) -> 216 (72.0%) | +1.3 points [-3.0, +5.7] | yes |
+| 0.0125 | 220 -> 214 (71.3%) | **+2.0** [-2.7, +6.7] | yes, exactly at the limit |
+
+With the pilot, Granite's GSM8K drop by gain is: 0.00625 **+1.3**; 0.0125 **+2.0**; 0.025 **+6.3**; 0.05 **+19.7**; 0.075 **+42.3**.
+
+**Reading it.** The cost falls steadily with the gain and becomes indistinguishable from noise somewhere between 0.0125 and 0.025. The
+0.0125 pass is a knife-edge: a drop of exactly 6 questions, 2.0 points, with an interval reaching +6.7. At 300 problems the rule is a
+coarse filter, as the spec said, not evidence of no harm.
+
+**What it does not show.** That steering *helps* Granite at either gain: no conversations were run, and Granite does not end its turn
+after `[END]`, so they would need a stop rule first. It does not make Granite validated: the guard still refuses it, because it has no
+record with recovery evidence of its own. It completes the transfer finding with a measured number: on Granite the recipe's capability
+cost shrinks into noise only at about half of the lowest gain the original grid tried, or lower.
 
 ### 7.8 What this does and does not show
 

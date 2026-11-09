@@ -43,7 +43,8 @@
 | NIT: redundant `isfinite`; `Upstream` protocol does not declare `steer` | Left as is (harmless / documented). |
 
 ## Known limitations (not fixed)
-- **One model.** A second model (Granite-3.1-2B) failed the pre-registered capability pilot at every tested gain (REPORT 7.7); the
+- **One model.** A second model (Granite-3.1-2B) failed the pre-registered capability pilot at every tested gain, and a later ladder
+  found the cost within noise only at 0.0125 or lower, with no recovery evidence (REPORT 7.7); the
   steering now fails closed: it refuses any model without a validation record (`proxy/validation.py`), and an explicit
   `experimental=True` override is marked in the trace.
 - Benefit shown on one model and rule set, in three pre-registered studies; the third used a new pool of prompts written in the

@@ -24,7 +24,8 @@ All notable changes to this project are documented here. Format follows
   identity covers `config.json`, is not cached, and the dtype and loaded path are checked.
 - Second-model support for the experiments (model profiles with a relative steering band, a per-model `gain_ceiling`, a dtype
   option, a pinned-revision check) and a pre-registered gain pilot. On Granite-3.1-2B-Instruct the pilot stopped: no gain was
-  eligible (GSM8K down 6.3 to 42.3 points), so steering is validated on one model only (`benchmarks/REPORT.md` 7.7).
+  eligible (GSM8K down 6.3 to 42.3 points), so steering is validated on one model only (`benchmarks/REPORT.md` 7.7). A pre-registered
+  ladder then found the capability cost within noise only at 0.0125 and below (drops of 2.0 and 1.3 points), with no recovery evidence.
 - Opt-in cap on consecutive steered turns (`SteeringConfig(max_consecutive=..., pause_turns=...)`, off by default) and its
   pre-registered study (`docs/preregistration/t0-cap-study.md`, `scripts/replicate_cap.py`). The study found the cap does
   **not** help (more losses than uncapped; non-inferiority failed), so it is not recommended (`benchmarks/REPORT.md` 7.5).
