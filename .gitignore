@@ -63,3 +63,5 @@ benchmarks/diagnostics_d1_progress.json
 benchmarks/results/granite-3.1-2b/ladder.smoke.json
 benchmarks/direction_control_*
 benchmarks/results/qwen2.5-1.5b/direction_control.smoke.json
+benchmarks/direction_draws_*
+benchmarks/results/qwen2.5-1.5b/direction_draws.smoke.json
