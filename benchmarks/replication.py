@@ -326,3 +326,90 @@ def ladder_outcome(drops: dict[float, float]) -> str:
     if eligible:
         return f"eligible at {max(eligible):g}"
     return f"no eligible gain found down to {min(drops):g}"
+
+
+# -- the random-direction draws: docs/preregistration/t0-direction-draws.md ---------------------------
+def same_conversation(old: Sequence[dict[str, Any]], new: Sequence[dict[str, Any]]) -> bool:
+    """True only if a re-run reproduced a recorded conversation exactly (turns, replies and rule flags)."""
+    if len(old) != len(new):
+        return False
+    return all(
+        (a["turn"], a["kind"], a["reply"], bool(a["ok"])) == (b["turn"], b["kind"], b["reply"], bool(b["ok"]))
+        for a, b in zip(old, new))
+
+
+def _recoveries(convs: Sequence[dict[str, Any]]) -> dict[int, float]:
+    out: dict[int, float] = {}
+    for c in convs:
+        r = recovery(c["turns"])
+        if r is None:
+            raise ValueError(f"seed {c['seed']} has no recovery to measure")
+        out[c["seed"]] = r
+    if len(out) != len(convs):
+        raise ValueError("a conversation seed appears twice in one arm")
+    return out
+
+
+def across_draws(reference: Sequence[dict[str, Any]], by_draw: dict[int, Sequence[dict[str, Any]]],
+                 sign: int = 1) -> dict[str, Any]:
+    """Compare ``reference`` with several random-direction draws, paired by conversation seed.
+
+    Per conversation, the draws' recoveries are averaged and the difference is
+    ``sign * (reference - mean over draws)``, so ``sign=+1`` gives rules minus random and ``sign=-1`` with the
+    t2 arm gives random minus t2. The mean has a bootstrap CI over the conversations only: it says nothing
+    about how much a *new* draw would differ. That is what ``per_draw``, ``spread`` and
+    ``draws_positive`` are for."""
+    if not by_draw:
+        raise ValueError("at least one draw is required")
+    ref = _recoveries(reference)
+    per_draw_rec = {d: _recoveries(convs) for d, convs in by_draw.items()}
+    for d, rec in per_draw_rec.items():
+        if set(rec) != set(ref):
+            raise ValueError(f"draw {d} must cover the reference's seeds: {sorted(rec)} vs {sorted(ref)}")
+    seeds = sorted(ref)
+    pooled = [sign * (ref[s] - float(np.mean([r[s] for r in per_draw_rec.values()]))) for s in seeds]
+    per_draw: dict[int, dict[str, Any]] = {}
+    for d, rec in per_draw_rec.items():
+        diffs = [sign * (ref[s] - rec[s]) for s in seeds]
+        wins = sum(x > _EPS for x in diffs)
+        losses = sum(x < -_EPS for x in diffs)
+        per_draw[d] = {"mean_diff": float(np.mean(diffs)), "ci95": bootstrap_ci(diffs), "wins": int(wins),
+                       "losses": int(losses), "ties": len(diffs) - int(wins) - int(losses)}
+    means = [v["mean_diff"] for v in per_draw.values()]
+    positive = sum(m > _EPS for m in means)
+    n = len(means)
+    # one-sided binomial tail: P(X >= positive) when each draw is equally likely to favour either arm
+    sign_p = sum(math.comb(n, k) for k in range(positive, n + 1)) / 2 ** n
+    return {
+        "n": len(seeds), "n_draws": n,
+        "mean_diff": float(np.mean(pooled)), "ci95": bootstrap_ci(pooled),
+        "per_seed": pooled, "per_draw": per_draw,
+        "spread": {"min": min(means), "max": max(means),
+                   "sd": float(np.std(means, ddof=1)) if n > 1 else 0.0},
+        "draws_positive": int(positive), "draw_sign_p": float(sign_p),
+    }
+
+
+def draws_verdict(rules_vs_random: dict[str, Any], random_vs_t2: dict[str, Any]) -> dict[str, Any]:
+    """The registered reading of the draws; both arguments are ``across_draws`` results."""
+    mean, (lo, hi) = rules_vs_random["mean_diff"], rules_vs_random["ci95"]
+    on_average = bool(mean > 0 and lo > 0)
+    n, positive = rules_vs_random["n_draws"], rules_vs_random["draws_positive"]
+    not_beaten = sorted(d for d, v in rules_vs_random["per_draw"].items() if not v["mean_diff"] > _EPS)
+    every = bool(on_average and not not_beaten)
+    if every:
+        outcome = f"random directions lose to the rules direction ({positive} of {n} draws)"
+    elif on_average:
+        outcome = ("the rules direction beats random directions on average, "
+                   f"not in every draw ({positive} of {n})")
+    elif mean < 0 and hi < 0:
+        outcome = "random directions do better"
+    else:
+        outcome = "not established across draws"
+    return {
+        "outcome": outcome, "rules_beat_random_on_average": on_average, "rules_beat_every_draw": every,
+        "draws_not_beaten": not_beaten,
+        "random_helps_on_average": bool(random_vs_t2["mean_diff"] > 0 and random_vs_t2["ci95"][0] > 0),
+        "draws_where_random_helps": sorted(
+            d for d, v in random_vs_t2["per_draw"].items() if v["ci95"][0] > 0),
+    }

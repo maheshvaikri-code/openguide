@@ -92,3 +92,13 @@ def push_to_write(gain: float, band: tuple[int, int], n_layers: int, pack_norms:
         push = gain * env[layer] * pack_norms[layer] / stats[layer]["median_input_norm"]
         out[layer] = float(push / stats[layer]["median_write_ratio"])
     return out
+
+
+def max_abs_layer_cosine(a: SignalPack, b: SignalPack, band: tuple[int, int]) -> float:
+    """The largest |cosine| between the two packs' vectors over the band (a near-orthogonality screen)."""
+    worst = 0.0
+    for layer in range(*band):
+        x = np.asarray(a.get(STEER_SIGNAL, layer), dtype=np.float64)
+        y = np.asarray(b.get(STEER_SIGNAL, layer), dtype=np.float64)
+        worst = max(worst, abs(float(x @ y / (np.linalg.norm(x) * np.linalg.norm(y)))))
+    return worst

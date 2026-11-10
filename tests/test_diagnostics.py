@@ -104,3 +104,23 @@ def test_push_to_write_grows_with_gain_and_shrinks_when_a_layer_writes_more():
     assert high[2] == pytest.approx(2 * low[2])
     big = {l: {"median_write_ratio": 0.10, "median_input_norm": 10.0} for l in range(6)}
     assert diag.push_to_write(0.05, (1, 4), 6, pn, big)[2] == pytest.approx(high[2] / 2)
+
+
+def test_the_layer_cosine_screen_reports_the_largest_absolute_cosine_over_the_band():
+    a, b = _pack(seed=1), _pack(seed=2)
+    c = diag.max_abs_layer_cosine(a, b, BAND)
+    cosines = []
+    for layer in range(*BAND):
+        x, y = a.get(STEER_SIGNAL, layer), b.get(STEER_SIGNAL, layer)
+        cosines.append(abs(float(np.dot(x, y) / np.linalg.norm(x) / np.linalg.norm(y))))
+    manual = max(cosines)
+    assert c == pytest.approx(manual)
+    assert diag.max_abs_layer_cosine(a, a, BAND) == pytest.approx(1.0)
+
+
+def test_the_layer_cosine_screen_ignores_the_sign():
+    a = _pack(seed=1)
+    flipped = SignalPack("m", a.d)
+    for layer in range(*BAND):
+        flipped.set_vector(STEER_SIGNAL, layer, -np.asarray(a.get(STEER_SIGNAL, layer)))
+    assert diag.max_abs_layer_cosine(a, flipped, BAND) == pytest.approx(1.0)

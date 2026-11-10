@@ -384,3 +384,124 @@ def test_the_ladder_uses_the_same_eligibility_rule_as_the_pilot():
     drops = {0.0125: 2.0001, 0.00625: 2.0}
     assert rp.pilot_eligibility(drops)["eligible"] == [0.00625]
     assert rp.ladder_outcome(drops) == "eligible at 0.00625"
+
+
+# -- the random-direction draws (docs/preregistration/t0-direction-draws.md) --------------------------
+def _draws(**by_draw_oks):
+    """{draw seed: arm} where each arm is a list of conversations, one per conversation seed."""
+    return {int(k[1:]): _arm({200 + i: [v] for i, v in enumerate(oks)}) for k, oks in by_draw_oks.items()}
+
+
+RULES5 = _arm({200: [True], 201: [True], 202: [True], 203: [True]})
+T2_5 = _arm({200: [False], 201: [False], 202: [True], 203: [False]})
+
+
+def test_draws_are_averaged_within_each_conversation_before_the_difference():
+    # the draws' recoveries average to 0.5, 0, 1, 0.5 per conversation
+    by_draw = _draws(d1=[False, False, True, True], d2=[True, False, True, False])
+    r = rp.across_draws(RULES5, by_draw)
+    assert r["per_seed"] == [pytest.approx(0.5), pytest.approx(1.0), pytest.approx(0.0), pytest.approx(0.5)]
+    assert r["mean_diff"] == pytest.approx(0.5) and r["n"] == 4 and r["n_draws"] == 2
+
+
+def test_every_draw_is_also_reported_on_its_own():
+    by_draw = _draws(d1=[False, False, False, False], d2=[True, True, True, False])
+    r = rp.across_draws(RULES5, by_draw)
+    assert r["per_draw"][1]["mean_diff"] == pytest.approx(1.0)
+    assert r["per_draw"][2]["mean_diff"] == pytest.approx(0.25)
+    assert (r["per_draw"][2]["wins"], r["per_draw"][2]["ties"], r["per_draw"][2]["losses"]) == (1, 3, 0)
+    assert r["spread"]["min"] == pytest.approx(0.25) and r["spread"]["max"] == pytest.approx(1.0)
+
+
+def test_the_sign_convention_makes_random_minus_t2_positive_when_random_recovers_more():
+    by_draw = _draws(d1=[True, True, True, True])
+    r = rp.across_draws(T2_5, by_draw, sign=-1)
+    # random beats t2 on 3 of the 4 conversations
+    assert r["mean_diff"] == pytest.approx(0.75)
+
+
+def test_draws_in_the_right_count_are_counted_as_positive_only_when_strictly_above_zero():
+    by_draw = _draws(d1=[False] * 4, d2=[True] * 4, d3=[False, False, True, True])
+    r = rp.across_draws(RULES5, by_draw)
+    assert r["draws_positive"] == 2          # d2 is exactly 0, which is not positive
+
+
+def test_the_draw_level_sign_test_is_the_one_sided_binomial_tail():
+    five = _draws(**{f"d{i}": [False] * 4 for i in range(5)})
+    assert rp.across_draws(RULES5, five)["draw_sign_p"] == pytest.approx(1 / 32)      # all 5 positive
+    mixed = dict(five)
+    mixed[0] = _arm({200: [True], 201: [True], 202: [True], 203: [True]})    # one draw ties rules exactly
+    assert rp.across_draws(RULES5, mixed)["draw_sign_p"] == pytest.approx(6 / 32)    # P(X >= 4 | n=5)
+
+
+def test_the_draws_must_cover_the_same_conversations_as_the_reference():
+    bad = {1: _arm({200: [False], 201: [False], 202: [False], 999: [False]})}
+    with pytest.raises(ValueError):
+        rp.across_draws(RULES5, bad)
+    with pytest.raises(ValueError):
+        rp.across_draws(RULES5, {})
+
+
+def _across(mean, lo, hi, per_draw_means, helps_means=None):
+    per = {i: {"mean_diff": m, "ci95": (m - 0.1, m + 0.1)} for i, m in enumerate(per_draw_means)}
+    pos = sum(m > 0 for m in per_draw_means)
+    return {"mean_diff": mean, "ci95": (lo, hi), "per_draw": per, "draws_positive": pos,
+            "n_draws": len(per_draw_means)}
+
+
+def _helps(mean, lo, per_draw_lo):
+    per = {i: {"mean_diff": 0.0, "ci95": (x, x + 0.2)} for i, x in enumerate(per_draw_lo)}
+    return {"mean_diff": mean, "ci95": (lo, lo + 0.2), "per_draw": per, "draws_positive": 0,
+            "n_draws": len(per)}
+
+
+NOBODY_HELPS = _helps(0.02, -0.05, [-0.1] * 5)
+
+
+def test_random_directions_lose_only_if_the_pooled_ci_is_above_zero_and_every_draw_is_positive():
+    v = rp.draws_verdict(_across(0.3, 0.2, 0.4, [0.2, 0.3, 0.4, 0.3, 0.3]), NOBODY_HELPS)
+    assert v["outcome"] == "random directions lose to the rules direction (5 of 5 draws)"
+    assert v["rules_beat_every_draw"] is True and v["rules_beat_random_on_average"] is True
+
+
+def test_a_pass_on_average_with_one_draw_at_or_below_zero_is_named_as_such():
+    v = rp.draws_verdict(_across(0.3, 0.2, 0.4, [0.5, 0.4, 0.3, 0.3, -0.01]), NOBODY_HELPS)
+    assert v["outcome"] == ("the rules direction beats random directions on average, "
+                            "not in every draw (4 of 5)")
+    assert v["rules_beat_every_draw"] is False and v["draws_not_beaten"] == [4]
+
+
+def test_a_pooled_ci_that_includes_zero_is_not_established_across_draws():
+    v = rp.draws_verdict(_across(0.05, -0.03, 0.14, [0.1, 0.0, 0.1, 0.05, 0.05]), NOBODY_HELPS)
+    assert v["outcome"] == "not established across draws"
+
+
+def test_a_pooled_lower_bound_of_exactly_zero_is_not_a_pass():
+    v = rp.draws_verdict(_across(0.1, 0.0, 0.2, [0.1] * 5), NOBODY_HELPS)
+    assert v["rules_beat_random_on_average"] is False and v["outcome"] == "not established across draws"
+
+
+def test_random_directions_that_do_better_are_reported_as_such():
+    v = rp.draws_verdict(_across(-0.2, -0.3, -0.1, [-0.2] * 5), NOBODY_HELPS)
+    assert v["outcome"] == "random directions do better"
+
+
+def test_it_always_says_whether_random_pushes_helped_and_in_which_draws():
+    helps = _helps(0.2, 0.1, [0.02, -0.05, 0.1, -0.02, 0.0])
+    v = rp.draws_verdict(_across(0.1, 0.05, 0.2, [0.1] * 5), helps)
+    assert v["random_helps_on_average"] is True and v["draws_where_random_helps"] == [0, 2]
+    nobody = rp.draws_verdict(_across(0.1, 0.05, 0.2, [0.1] * 5), NOBODY_HELPS)
+    assert nobody["random_helps_on_average"] is False
+
+
+def test_a_rerun_matches_the_committed_conversation_only_if_every_reply_and_flag_is_identical():
+    old = conv(600, [True, False])["turns"]
+    same = [dict(t) for t in old]
+    assert rp.same_conversation(old, same) is True
+    changed = [dict(t) for t in old]
+    changed[7] = {**changed[7], "reply": changed[7]["reply"] + "."}
+    assert rp.same_conversation(old, changed) is False
+    flagged = [dict(t) for t in old]
+    flagged[7] = {**flagged[7], "ok": not flagged[7]["ok"]}
+    assert rp.same_conversation(old, flagged) is False
+    assert rp.same_conversation(old, same[:-1]) is False
