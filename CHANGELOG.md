@@ -6,6 +6,14 @@ All notable changes to this project are documented here. Format follows
 ## [Unreleased]
 
 ### Added
+- **Architecture-drift study harness** (`archstudy/`, step 1, no API spend; brief `docs/briefs/arch-drift-harness.md`, ADR-004,
+  plan `docs/plans/arch-drift-harness.md`). A synthetic orders codebase with four visible and three held-out architecture rules; a
+  Claude Code PostToolUse hook and git commit check for three arms (check at commit, check after every edit, no checks) with one
+  shared message; silent hash-chained snapshots and an offline scorer (violations left, edits in violation, episodes, task
+  success); a seeded 12-task script with shocks at positions 4 and 9 and hidden acceptance tests; fail-closed container launch
+  validation, an egress allowlist proxy, key redaction, and an image definition; and a dry run with scripted stand-in agents
+  (`scripts/arch_dryrun.py`) showing the scorer separates a compliant agent, a shortcut, a disguised shortcut, and an agent that
+  fixes a violation when told. No model or API is called; the Docker image is not yet built.
 - **Drift-gated T0 activation steering in the proxy** (opt-in; ADR-003, `docs/t0-steering.md`). With a local-weights
   upstream (`HFUpstream.enable_steering`) and `create_app(..., steering=SteeringConfig(...))`, the generation after a
   turn that needed a correction is steered at a small gain (default and hard cap 0.05, the only gain measured not to damage reasoning); otherwise nothing is

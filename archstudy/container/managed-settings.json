@@ -1,0 +1,18 @@
+{
+  "allowManagedHooksOnly": true,
+  "disableAllHooks": false,
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python /opt/archstudy/hook.py",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
