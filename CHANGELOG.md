@@ -30,6 +30,10 @@ All notable changes to this project are documented here. Format follows
   `scripts/replicate_direction_control.py`, `benchmarks/REPORT.md` 7.8): rules direction beat a random direction of the same size
   (+0.29 recovery, CI [+0.19, +0.40], 60 conversations); the random push did not detectably help (+0.06) and cost no GSM8K accuracy
   (0.3 points). One random draw. Tested helpers: `direction_verdict` and `ladder_outcome` in `benchmarks/replication.py`.
+- Pre-registered five more random directions (`docs/preregistration/t0-direction-draws.md`, `scripts/replicate_direction_draws.py`,
+  `benchmarks/REPORT.md` 7.8): rules beat random in 5 of 5 draws (draw-averaged +0.33 recovery, CI [+0.25, +0.41]); random pushes did
+  not detectably help; their GSM8K cost ranged from -2.1 to +2.7 points. Also corrects an earlier non-English count in 7.8 (the true
+  count is 0). Helpers `across_draws`, `draws_verdict`, `same_conversation`, `max_abs_layer_cosine`.
 - Opt-in cap on consecutive steered turns (`SteeringConfig(max_consecutive=..., pause_turns=...)`, off by default) and its
   pre-registered study (`docs/preregistration/t0-cap-study.md`, `scripts/replicate_cap.py`). The study found the cap does
   **not** help (more losses than uncapped; non-inferiority failed), so it is not recommended (`benchmarks/REPORT.md` 7.5).

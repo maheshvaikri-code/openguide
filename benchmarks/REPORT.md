@@ -190,8 +190,12 @@ The design was not fixed in advance. In order:
     baseline exactly. The ladder's 0.0125 pass is exactly at the eligibility limit.
 13. **The direction control (7.8) was pre-registered** (spec `f890c30`, code commit `36e9fc4`, clean) and run once, with no
     deviations. Two of the spec's secondary items (the worst paired differences and the count of non-English replies) are not
-    written by the runner; I computed them afterwards from the committed data. The non-English count is a character-range
-    check (Cyrillic or CJK characters), a rough proxy, and it is exploratory.
+    written by the runner; I computed them afterwards from the committed data. **My first non-English count was wrong:** I used a
+    hand-written character range that also matched en and em dashes, curly quotes and arrows, and reported 48, 22 and 50 replies.
+    The repository's tested `not_english` function finds **none** in any arm. The 7.8 text below is corrected.
+14. **The five-draw study (7.8) was pre-registered** (spec `b026e02`, code commit `25d71de`, clean) and run once, with no deviations.
+    Its runner was smoke-tested on other seeds first. A re-run of three conversations under both reference arms reproduced the
+    committed ones exactly, as the spec required.
 
 ### 7.1 Does re-anchoring help? (recovery on a real model)
 
@@ -617,23 +621,73 @@ that drift under `t2`, random minus `t2` is +0.09 [-0.02, +0.22].
   fired on 38.1% of the random arm's turns against 23.1% for rules. That share is an *outcome* of the closed loop (a failing model
   is gated on more), not a dose I set, but it means the random arm received **more** total push than the rules arm, and still
   recovered less. So the result is not that the random arm was pushed too little.
-- Capability: Qwen does not pay for a random push of this size either (drop 0.3 points, the same as the rules pack within noise).
+- Capability: on this draw Qwen does not pay for a random push of this size (drop 0.3 points, the same as the rules pack within noise;
+  five more draws below range from -2.1 to +2.7 points).
   That is the opposite of Granite in 7.7 (random directions hurt it by 3.7 points on average at a smaller relative push), which
   is consistent with Granite's fragility being a property of that model rather than of the recipe, but does not explain it.
 - Secondary checks: shock-turn compliance is about 0% in every arm (0.8% for t2, 0.8% for rules, 0.0% for random), so, as in 7.4-7.6, steering
-  reacts after a failure and does not prevent it. Replies are mostly the intended kind: by a rough character-range check, 22 of
-  960 `rules` replies, 48 of `t2` and 50 of `random` contain Cyrillic or CJK characters (exploratory, not part of any decision), so the
-  rules arm drifted into other languages least. The shortest `rules` reply is "No, desktop-only." (2 words; the checker records one
+  reacts after a failure and does not prevent it. No reply in any arm contains non-Latin letters (the tested
+  `not_english` check; an earlier version of this section reported 48, 22 and 50 from a hand-written character range that wrongly
+  matched dashes and curly quotes, which was my error). The shortest `rules` reply is "No, desktop-only." (2 words; the checker records one
   reply under 3 words). I read only a sample of replies (one conversation in two arms and the shortest replies), not all of them,
   and found no degenerate text there.
 
-**What it does not show.** The spec's limits stand and I repeat them: **one random direction.** A pass shows the rules direction beat *this*
+**What it does not show.** The spec's limits stand and I repeat them: **one random direction (five more follow below).** A pass shows the rules direction beat *this*
 draw; another draw could do better or worse (a failure would have been informative whatever the draw; a pass is not, on its own, a
 statement about all random directions). It does not test a *matched-but-wrong* direction (for example the direction from a different rule
 set), which is a different question. N = 60 would not detect a small true difference. Pool 2, one model, one rule set. The random arm
 ran as an experiment under the guard and says nothing about safety. It does not explain *why* the rules direction works, only that
 the effect depends on it here. The Qwen validation record is unchanged: the guard's evidence list names the three earlier studies, and
 this one is additional support, not a new basis for a higher ceiling.
+
+**Five more draws (pre-registered).** The follow-up asked whether random directions, as a class, lose to the rules direction
+([`../docs/preregistration/t0-direction-draws.md`](../docs/preregistration/t0-direction-draws.md), commit `b026e02`, frozen before
+any run). Five new random packs (seeds 31415, 27183, 16180, 14142 and 13579, hashes pinned in the spec; the largest |cosine| with the
+rules pack is 0.0499; a sixth candidate, 17320, was skipped by the registered near-orthogonality screen at 0.0704, before any model
+output was seen). The same 60 conversations (seeds 600-659), so **the conversations are not new, only the directions**. The `t2` and
+`rules` arms were reused from `direction_control.json` after a re-run of seeds 600-602 under both arms reproduced all six conversations
+reply for reply. Code commit `25d71de` (clean). All 2,015 `STEER` records in the five draws are marked experimental. Raw data:
+[`results/qwen2.5-1.5b/direction_draws.json`](results/qwen2.5-1.5b/direction_draws.json).
+
+**Registered statement: random directions lose to the rules direction (5 of 5 draws).** Primary: the draw-averaged rules minus random
+is **+0.326, 95% CI [+0.247, +0.407]**, and rules is ahead in each draw separately.
+
+| Draw (seed) | Random arm recovery | Rules - random, 95% CI | Wins / ties / losses | Random - t2, 95% CI | Turns steered | GSM8K drop, 95% CI |
+|---|---|---|---|---|---|---|
+| 31415 | 60.3% | +0.308 [+0.213, +0.407] | 35 / 19 / 6 | +0.043 [-0.038, +0.132] | 40.3% | -2.1 [-4.6, +0.4] |
+| 27183 | 57.5% | +0.337 [+0.247, +0.430] | 39 / 17 / 4 | +0.015 [-0.055, +0.092] | 42.3% | +2.7 [+0.1, +5.2] |
+| 16180 | 50.5% | +0.407 [+0.300, +0.513] | 45 / 12 / 3 | -0.055 [-0.127, +0.018] | 48.3% | +2.1 [-0.5, +4.7] |
+| 14142 | 63.5% | +0.277 [+0.183, +0.370] | 38 / 19 / 3 | +0.075 [-0.013, +0.162] | 38.6% | +1.7 [-0.8, +4.1] |
+| 13579 | 60.8% | +0.303 [+0.213, +0.395] | 44 / 13 / 3 | +0.048 [-0.015, +0.118] | 40.3% | +0.6 [-1.9, +3.2] |
+| **Five draws, averaged** | | **+0.326 [+0.247, +0.407]** | | +0.025 [-0.029, +0.082] | | mean +1.0 |
+| Original draw (2718), for reference, enters no decision | 61.8% | +0.293 [+0.190, +0.400] | 37 / 19 / 4 | +0.058 [-0.027, +0.147] | 38.1% | +0.3 [-2.2, +2.9] |
+
+For comparison, `t2` recovers 56.0% and the rules pack 91.2% (steering 23.1% of turns), with a GSM8K drop of 0.5 points [-2.3, +3.3].
+
+**Reading it.**
+- The rules direction is ahead of the random one in all five new draws and in the original, so six of six, by +0.277 to +0.407
+  (standard deviation 0.05 across the five). The interval above is over the 60 conversations and does **not** say how much a sixth draw
+  might differ; the per-draw rows and that spread do. Five draws cannot give a draw-level sign probability below 1/32 = 0.031, which
+  is what 5 of 5 gives.
+- A random push does not reliably help recovery: averaged over the five draws it is +0.025 [-0.029, +0.082], and no single draw's
+  interval excludes zero (draw means -0.055 to +0.075). Four of five means are positive, which at this size says little.
+- Rules is better on average and in most conversations, not in all: in each draw there is a conversation where the random push
+  recovered more than the rules push (the worst paired differences are -0.3, -0.1, -1.0, -0.9 and -1.0; a difference of -1.0 is a
+  conversation where the random push recovered every plain turn and the rules push none).
+- The random arms were steered on 38.6% to 48.3% of turns against 23.1% for rules. As in the single draw this is an outcome of the
+  closed loop, and it means the random arms got *more* push, not less.
+- **The capability result is less clean than the single draw suggested.** The five random pushes cost between -2.1 and +2.7 GSM8K
+  points (mean +1.0), and one interval, draw 27183 at +2.7 [+0.1, +5.2], excludes zero. The rules pack's +0.5 [-2.3, +3.3] is in the
+  same range, so this does not separate the two directions, but "a random push costs Qwen nothing" is not supported: the cost is small
+  and varies by draw. This was reported only, as registered; it enters no decision.
+- No reply in any draw contains non-Latin letters (tested `not_english` check).
+
+**What it does not show.** Five draws are a small sample of directions. "Random" here means isotropic Gaussian directions rescaled to the
+pack's per-layer norms and screened to be near-orthogonal to it; that is not "all directions" and not a *plausible-but-wrong* direction
+(for example the direction from a different rule set). So it supports "the rules direction beats random directions of this kind on
+Qwen2.5-1.5B", and it does **not** support "the steering direction must be semantically correct": a direction that is merely coherent
+could do as well, and that needs its own study. Same 60 conversations in every draw, pool 2, one model, one rule set, N = 60 (a small
+true difference would not be detected). The random arms are experiments under the guard and say nothing about safety.
 
 ### 7.9 What this does and does not show
 
@@ -648,20 +702,21 @@ this one is additional support, not a new basis for a higher ceiling.
   push of the same size also hurt) and is not explained by Granite's layers writing less; why Granite is more fragile is not shown.
   A pre-registered random-direction control on Qwen (7.8) found the recovery gain depends on the rules direction (rules minus random
   +0.29, CI [+0.19, +0.40]; a random push of the same size did not detectably help, +0.06, CI [-0.03, +0.15]) with no capability cost
-  from either (GSM8K 0.3 and 0.5 points), on one random draw.
+  from either (GSM8K 0.3 and 0.5 points), on one random draw. Five further pre-registered draws all lost to the rules direction
+  (draw-averaged +0.33, CI [+0.25, +0.41], 5 of 5 draws), with GSM8K costs from -2.1 to +2.7 points for the random pushes.
 - **Does not show:** anything about 7B/8B models (the blueprint's Qwen2.5-7B does not fit in 8 GB at full
   precision, so that gate is still unrun); that results hold for other rules or models (new prompts of the same style were covered in 7.6; a second model failed its
   capability pilot, 7.7); that the
   placement of a re-anchor matters (it flips by conversation); a benefit of re-anchoring in text (n = 5
   conversations, intervals touch zero); that the closed loop's benefit holds beyond this model and rule set.
-- **Limits:** one model with a passing result (Qwen2.5-1.5B; a second failed its pilot), one contract, one random draw in the direction control (7.8), scripted prompts (two pools of 40, same author and style), greedy decoding (no sampling variance), 5
+- **Limits:** one model with a passing result (Qwen2.5-1.5B; a second failed its pilot), one contract, six random draws in the direction control (7.8; isotropic, near-orthogonal to the rules direction, same 60 conversations), scripted prompts (two pools of 40, same author and style), greedy decoding (no sampling variance), 5
   conversations per arm in 7.1-7.3 (60 in each of 7.4-7.6), MMLU on 300-500 random test questions and GSM8K on 100-1,319. The
   steering vector was derived and evaluated on the same kind of question (different questions, same template).
   Rule checkers count degenerate text as compliant on some rules (see the warning above).
 
-Reproduce (GPU, ~1.5 hours in total, plus ~5 minutes for 7.3, ~1.7 hours for 7.4, ~1.6 hours for 7.5, ~2.3 hours for 7.6, ~35 minutes for the 7.7 filter and ~1.6 hours for 7.8): `python scripts/calibrate_real_rules.py`;
+Reproduce (GPU, ~1.5 hours in total, plus ~5 minutes for 7.3, ~1.7 hours for 7.4, ~1.6 hours for 7.5, ~2.3 hours for 7.6, ~35 minutes for the 7.7 filter, ~1.6 hours for the first 7.8 study and about 5 hours of conversations plus GSM8K for the five draws): `python scripts/calibrate_real_rules.py`;
 `python scripts/real_placement_ablation.py` (add `--plain-only` for the ablation);
-`python scripts/real_t0_gate.py`; `python scripts/replicate_t0.py` (7.4) and `python scripts/replicate_cap.py` (7.5) `python scripts/replicate_pool2.py` (7.6), `python scripts/replicate_direction_control.py` (7.8) and, for 7.7, `python scripts/derive_steering_pack.py --profile granite` then
+`python scripts/real_t0_gate.py`; `python scripts/replicate_t0.py` (7.4) and `python scripts/replicate_cap.py` (7.5) `python scripts/replicate_pool2.py` (7.6), `python scripts/replicate_direction_control.py` and `python scripts/replicate_direction_draws.py` (7.8) and, for 7.7, `python scripts/derive_steering_pack.py --profile granite` then
 `python scripts/pilot_second_model.py --capability-only`, each of which refuses to run unless
 their spec is committed;
 then `python scripts/real_model_demo.py --serve` to browse the runs in the

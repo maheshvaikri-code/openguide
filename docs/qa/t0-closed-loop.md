@@ -48,7 +48,8 @@
   steering now fails closed: it refuses any model without a validation record (`proxy/validation.py`), and an explicit
   `experimental=True` override is marked in the trace.
 - A pre-registered random-direction control (REPORT 7.8) found the benefit depends on the rules direction on this model; it used
-  one random draw, so it does not rule out that some other direction recovers as well.
+  one random draw. Five further pre-registered draws agreed (5 of 5), but all are isotropic and near-orthogonal to the pack, so a
+  coherent but wrong direction is still untested.
 - Benefit shown on one model and rule set, in three pre-registered studies; the third used a new pool of prompts written in the
   same style (REPORT 7.4-7.6). Capability was measured with steering
   always on, not through the loop. Conversations where the gate keeps firing do worse (7 of 60 in 7.4, 6 of 60 in 7.5), not shown to be

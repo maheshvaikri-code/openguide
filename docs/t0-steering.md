@@ -90,7 +90,10 @@ no cap (-0.03, CI [-0.08, +0.01]). Pausing steering let some conversations that 
   stricter rule). The new prompts are in the same style and written by the same system; no other model or rule set was tested.
   A fourth, pre-registered study (7.8) swapped the rules direction for a random one of the same per-layer size: rules beat random
   by +0.29 recovery (CI [+0.19, +0.40]) and the random push did not detectably beat plain T2 (+0.06, CI [-0.03, +0.15]), so on this
-  model the benefit comes from the rules direction, not from any small push at the right moment. That is one random draw.
+  model the benefit comes from the rules direction, not from any small push at the right moment. That was one random draw; five more,
+  pre-registered, all lost to the rules direction (draw-averaged +0.33, CI [+0.25, +0.41]; random pushes did not detectably help, and
+  their GSM8K cost ranged from -2.1 to +2.7 points). "Random" there means isotropic and near-orthogonal; a coherent but wrong
+  direction has not been tested.
 - **Conversations where the gate keeps firing do worse** (7 of 60 ran 8 or more steered turns; mean paired difference
   -0.04), and in one the steered replies dropped the brackets of `[END]` so the gate never switched off (1.00 -> 0.00).
   These are the conversations where the model keeps breaking the rules, so this is not shown to be caused by steering. A
